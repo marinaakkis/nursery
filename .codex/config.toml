@@ -1,0 +1,22 @@
+# Codex CLI — security configuration (policy in .cursor/rules/00-security.mdc)
+
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+persistent_instructions = "Follow security rules from AGENTS.md. Never commit secrets. Do not run git push without explicit request."
+
+[features]
+codex_hooks = true
+
+# MCP: add servers as needed
+# [mcp_servers.github]
+# command = "npx"
+# args = ["-y", "@modelcontextprotocol/server-github"]
+# startup_timeout_sec = 30
+
+[profiles.strict]
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+
+[profiles.standard]
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"

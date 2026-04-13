@@ -1,0 +1,21 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "AGENTS.md"
+  ],
+  "agent": {
+    "default": {
+      "description": "Primary development agent. Security policy in AGENTS.md.",
+      "mode": "primary",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true
+      }
+    }
+  },
+  "permission": {
+    "mcp_*": "ask"
+  }
+}

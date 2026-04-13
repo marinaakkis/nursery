@@ -1,0 +1,281 @@
+# ============================================================================
+# CURSOR AI SECURITY TEMPLATE - .gitignore
+# ============================================================================
+# Версия: 2.0.0
+# Назначение: Предотвращение коммита конфиденциальных файлов в Git
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# 1. СЕКРЕТЫ И УЧЁТНЫЕ ДАННЫЕ (КРИТИЧНЫЙ ПРИОРИТЕТ)
+# ----------------------------------------------------------------------------
+
+
+# Environment переменные
+.env
+.env.*
+.env.local
+.env.production
+.env.staging
+.env.development
+.env.test
+!.env.example
+
+# SSH ключи и сертификаты
+*.key
+*.pem
+*.cert
+*.crt
+*.p12
+*.pfx
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+
+# Cloud credentials
+.aws/
+.azure/
+.gcloud/
+gcloud-service-key.json
+
+# Secrets management
+secrets/
+credentials/
+vault/
+.secrets/
+config/master.key
+config/credentials.yml.enc
+
+# ----------------------------------------------------------------------------
+# 2. ЗАВИСИМОСТИ
+# ----------------------------------------------------------------------------
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Python
+venv/
+env/
+ENV/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Go
+vendor/
+*.exe
+!gitleaks-hook-windows-amd64.exe
+!sanitizer-windows-amd64.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Ruby
+.bundle/
+
+# Rust
+target/
+Cargo.lock
+
+# Java/Kotlin
+*.jar
+*.war
+*.ear
+*.class
+
+# .NET
+bin/
+obj/
+
+# ----------------------------------------------------------------------------
+# 3. АРТЕФАКТЫ СБОРКИ И КЕШИ
+# ----------------------------------------------------------------------------
+
+# Build outputs
+dist/
+out/
+build/
+coverage/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.output/
+.vercel/
+.netlify/
+
+# Logs
+*.log
+logs/
+log/
+
+# ----------------------------------------------------------------------------
+# 4. IDE И РЕДАКТОРЫ
+# ----------------------------------------------------------------------------
+
+# VSCode
+.vscode/
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Cursor (локальные настройки — правила и команды коммитятся)
+# .cursor/
+# !.cursor/rules/
+# !.cursor/commands/
+# !.cursor/mcp.json
+.cursor/hooks/vendor/
+.claude/hooks/vendor/
+
+# JetBrains
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+
+# Emacs
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# ----------------------------------------------------------------------------
+# 5. СИСТЕМНЫЕ ФАЙЛЫ
+# ----------------------------------------------------------------------------
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+.fuse_hidden*
+.nfs*
+
+# ----------------------------------------------------------------------------
+# 6. ВРЕМЕННЫЕ И ТЕСТОВЫЕ ФАЙЛЫ
+# ----------------------------------------------------------------------------
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Test outputs
+test-results/
+playwright-report/
+cypress/screenshots/
+cypress/videos/
+
+# Crash dumps
+*.dmp
+*.dump
+core
+core.*
+
+# ----------------------------------------------------------------------------
+# 7. БАЗЫ ДАННЫХ
+# ----------------------------------------------------------------------------
+
+# SQLite
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
+# SQL дампы
+dump.sql
+backup.sql
+
+# Redis
+dump.rdb
+
+# ----------------------------------------------------------------------------
+# 8. DOCKER
+# ----------------------------------------------------------------------------
+
+.docker/
+
+# ----------------------------------------------------------------------------
+# 9. АРХИВЫ И БОЛЬШИЕ ФАЙЛЫ
+# ----------------------------------------------------------------------------
+
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.iso
+
+# ----------------------------------------------------------------------------
+# 10. СПЕЦИФИЧНЫЕ ДЛЯ ПРОЕКТА
+# ----------------------------------------------------------------------------
+
+# Добавьте сюда файлы, специфичные для вашего проекта
+
+# ============================================================================
+# КОНЕЦ ФАЙЛА
+# ============================================================================

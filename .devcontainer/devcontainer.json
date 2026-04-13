@@ -1,0 +1,47 @@
+{
+    "name": "Cursor Secure Development Environment",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  
+    // "features": {
+    //   "docker.biocad.ru/ghcr.io/devcontainers/features/git:1": {},
+    //   "docker.biocad.ru/ghcr.io/devcontainers/features/python:1": {
+    //     "version": "3.12",
+    //     "installTools": true
+    //   },
+    //   "docker.biocad.ru/ghcr.io/devcontainers/features/common-utils:2": {
+    //     "installZsh": true,
+    //     "installOhMyZsh": true,
+    //     "upgradePackages": true
+    //   }
+    // },
+  
+    "customizations": {
+      "vscode": {
+        "settings": {
+          "cursor.ghostMode": true,
+          "cursor.privacyMode": "strict",
+          "cursor.autoRun": false,
+          "cursor.telemetry.enableTelemetry": false,
+          "cursor.telemetry.enableCrashReporter": false
+        },
+        "extensions": []
+      }
+    },
+  
+    "remoteUser": "vscode",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  
+    "containerEnv": {
+      "GIT_EDITOR": "code --wait"
+    },
+    "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && pip install pre-commit && pre-commit install",
+  
+    "forwardPorts": [3000, 8080],
+    "portsAttributes": {
+      "3000": {
+        "label": "Dev Server",
+        "onAutoForward": "notify"
+      }
+    }
+  }
+  

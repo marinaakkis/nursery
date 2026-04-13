@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.cursor/hooks/before-submit-prompt.js\"",
+            "statusMessage": "Scanning prompt for secrets"
+          }
+        ]
+      }
+    ]
+  }
+}
