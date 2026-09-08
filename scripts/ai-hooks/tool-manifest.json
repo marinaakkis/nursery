@@ -1,0 +1,35 @@
+{
+  "$schema": "./tool-manifest.schema.json",
+  "defaultGitlabUrl": "https://gitlab.biocad.ru",
+  "defaultRequestTimeoutMs": 30000,
+  "tools": {
+    "gitleaks": {
+      "packageName": "gitleaks-hook",
+      "projectId": "3168",
+      "version": "v2.0.1",
+      "vendorDir": "gitleaks",
+      "binaries": {
+        "darwin-arm64": {
+          "file": "gitleaks-hook-darwin-arm64",
+          "sha256": "6a574508494b5429c68819ee48e3042e7c9998f36173c22a8f66197e31089408"
+        },
+        "darwin-x64": {
+          "file": "gitleaks-hook-darwin-amd64",
+          "sha256": "b24afd81ac6d35fadcca22d8330a38426ebb5f7d31aa9fbb006db968ae89bff2"
+        },
+        "linux-arm64": {
+          "file": "gitleaks-hook-linux-arm64",
+          "sha256": "085b102d53512da97d594c22ffab42326d669c7f108abfd06c121c57513ed853"
+        },
+        "linux-x64": {
+          "file": "gitleaks-hook-linux-amd64",
+          "sha256": "deebd077896e8f9e8e84efcf00363c918321d5e861e39ba363fdf6fef4bc13e8"
+        },
+        "win32-x64": {
+          "file": "gitleaks-hook-windows-amd64.exe",
+          "sha256": "2f16232c762cf2937e053689dc0dbc5143f9fbfec675df280849de9b72e73d98"
+        }
+      }
+    }
+  }
+}

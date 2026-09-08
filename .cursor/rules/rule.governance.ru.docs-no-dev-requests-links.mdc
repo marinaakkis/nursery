@@ -1,0 +1,33 @@
+---
+description: Permanent docs/artifacts must not link into docs/dev-requests/**; docs/ holds global architecture only
+globs: "**/docs/**/*.md"
+alwaysApply: false
+---
+
+# Постоянные артефакты без ссылок на `docs/dev-requests/**`
+
+`docs/dev-requests/**` — это **рабочие задачи (dev-request)**, которые публикуются во внешнее хранилище (например, Obsidian) и **переносятся туда** (lifecycle: хранилище = система записи). Поэтому они **не являются постоянной документацией**, и ссылки на них из постоянных артефактов ломаются при переносе и создают неверную связанность.
+
+## Запрет
+
+В **постоянных артефактах** запрещено создавать markdown-гиперссылки или путевые зависимости на файлы внутри **`docs/dev-requests/**`**. К постоянным артефактам относятся:
+
+- `docs/**` **вне** `docs/dev-requests/` (в т.ч. `docs/architecture.md`, `docs/c4-diagrams/`, `docs/adr-log/`, `docs/process-diagrams/`, `docs/data-models/`, `docs/api-requirements/`, `docs/integrations/`);
+- команды, правила, скиллы в `.cursor/**` и `.claude/**`;
+- скрипты и их документация в `scripts/**`;
+- конфигурация и README в корне репозитория.
+
+## Что должно лежать в `docs/` (глобально)
+
+`docs/` описывает **систему в целом**, независимо от конкретного dev-request: системные **C4 (C1/C2/C3)**, ключевые **ADR/DDR**, **процессные диаграммы**, **ERD**, **межсервисные контракты**, **интеграции**. `docs/architecture.md` — индекс этих глобальных документов. Наполнение/обновление глобальных доков выполняется стадией **doc-sync** публикатора (`scripts/publish-dev-request/`) при публикации dev-request.
+
+## Разрешено
+
+1. **Обратное направление:** файлы внутри `docs/dev-requests/**` **могут** ссылаться на постоянные документы (`docs/`, `scripts/`, и т.п.) и друг на друга.
+2. **Журнал публикаций:** автогенерируемый блок в `docs/architecture.md` ссылается на **внешнее хранилище** (storageRef), а **не** на `docs/dev-requests/**`.
+3. **Обработка как данных:** инструменты, которые сканируют каталог `docs/dev-requests/` как вход (например `publish-dev-requests-docs`), его **обрабатывают**, а не линкуют — это не нарушение.
+
+## Связанные правила
+
+- `rule.governance.ru.docs-no-input-links` — аналогичный запрет ссылок `docs/ → .input/`.
+- `skill.arch.en.architecture-md-artifact` — `architecture.md` как индекс **глобальной** архитектуры (не per-dev-request).

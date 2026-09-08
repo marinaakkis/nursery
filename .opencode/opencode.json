@@ -3,19 +3,52 @@
   "instructions": [
     "AGENTS.md"
   ],
+  "share": "disabled",
+  "permission": {
+    "*": "ask",
+    "read": {
+      "*": "allow",
+      ".env": "deny",
+      ".env.*": "deny",
+      "secrets/**": "deny",
+      "*.key": "deny",
+      "*.pem": "deny",
+      "*.p12": "deny",
+      ".aws/credentials": "deny"
+    },
+    "edit": "ask",
+    "bash": {
+      "*": "ask",
+      "pwd": "allow",
+      "ls *": "allow",
+      "rg *": "allow",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "node scripts/validate-ai-template.mjs": "allow",
+      "node --test .githooks/integration-passports.validate.test.mjs": "allow",
+      "git push*": "deny",
+      "git reset --hard*": "deny",
+      "git checkout --*": "deny",
+      "rm -rf /*": "deny",
+      "chmod 777 *": "deny",
+      "chmod a+rwx *": "deny",
+      "curl * | bash": "deny",
+      "wget * | sh": "deny",
+      "docker system prune*": "deny",
+      "kubectl delete*": "deny",
+      "helm uninstall*": "deny",
+      "terraform destroy*": "deny"
+    },
+    "external_directory": "ask",
+    "webfetch": "ask",
+    "websearch": "ask",
+    "mcp_*": "ask"
+  },
   "agent": {
     "default": {
-      "description": "Primary development agent. Security policy in AGENTS.md.",
-      "mode": "primary",
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "bash": true
-      }
+      "description": "Primary development agent. Shared policy is in AGENTS.md; high-risk tools require approval.",
+      "mode": "primary"
     }
-  },
-  "permission": {
-    "mcp_*": "ask"
   }
 }

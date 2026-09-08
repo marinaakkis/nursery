@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+set -eu
+
+node .githooks/integration-passports.validate.mjs pre-push

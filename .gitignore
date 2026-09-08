@@ -19,6 +19,7 @@
 .env.development
 .env.test
 !.env.example
+!.env.*.example
 
 # SSH ключи и сертификаты
 *.key
@@ -158,8 +159,7 @@ log/
 # !.cursor/rules/
 # !.cursor/commands/
 # !.cursor/mcp.json
-.cursor/hooks/vendor/
-.claude/hooks/vendor/
+scripts/ai-hooks/vendor/
 
 # JetBrains
 .idea/
@@ -221,6 +221,8 @@ tmp/
 temp/
 *.tmp
 *.bak
+.input/
+.prompts-audit/
 
 # Test outputs
 test-results/
@@ -273,6 +275,9 @@ dump.rdb
 # ----------------------------------------------------------------------------
 # 10. СПЕЦИФИЧНЫЕ ДЛЯ ПРОЕКТА
 # ----------------------------------------------------------------------------
+
+# Per-developer project state — not shared via git
+.project-metadata.local.json
 
 # Добавьте сюда файлы, специфичные для вашего проекта
 

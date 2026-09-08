@@ -1,100 +1,43 @@
 @echo off
 setlocal enabledelayedexpansion
 
-rem ============================================================================
-rem CURSOR AI TEMPLATE - SETUP SCRIPT (Windows)
-rem ============================================================================
+where node >nul 2>nul
+if errorlevel 1 (
+  echo [WARN] Node.js 18+ is required for AI hooks and setup helpers.
+  echo [WARN] Install Node.js, then rerun this script.
+  exit /b 1
+)
 
-rem --- ANSI colors (Windows 10 1903+) ---
-for /f "delims=" %%i in ('powershell -NoProfile -Command "[char]27"') do set "ESC=%%i"
-set "GREEN=%ESC%[32m"
-set "YELLOW=%ESC%[33m"
-set "BLUE=%ESC%[34m"
-set "NC=%ESC%[0m"
+echo [INFO] Installing verified AI security hook...
+node scripts\ai-hooks\run-hook-tool.mjs gitleaks --install
+if errorlevel 1 exit /b 1
+echo [OK] AI security hook installed and verified.
 
-rem ============================================================================
-rem BANNER
-rem ============================================================================
-echo.
-echo  +-------------------------------------------+
-echo  ^|   CURSOR AI TEMPLATE SETUP               ^|
-echo  +-------------------------------------------+
-echo.
-echo %BLUE%[INFO]%NC% Platform: Windows
-echo.
+echo [INFO] Merging Cursor user settings without overwriting unrelated keys...
+node scripts\bootstrap\merge-cursor-settings.mjs
+if errorlevel 1 exit /b 1
+echo [OK] Cursor settings merged. Restart Cursor to apply them.
 
-rem ============================================================================
-rem 2. CREATE .env
-rem ============================================================================
-echo %BLUE%[INFO]%NC% Checking .env...
-
-if not exist ".env" (
-    if exist ".env.example" (
-        copy ".env.example" ".env" >nul
-        echo %GREEN%[OK]%NC% .env created from .env.example
-        echo %YELLOW%[WARN]%NC% Edit .env - do NOT open in Cursor!
-    ) else (
-        echo %BLUE%[INFO]%NC% .env.example not found - creating template...
-        (
-            echo # Example environment variables
-            echo # APP_ENV=development
-            echo # DATABASE_URL=postgresql://user:password@localhost:5432/dbname
-            echo # SECRET_KEY=changeme
-        ) > ".env.example"
-        copy ".env.example" ".env" >nul
-        echo %GREEN%[OK]%NC% .env.example and .env created
-        echo %YELLOW%[WARN]%NC% Fill in variables in .env before starting the project
-    )
+if exist ".git" (
+  echo [INFO] Installing repository git hooks...
+  powershell -NoProfile -ExecutionPolicy Bypass -File "scripts\git-hooks\git-hooks.win.install.ps1"
 ) else (
-    echo %GREEN%[OK]%NC% .env already exists
+  echo [WARN] .git directory not found; git hook installation skipped.
 )
 
-rem ============================================================================
-rem 3. CURSOR PRIVACY MODE
-rem ============================================================================
-echo %BLUE%[INFO]%NC% Configuring Cursor Privacy Mode...
+echo [INFO] Updating local project metadata...
+powershell -NoProfile -Command "& { $p='.project-metadata.local.json'; $m=if(Test-Path $p){Get-Content $p -Raw|ConvertFrom-Json}else{[PSCustomObject]@{}}; $hooks=(Test-Path '.git\hooks\pre-commit') -and (Test-Path '.git\hooks\pre-push'); $m|Add-Member -NotePropertyName isGitHooksInited -NotePropertyValue $hooks -Force; $m|Add-Member -NotePropertyName lastAiTemplateSetupAt -NotePropertyValue ([DateTime]::UtcNow.ToString('o')) -Force; $m|ConvertTo-Json|Set-Content $p -Encoding UTF8 }"
+if errorlevel 1 exit /b 1
+echo [OK] .project-metadata.local.json updated. This file is gitignored.
 
-set "CURSOR_DIR=%APPDATA%\Cursor\User"
-set "CURSOR_SETTINGS=%CURSOR_DIR%\settings.json"
-set "CURSOR_BACKUP=%CURSOR_DIR%\settings.json.bak"
-
-echo %BLUE%[INFO]%NC% Settings path: %CURSOR_SETTINGS%
-
-if not exist "%CURSOR_DIR%" mkdir "%CURSOR_DIR%"
-
-if exist "%CURSOR_SETTINGS%" (
-    copy "%CURSOR_SETTINGS%" "%CURSOR_BACKUP%" >nul
-    echo %BLUE%[INFO]%NC% Backup saved: %CURSOR_BACKUP%
-)
-
-(
-    echo {
-    echo   "cursor.privacyMode": true,
-    echo   "cursor.ghostMode": true,
-    echo   "cursor.autoRun": false,
-    echo   "telemetry.telemetryLevel": "off",
-    echo   "telemetry.enableCrashReporter": false,
-    echo   "telemetry.enableTelemetry": false,
-    echo   "http.disableHTTP2": true
-    echo }
-) > "%CURSOR_SETTINGS%"
-
-echo %GREEN%[OK]%NC% Cursor settings applied
-echo %YELLOW%[WARN]%NC% Restart Cursor IDE to apply settings
-
-rem ============================================================================
-rem DONE
-rem ============================================================================
 echo.
-echo  +-------------------------------------------+
-echo  ^|   SETUP COMPLETE!                        ^|
-echo  +-------------------------------------------+
+echo Setup complete.
 echo.
-echo Next steps:
-echo   1. Edit .env         -^> notepad .env
-echo   2. Close Cursor, then reopen the project
-echo   3. DevContainer  -^> Ctrl + Shift + P -^> 'Open Folder in Container'
+echo No .env file was created. Create local environment files manually from your
+echo project's own non-secret template when the application actually needs them.
+echo.
+echo Run validation:
+echo   node scripts\validate-ai-template.mjs
 echo.
 
-pause
 endlocal

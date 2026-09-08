@@ -1,0 +1,6116 @@
+openapi: "3.0.2"
+info:
+  version: 1.0.1
+  title: VK HR Tek - public api service
+servers:
+  - url: https://{host}/api/{basePath}
+    variables:
+      host:
+        default: 'public-api.vkdoc.mail.ru'
+      basePath:
+        default: v1
+paths:
+  /user/by_snils:
+    get:
+      parameters:
+        - in: query
+          name: snils
+          schema:
+            type: string
+          required: true
+          description: СНИЛС
+      description: Получение идентификатора пользователя по СНИЛСу
+      tags:
+        - user
+      security:
+        - ApiKeyAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserBySnilsResponse"
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user/phone/init:
+    parameters:
+      - $ref: '#/components/parameters/user'
+    post:
+      description: Инициализация сохранения номера телефона для пользователя, инициирует отправку SMS с кодом
+      tags:
+        - user
+      security:
+        - ApiKeyAuth: [ ]
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/UserPhoneInitRequest"
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                InvalidPhoneToNotify: { $ref: "#/components/examples/InvalidPhoneToNotify" }
+                NotifyRateLimit: { $ref: "#/components/examples/NotifyRateLimit" }
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user/phone/verify:
+    parameters:
+      - $ref: '#/components/parameters/user'
+    post:
+      description: Подтверждение телефона SMS-кодом
+      tags:
+        - user
+      security:
+        - ApiKeyAuth: [ ]
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/PhoneVerifyRequest"
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                InvalidPhoneCode: { $ref: "#/components/examples/InvalidPhoneCode" }
+                NotifyRateLimit: { $ref: "#/components/examples/NotifyRateLimit" }
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user:
+    parameters:
+      - $ref: '#/components/parameters/user'
+    get:
+      description: Получение информации о пользователе
+      tags:
+        - user
+      security:
+        - ApiKeyAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user/certificate/init:
+    parameters:
+      - $ref: '#/components/parameters/user'
+    post:
+      description: "Контур: отправка SMS для подтверждения выпуска УНЭПа только. КриптоПро: продверждение выпуска сертификата."
+      security:
+        - ApiKeyAuth: [ ]
+      tags:
+        - certificate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertificateInitRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user/certificate/verify:
+    parameters:
+      - $ref: '#/components/parameters/user'
+    post:
+      description: Подтверждение выпуска УНЭПа SMS-кодом только для Контура
+      security:
+        - ApiKeyAuth: [ ]
+      tags:
+        - certificate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertificateVerifyRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user/certificate/info/{user_id}:
+    parameters:
+      - $ref: '#/components/parameters/user'
+    post:
+      description: Получение информации активного УНЭП сертификата пользователя с ошибками Контура
+      security:
+        - ApiKeyAuth: [ ]
+      tags:
+        - certificate
+      parameters:
+        - $ref: '#/components/parameters/user-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CertificateInfoResponse'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user/certificate/application:
+    parameters:
+      - $ref: '#/components/parameters/user'
+    get:
+      description: Файл заявления на выпуск УНЭПа
+      security:
+        - ApiKeyAuth: [ ]
+      tags:
+        - certificate
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Создание Заявки
+      tags:
+        - event
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEventRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEventResponse'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /event/list:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение списка заявок
+      tags:
+        - event
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventListRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventListResponse'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/export:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Запустить задачу по экспорту списка заявок в файл
+      tags:
+        - event
+      parameters:
+        - in: query
+          name: type
+          required: true
+          schema:
+            type: string
+            enum: ["events", "documents"]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventListExportRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventListExportResponse'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/create_options:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Список типов Заявок, которые может создать сотрудник
+      tags:
+        - event
+      parameters:
+        - in: query
+          name: event_type_group
+          required: false
+          description: Идентификатор группы типа Заявки
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: employee_id
+          required: false
+          description: Идентификатор сотрудника
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: personnel_number
+          required: false
+          description: Уникальный идентификатор сотрудника во внешней системе
+          schema:
+            type: string
+        - in: query
+          name: legal_id
+          required: false
+          description: Уникальный идентификатор компании
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEventOptionsList'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/create_options/event_type:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Настройки создания конкретного типа мероприятия
+      tags:
+        - event
+      parameters:
+        - in: query
+          name: event_type_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventTypeCreateOptionsResponse'
+
+  /event/create_options/event_type/participant_options:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение списка возможных исполнителей для роли в заявке
+      tags:
+        - event
+      parameters:
+        - in: query
+          name: event_type_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: role_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: search
+          required: false
+          description: поиск по фио и табельному
+          schema:
+            type: string
+            minLength: 3
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - in: query
+          name: offset
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventTypeParticipantOptionsResponse'
+
+  /event/available_filters:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Список фильтров для листинга Заявок
+      tags:
+        - event
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailableFilters'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    get:
+      tags:
+        - event
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение информации о Заявке
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/{node_id}/upload:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Загрузка документа в Заявку
+      tags:
+        - action
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/node-id'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/{node_id}/accept:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Согласование Заявки
+      tags:
+        - action
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/node-id'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AcceptRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/{node_id}/decline:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Отклонить
+      operationId: DoDecline
+      tags:
+        - action
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/node-id'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DeclineRequest'
+      responses:
+        200:
+          description: OK
+
+  /event/{event_id}/{node_id}/decline_sign:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Отказ от подписания
+      operationId: DoDeclineSign
+      tags:
+        - action
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/node-id'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DeclineSignRequest'
+      responses:
+        200:
+          description: OK
+
+  /event/{event_id}/{node_id}/return:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Вернуть на доработку
+      operationId: DoReturn
+      tags:
+        - action
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/node-id'
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/ReturnRequest'
+      responses:
+        200:
+          description: OK
+
+  /event/{event_id}/{node_id}/generate_document_from_template/preview:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    put:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Превью документа, который будет сгенерирован из шаблона
+      tags:
+        - action
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/node-id'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GenerateDocumentRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/{node_id}/generate_document_from_template:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Генерация документа из шаблона
+      tags:
+        - action
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/node-id'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GenerateDocumentRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/{node_id}/unep_sign:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Подписание документа сотрудником
+      tags:
+        - action
+        - sign
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/node-id'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UnepSignRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/{node_id}/unep_sign/code:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Запрос SMS-кода для подписания документа сотрудником
+      tags:
+        - action
+        - sign
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/node-id'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/unep_sign_batch:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Подписание нескольких документов сотрудником (для cryptopro_local)
+      tags:
+        - action
+        - sign
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UnepSignBatchRequest'
+      responses:
+        '200': {description: 'OK'}
+        '400': {description: 'Переданы невалидные данные', content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+        '401': {description: 'Ошибка авторизации', content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+        '403': {description: 'Запрещено', content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+        '404': {description: 'Не найдено', content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+        '500': {description: 'Серверная ошибка', content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+
+  /event/{event_id}/unep_sign_batch/{sign_request_id}:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Подписание нескольких документов сотрудником
+      tags:
+        - action
+        - sign
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/sign-request-id'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UnepSignRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/unep_sign_batch/code:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Запрос SMS-кода для подписания нескольких документов сотрудником
+      tags:
+        - action
+        - sign
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitUnepSignBatchRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitUnepSignBatchResponse'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/document/{document_id}/file:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение файла документа
+      tags:
+        - event
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/document-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/document/{document_id}/file_with_stamp:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение файла документа с визуализацией подписи
+      tags:
+        - event
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/document-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /event/{event_id}/document/{document_id}/zip:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение архива с документом и подписями
+      tags:
+        - event
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/document-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/document/{document_id}/file/hash:
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получить хэш файла документа
+      tags:
+        - event
+      parameters:
+        - $ref: '#/components/parameters/side'
+        - $ref: '#/components/parameters/user'
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/document-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetEventDocumentFileHashResponse'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/document/{document_id}/mark_read:
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Пометить документ как прочитанный, доступно только со стороны сотрудника
+      tags:
+        - event
+      parameters:
+        - $ref: '#/components/parameters/side'
+        - $ref: '#/components/parameters/user'
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/document-id'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/attribute/{attribute_id}/file:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение файла аттрибута Заявки
+      tags:
+        - event
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/attribute-id'
+        - $ref: '#/components/parameters/file-uuid'
+      responses:
+        '200':
+          description: OK
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/cancel_reasons:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение возможных причин для отклонения Заявки
+      tags:
+        - event
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelReasonListResponse'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Отклонение Заявки
+      tags:
+        - event
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelEventRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelEventResponse'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/restore:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Восстановление отклоненной Заявки
+      tags:
+        - event
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/{node_id}/ukep_sign:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Подписать документ (УКЭП)
+      tags:
+        - action
+        - sign
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/node-id'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UkepSignRequest'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/ukep_sign_batch:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Подписать несколько документов (УКЭП)
+      tags:
+        - action
+        - sign
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UkepSignBatchRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UkepSignBatchResponse'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/{event_id}/{node_id}/pep_sign:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Подписать документ (ПЭП)
+      tags:
+        - action
+        - sign
+      parameters:
+        - $ref: '#/components/parameters/event-id'
+        - $ref: '#/components/parameters/node-id'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /event/pep_sign_batch:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Подписать несколько документов (ПЭП)
+      tags:
+        - action
+        - sign
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PepSignBatchRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PepSignBatchResponse'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /employee:
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Создать или обновить данные сотрудника
+      tags:
+        - employee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeCreateRequest'
+      responses:
+        '200':
+          description: OK
+
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /user/by_personnel_number:
+    get:
+      parameters:
+        - in: query
+          name: personnel_number
+          schema:
+            type: string
+          required: true
+          description: табельный номер
+        - in: query
+          name: company_id
+          schema:
+            $ref: "#/components/schemas/CompanyLegalId"
+          required: true
+          description: внешний идентификатор компании
+      description: Получение идентификатора пользователя по табельному номеру
+      tags:
+        - user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserByPersonnelNumberResponse'
+
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Серверная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /file_request/{file_request_id}:
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+        - UserKeyAuth: [ ]
+      description: Проверка статуса запроса файла
+      operationId: GetFileRequestState
+      tags:
+        - event
+      parameters:
+        - $ref: '#/components/parameters/file-request-id'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFileRequestStateResponse'
+
+  /file_request/{file_request_id}/download:
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+        - UserKeyAuth: [ ]
+      description: Скачивание файла по запросу
+      operationId: FileRequestDownload
+      tags:
+        - event
+      parameters:
+        - $ref: '#/components/parameters/file-request-id'
+        - $ref: '#/components/parameters/side'
+      responses:
+        200:
+          description: OK
+          content:
+            application/zip: {}
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet: {}
+
+  /employee/export:
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Запуск экспорта списка сотрудников
+      tags:
+        - employee
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/EmployeeListExportRequest"
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmployeeListExportResponse"
+        400:
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /company/{company_id}/groups/check:
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Проверка возможности создания роли в компании
+      operationId: CheckCompanyGroupCreation
+      tags:
+        - company
+        - group
+      parameters:
+        - $ref: '#/components/parameters/company-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckCompanyGroupCreationRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckCompanyGroupCreationResponse'
+
+  /company/{company_id}/unep_type:
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение информации об используемых в компании УНЭПах
+      operationId: GetCompanyUnepType
+      tags: [ company, unep_type ]
+      parameters:
+        - $ref: '#/components/parameters/company-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyUnepType'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /company/{company_id}/groups:
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение списка ролей пользователей в компании
+      operationId: GetCompanyGroups
+      tags:
+        - company
+        - group
+      parameters:
+        - $ref: '#/components/parameters/company-id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyGroups'
+        '400':
+          description: Переданы невалидные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Запрещено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Создание роли в компании
+      operationId: CreateCompanyGroup
+      tags:
+        - company
+        - group
+      parameters:
+        - $ref: '#/components/parameters/company-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompanyGroupRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCompanyGroupResponse'
+
+  /event_type:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      operationId: CreateEventType
+      description: Создание типа заявки
+      tags:
+        - event_type
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEventTypeRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEventTypeResponse'
+
+  /event_type/{event_type_id}:
+    parameters:
+      - $ref: '#/components/parameters/side'
+      - $ref: '#/components/parameters/user'
+      - $ref: '#/components/parameters/event-type-id'
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      operationId: GetEventType
+      description: Получение типа заявки
+      tags:
+        - event_type
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetEventTypeResponse'
+    put:
+      security:
+        - ApiKeyAuth: [ ]
+      operationId: UpdateEventType
+      description: Обновление типа заявки
+      tags:
+        - event_type
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEventTypeRequest'
+      responses:
+        '200':
+          description: OK
+
+
+  /template:
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/query-company-id'
+      description: Получение списка шаблонов
+      operationId: GetTemplates
+      tags:
+        - template
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTemplatesResponse'
+
+  /template/{template_id}:
+    parameters:
+      - $ref: '#/components/parameters/template-id'
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение информации о шаблоне
+      operationId: GetTemplate
+      tags:
+        - template
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTemplateResponse'
+
+  /template/{template_id}/file:
+    parameters:
+      - $ref: '#/components/parameters/template-id'
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Скачивание текущего файла шаблона
+      operationId: DownloadTemplateFile
+      tags:
+        - template
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/vnd.openxmlformats-officedocument.wordprocessingml.document:
+              schema:
+                type: string
+                format: binary
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Загрузка нового файла шаблона
+      operationId: UploadTemplateFile
+      tags:
+        - template
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadTemplateFileRequest'
+      responses:
+        '200':
+          description: OK
+
+
+  /template/{template_id}/preview:
+    parameters:
+      - $ref: '#/components/parameters/template-id'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Предварительный просмотр шаблона
+      operationId: PreviewTemplate
+      tags:
+        - template
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreviewTemplateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+  /policy/employee/list:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/side'
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение списка Корп. документов сотрудника
+      operationId: GetPolicyEmployeeList
+      tags:
+        - policy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeePolicyListRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeePolicyListResponse'
+
+  /policy/{policy_id}/version/{policy_version_id}/file:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/policy-id'
+        - $ref: '#/components/parameters/policy-version-id'
+        - $ref: '#/components/parameters/side'
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение файла Корп. документа
+      operationId: GetPolicyVersionFile
+      tags:
+        - policy
+      responses:
+        200:
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+  /policy/accept:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/side'
+      security:
+        - ApiKeyAuth: [ ]
+      operationId: AcceptPolicies
+      description: Запрос SMS-кода для Корп. документов сотрудником (УНЭП)
+      tags:
+        - policy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptPoliciesRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptPoliciesResponse'
+
+  /policy/confirm_accept:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/side'
+      security:
+        - ApiKeyAuth: [ ]
+      operationId: AcceptConfirmPolicies
+      description: Подписание Корп. документов сотрудником (УНЭП)
+      tags:
+        - policy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmAcceptPoliciesRequest'
+      responses:
+        200:
+          description: OK
+
+  /policy/{policy_id}/version/{policy_version_id}/mark_read:
+    post:
+      parameters:
+        - $ref: '#/components/parameters/policy-id'
+        - $ref: '#/components/parameters/policy-version-id'
+        - $ref: '#/components/parameters/side'
+      security:
+        - ApiKeyAuth: [ ]
+      description: Пометка Корп. документа как прочитанного
+      operationId: MarkPolicyVersionAsRead
+      tags:
+        - policy
+      responses:
+        200:
+          description: OK
+
+  /company/{company_id}/unit/types:
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение типов оргструктуры в компании
+      operationId: GetUnitTypes
+      tags:
+        - unit
+      parameters:
+        - $ref: '#/components/parameters/company-id'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUnitTypesResponse'
+
+  /company/{company_id}/unit/tree:
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение дерева подразделений
+      operationId: GetUnitsTree
+      tags:
+        - unit
+      parameters:
+        - $ref: '#/components/parameters/company-id'
+        - in: query
+          name: unit_type
+          required: false
+          schema:
+            $ref: "#/components/schemas/UnitType"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUnitsTreeResponse'
+
+  /company/{company_id}/unit:
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Создание подразделения
+      operationId: CreateUnit
+      tags:
+        - unit
+      parameters:
+        - $ref: '#/components/parameters/company-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUnitRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUnitResponse'
+
+  /company/unit/{unit_id}:
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получение информации о подразделении
+      operationId: GetUnit
+      tags:
+        - unit
+      parameters:
+        - $ref: '#/components/parameters/unit-id'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUnitResponse'
+    put:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Изменение подразделения
+      operationId: UpdateUnit
+      tags:
+        - unit
+      parameters:
+        - $ref: '#/components/parameters/unit-id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUnitRequest'
+      responses:
+        200:
+          description: OK
+    delete:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Удаление подразделения
+      operationId: DeleteUnit
+      tags:
+        - unit
+      parameters:
+        - $ref: '#/components/parameters/unit-id'
+      responses:
+        200:
+          description: OK
+
+  /company/{company_id}/event_types:
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получения списка типов заявок в компании
+      operationId: GetCompanyEventTypes
+      tags:
+        - company
+      parameters:
+        - $ref: '#/components/parameters/company-id'
+        - in: query
+          name: has_manager
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCompanyEventTypesResponse'
+
+  /company/unit/{unit_id}/employees:
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: "Список сотрудников в подразделении"
+      tags:
+        - company
+        - unit
+      parameters:
+        - $ref: "#/components/parameters/company-id"
+        - $ref: "#/components/parameters/unit-id"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitEmployeesResponse'
+
+  /company/manager_substitute/list:
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получения списка руководителей для управления заместителями
+      operationId: GetManagerSubstitutesList
+      tags:
+        - substitutes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetManagerSubstitutesListRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetManagerSubstitutesListResponse'
+
+  /company/manager_substitute:
+    get:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Получения списка заместителей для сотрудника
+      operationId: GetManagerSubstitutes
+      tags:
+        - substitutes
+      parameters:
+        - $ref: "#/components/parameters/query-employee-id"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetManagerSubstitutesResponse'
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Добавление заместителя
+      operationId: CreateManagerSubstitute
+      tags:
+        - substitutes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateManagerSubstituteRequest'
+      responses:
+        200:
+          description: OK
+  /company/manager_substitute/delete:
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Удаление заместителя
+      operationId: DeleteManagerSubstitute
+      tags:
+        - substitutes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteManagerSubstituteRequest'
+      responses:
+        200:
+          description: OK
+  /policy/company/export:
+    post:
+      security:
+        - ApiKeyAuth: [ ]
+      description: Экспорт списка Корп. документов
+      tags:
+        - policy
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/CompanyPolicyExportRequest"
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyPolicyExportResponse"
+
+  /docs/{service_doc_type}:
+    get:
+      parameters: [ { $ref: '#/components/parameters/service-doc-type' } ]
+      description: Получить актуальный документ для ознакомления.
+      tags: [ service_doc ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /user/certificate/download:
+    get:
+      description: "Скачать сертификат КриптоПро. UUID пользователя указывается в заголовке X-User-Id."
+      security:
+        - ApiKeyAuth: [ ]
+        - UserKeyAuth: [ ]
+      tags: [ certificate ]
+      responses:
+        200:
+          description: ok
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+components:
+  parameters:
+    # headers:
+    side:
+      in: header
+      name: X-Side
+      required: true
+      description: Сторона - сотрудник (employee) или компания (company)
+      schema:
+        type: string
+        enum:
+          - employee
+          - company
+    user:
+      in: header
+      name: X-User-Id
+      required: true
+      description: Идентификатор пользователя
+      schema:
+        type: string
+    query-employee-id:
+      in: query
+      name: employee_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+    # path params
+    service-doc-type:
+      in: path
+      name: service_doc_type
+      description: "Тип документа для ознакомления. Например: user_agreement, policy_confidentiality."
+      schema:
+        type: string
+      required: true
+    company-id:
+      in: path
+      name: company_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: Company ID
+    unit-id:
+      in: path
+      name: unit_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: Unit ID
+    event-type-id:
+      in: path
+      name: event_type_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: Event Type ID
+    event-id:
+      in: path
+      name: event_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: Идентификатор Заявки
+    node-id:
+      in: path
+      name: node_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: Идентификатор этапа
+    document-id:
+      in: path
+      name: document_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: Идентификатор документа
+    simple-document-id:
+      in: path
+      name: simple_document_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: Идентификатор документа
+    file-uuid:
+      in: query
+      name: id
+      schema:
+        type: string
+        format: uuid
+        description: support only uuid. Int is deprecated and not supported!
+      description: параметр обязателен для аттрибутов с типом file_multiple
+    attribute-id:
+      in: path
+      name: attribute_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: Идентификатор атрибута
+    sign-request-id:
+      in: path
+      name: sign_request_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: Идентификатор пакетного запроса на подпись
+    file-request-id:
+      in: path
+      name: file_request_id
+      description: File Request ID
+      schema:
+        type: string
+        format: uuid
+      required: true
+    policy-id:
+      in: path
+      name: policy_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+    policy-version-id:
+      in: path
+      name: policy_version_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+    user-id:
+      in: path
+      name: user_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: User ID
+    template-id:
+      in: path
+      name: template_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: Идентификатор шаблона
+    query-company-id:
+      in: query
+      name: company_id
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: Идентификатор компании
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+    UserKeyAuth:
+      type: apiKey
+      in: header
+      name: "X-User-Id"
+
+  examples:
+    InvalidPhoneToNotify:
+      value:
+        code: 400
+        message: "Bad request"
+        data: { error_details: "", error_code: "invalid_phone_to_notify" }
+    NotifyRateLimit:
+      value:
+        code: 400
+        message: "Bad request"
+        data: { error_details: "", error_code: "notify_rate_limit" }
+    InvalidPhoneCode:
+      value:
+        code: 400
+        message: "Bad Request"
+        data: { error_details: "", error_code: "invalid_phone_code" }
+
+  schemas:
+    CompanyUnepType:
+      type: object
+      required: [ employee_unep_type_source, available_unep_types ]
+      properties:
+        employee_unep_type_source:
+          $ref: "#/components/schemas/EmployeeUnepTypeSource"
+        available_unep_types:
+          type: array
+          example: [kontur, goskey, cryptopro_simple, cryptopro_local, disabled]
+          items:
+            type: string
+
+    EmployeeUnepTypeSource:
+      type: string
+      enum: [web, onecvk, public]
+      example: web
+      description: "Источник типов УНЭП для сотрудников."
+
+    CompanyGroups:
+      type: object
+      required: [ groups ]
+      properties:
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
+
+    Group:
+      type: object
+      required: [ id, name, parent_id ]
+      properties:
+        id:
+          type: string
+          x-chance:
+            guid:
+              version: 5
+          format: uuid
+        name:
+          type: string
+          x-chance:
+            sentence:
+              words: 10
+          description: 'Название группы'
+        parent_id:
+          type: string
+          x-chance:
+            guid:
+              version: 5
+          format: uuid
+    CreateCompanyGroupRequest:
+      type: object
+      required: [ name, all_companies ]
+      properties:
+        name:
+          type: string
+          x-chance:
+            sentence:
+              words: 10
+          description: 'Название группы'
+        parent_id:
+          type: string
+          x-chance:
+            guid:
+              version: 5
+          format: uuid
+        all_companies:
+          type: boolean
+
+    CreateCompanyGroupResponse:
+      type: object
+      required: [ result ]
+      properties:
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateCompanyGroupResponseItem'
+
+    CreateCompanyGroupResponseItem:
+      type: object
+      required: [ company_id, success ]
+      properties:
+        company_id:
+          type: string
+          x-chance:
+            guid:
+              version: 5
+          format: uuid
+        success:
+          type: boolean
+    CheckCompanyGroupCreationRequest:
+      type: object
+      required: [ name ]
+      properties:
+        name:
+          type: string
+          x-chance:
+            sentence:
+              words: 10
+          description: 'Название группы'
+        parent_id:
+          type: string
+          x-chance:
+            guid:
+              version: 5
+          format: uuid
+
+    CheckCompanyGroupCreationResponse:
+      type: object
+      required: [ result ]
+      properties:
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/CheckCompanyGroupCreationResponseItem'
+
+    CheckCompanyGroupCreationResponseItem:
+      type: object
+      required: [ company_id, status ]
+      properties:
+        company_id:
+          type: string
+          x-chance:
+            guid:
+              version: 5
+          format: uuid
+        status:
+          type: string
+          enum:
+            - success
+            - already_exists
+            - no_parent_group
+    TimeRange:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+
+    UserBySnilsResponse:
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор пользователя
+
+    UserPhoneInitRequest:
+      required:
+        - phone
+      properties:
+        phone:
+          $ref: "#/components/schemas/Phone"
+
+    PhoneVerifyRequest:
+      required:
+        - phone
+        - code
+      properties:
+        phone:
+          $ref: "#/components/schemas/Phone"
+        code:
+          type: string
+          description: Код из SMS-сообщения
+
+    UserResponse:
+      required:
+        - id
+        - first_name
+        - last_name
+        - middle_name
+        - has_company_side
+        - employees
+        - certificate
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор пользователя
+        first_name:
+          type: string
+          description: Имя
+        last_name:
+          type: string
+          description: Фамилия
+        middle_name:
+          type: string
+          description: Отчество
+        phone:
+          $ref: "#/components/schemas/Phone"
+        has_company_side:
+          type: boolean
+          example: true
+          description: Есть ли у пользователя возможность работать с Заявками со стороны компании
+        employees:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuthEmployee"
+          description: Список сотрудников пользователя
+        certificate:
+          type: object
+          description: Данные о УНЭПе пользователя
+          required:
+            - status
+          properties:
+            status:
+              $ref: "#/components/schemas/CertificateStatus"
+            valid_from:
+              type: string
+              example: "31.12.2020"
+            valid_to:
+              type: string
+              example: "31.12.2020"
+            release_method:
+              $ref: "#/components/schemas/CertificateReleaseMethod"
+            valid_from_iso:
+              type: string
+              format: date
+              example: "2020-12-31"
+            valid_to_iso:
+              type: string
+              format: date
+              example: "2020-12-31"
+            serial_number:
+              type: string
+        ukep_certificates:
+          type: array
+          items:
+            $ref: "#/components/schemas/UkepCertificate"
+    UkepCertificate:
+      type: object
+      required: [ valid_from, valid_to, issued_by, owner, serial_number, company_id, company_name ]
+      example:
+        valid_from: "2022-10-13"
+        valid_to: "2023-10-13"
+        issued_by: "Федеральная налоговая служба"
+        owner: "ИП Юрьев Михаил Юрьевич"
+        serial_number: "1a11aaa000999888766"
+        company_id: "uuid"
+        company_name: "ООО ВК"
+      properties:
+        valid_from:
+          type: string
+          format: date
+          example: "2022-01-01"
+        valid_to:
+          type: string
+          format: date
+          example: "2022-01-01"
+        issued_by:
+          type: string
+        owner:
+          type: string
+        serial_number:
+          type: string
+        company_id:
+          type: string
+          format: uuid
+        company_name:
+          type: string
+
+    CertificateInitRequest:
+      type: object
+
+    CertificateVerifyRequest:
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          description: Код из SMS-сообщения
+
+    AuthEmployee:
+      required:
+        - id
+        - personnel_number
+        - company
+        - position
+        - unit
+        - custom_type
+      properties:
+        id:
+          type: string
+          description: Идентификатор сотрудника
+        personnel_number:
+          type: string
+          description: Уникальный идентификатор сотрудника во внешней системе
+        company:
+          $ref: "#/components/schemas/Company"
+        dismissed_at:
+          type: string
+          format: date-time
+          description: Дата увольнения при наличии
+        position:
+          type: string
+          example: "Старший специалист отдела персонала"
+        unit:
+          type: string
+          example: "Департамент персонала"
+        custom_type:
+          type: string
+          example: "warehouse"
+        vacation_available_days:
+          type: integer
+          description: количество накопленных дней отпуска
+          example: 42
+
+    Company:
+      required:
+        - id
+        - name
+        - legal_id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор компании
+        name:
+          type: string
+          description: Название компании
+        legal_id:
+          $ref: "#/components/schemas/CompanyLegalId"
+
+    CompanyLegalId:
+      type: string
+      description: Внешний идентификатор компании
+
+    CertificateStatus:
+      type: string
+      example: released
+      enum:
+        - waiting_to_create #ожидает создания
+        - need_verify #ожидает подписания
+        - verifying #проверка подписания
+        - waiting_confirmation #ожидает подтверждения в ЕСИА
+        - released #успешно выпущен
+        - expired #истек срок действия
+        - error #ошибка выпуска УНЭПа
+        - release_paused #ручная проверка данных
+      description: >
+        Контур. Информация о статусе выпуска УНЭПа:
+          * `waiting_to_create` - ожидает создания заявления на выпуск УНЭП (проверки СМЭВ и пр)
+          * `need_verify` - ожидает подписания (пользователь должен инициировать старт выпуска заявления на выпуск УНЭП)
+          * `verifying` - проверка подписания
+          * `waiting_confirmation` - ожидает подтверждения в ЕСИА
+          * `released` - УНЭП успешно выпущен
+          * `expired` - у сертификата истек срок действия
+          * `error` - ошибка выпуска УНЭПа
+          * `release_paused` - ручная проверка данных
+        
+        КриптоПро DSS Simple:
+          * waiting_to_create - ожидаем асинхронное создание сертификата.
+          * need_verify - ожидаем подтверждения пользователем.
+          * verifying - сертификат выпускается (Оператор асинхронно одобряет заявление).
+          * released - сертификат выпущен.
+          * expired - сертификат истек.
+          * error - ошибка выпуска сертификата.
+
+    CertificateReleaseMethod:
+      type: string
+      example: sms
+      enum:
+        - sms
+        - esia
+      description: >
+        Способ выпуска УНЭП:
+          * `sms` - Подпись заявления на выпуск УНЭП через SMS
+          * `esia` - Подпись заявления через подтверждение личности на Госуслугах
+
+    CertificateInfoResponse:
+      type: object
+      required:
+        - certificate_id
+        - errors
+      properties:
+        certificate_id:
+          type: string
+          format: uuid
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/CertificateInfoError'
+
+    CertificateInfoError:
+      type: object
+      required: [ code ]
+      properties:
+        code:
+          type: string
+        description:
+          type: string
+
+    CreateEventOptionsList:
+      type: object
+      required: [ options ]
+      properties:
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateEventOption'
+
+    CreateEventOption:
+      type: object
+      required: [ option_name, employee_id, event_type_id, event_type_name, employee_name ]
+      properties:
+        option_name:
+          type: string
+          description: Название типа Заявки
+        employee_id:
+          type: string
+          format: uuid
+          description: Идентификатор сотрудника
+        event_type_id:
+          type: string
+          format: uuid
+          description: Идентификатор типа Заявки
+        event_type_name:
+          type: string
+          description: Название типа Заявки
+        employee_name:
+          type: string
+          description: Имя сотрудника
+
+    EventTypeCreateOptionsResponse:
+      type: object
+      required: [ participants ]
+      properties:
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/EventTypeCreateOptionsParticipant"
+
+    EventTypeCreateOptionsParticipant:
+      type: object
+      required: [ role, scope, required ]
+      properties:
+        role:
+          $ref: "#/components/schemas/RoleItem"
+        scope:
+          $ref: "#/components/schemas/ParticipantScope"
+        required:
+          type: boolean
+        groups:
+          type: array
+          deprecated: true
+          description: Для обратной совместимости, заполнено только если scope = group
+          items:
+            $ref: "#/components/schemas/GroupItem"
+        default_group_id:
+          type: string
+          format: uuid
+
+    EventTypeParticipantOptionsResponse:
+      type: object
+      required: [ options ]
+      properties:
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/EventTypeParticipantOption"
+
+    EventTypeParticipantOption:
+      type: object
+      required: [ group_id, name ]
+      properties:
+        group_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        company:
+          $ref: "#/components/schemas/CompanyItem"
+        personnel_number:
+          type: string
+        position:
+          type: string
+
+    RoleItem:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    GroupItem:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    CreateEventRequest:
+      type: object
+      required: [ event_type_id ]
+      properties:
+        event_type_id:
+          type: string
+          format: uuid
+          description: Идентификатор типа Заявки
+        employee_id:
+          type: string
+          format: uuid
+          description: Идентификатор сотрудника для кого создается Заявка
+        participants:
+          type: array
+          description: Настраиваемые участники Заявки
+          items:
+            $ref: "#/components/schemas/CreateEventParticipant"
+        deadlines:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventDeadline'
+          description: Опциональные дедлайны этапов мероприятия
+
+
+    CreateEventParticipant:
+      type: object
+      required: [ role_id, group_id ]
+      properties:
+        role_id:
+          type: string
+          format: uuid
+        group_id:
+          type: string
+          format: uuid
+
+    ParticipantScope:
+      type: string
+      enum: [ group, company, account ]
+
+    CreateEventResponse:
+      type: object
+      required: [ event_id ]
+      properties:
+        event_id:
+          type: string
+          format: uuid
+          description: Идентификатор созданной Заявки
+
+    CreateSimpleDocumentRequest:
+      type: object
+      required: [ document, employee_id ]
+      properties:
+        employee_id:
+          type: string
+          format: uuid
+          description: Кем подписываем документ.
+        issuer_id:
+          type: string
+          format: uuid
+          description: Свой ID, если нужен.
+        document:
+          type: string
+          format: binary
+
+    CreateSimpleDocumentResponse:
+      type: object
+      required: [ simple_document_id ]
+      properties:
+        simple_document_id:
+          type: string
+          format: uuid
+
+    SimpleDocumentConfirmSignRequest:
+      type: object
+      required: [ verification_code ]
+      properties:
+        verification_code:
+          type: string
+          description: Код подтверждения подписи
+
+    Pagination:
+      type: object
+      properties:
+        sort_by:
+          type: string
+          description: Поле сортировки
+        sort_order:
+          type: string
+          description: Порядок сортировки
+        limit:
+          type: integer
+          description: Количество на странице
+        offset:
+          type: integer
+          description: Отступ для выборки
+      example:
+        sort_by: created_at
+        sort_order: desc
+        limit: 20
+        offset: 0
+
+    EventListRequestFilters:
+      type: object
+      properties:
+        actor:
+          type: string
+          enum: ["0", "1" , "2"]
+          description: >
+            На чьей стороне:
+              * `0` - На мне (default)
+              * `1` - На моей команде
+              * `2` - Все
+        event_type_groups:
+          type: array
+          description: По типу Заявки
+          items:
+            type: string
+        company:
+          description: По компании
+          type: array
+          items:
+            type: string
+            format: uuid
+        personnel_number:
+          description: Уникальный идентификатор сотрудника во внешней системе
+          type: string
+        no_employee:
+          description: true - заявки без сотрудника, false/не указан - без фильтрации
+          type: boolean
+        finished_at:
+          $ref: "#/components/schemas/TimeRange"
+        status:
+          type: array
+          items:
+            type: string
+            enum: [ upload, sign, accept, completed, declined, declined_sign, canceled, in_paper ]
+        show_closed_events:
+          description: Показывать ли завершенные Заявки
+          type: string
+          deprecated: true
+        deadline:
+          $ref: "#/components/schemas/TimeRange"
+
+    EventListRequest:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        filters:
+          $ref: "#/components/schemas/EventListRequestFilters"
+
+    EventListResponse:
+      type: object
+      required: [ events, total_count ]
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventListItem'
+        total_count:
+          type: integer
+          example: 137
+          format: int64
+
+    EventTypeItem:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "Подключение PayDay"
+          description: Название типа Заявки
+
+    AvailableFilters:
+      type: object
+      description: Список фильтров
+      required: [ filters ]
+      properties:
+        filters:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/FilterSelect'
+              - $ref: '#/components/schemas/FilterMultiple'
+              - $ref: '#/components/schemas/FilterText'
+              - $ref: '#/components/schemas/FilterBool'
+              - $ref: '#/components/schemas/FilterTimeRange'
+      example:
+        filters:
+          - key: "actor"
+            name: "На чьей стороне"
+            type: "select"
+            options:
+              - value: "0"
+                label: "На мне"
+              - value: "1"
+                label: "На моей команде"
+              - value: "2"
+                label: "Все"
+          - key: "event_type_groups"
+            name: "По типу Заявки"
+            type: "multiple"
+            options:
+              - value: "0"
+                label: "-"
+              - value: "Смена ФИО"
+                label: "Смена ФИО"
+              - value: "Заявление PayDay"
+                label: "Заявление PayDay"
+          - key: "company"
+            name: "По юрлицу"
+            type: "multiple"
+            options:
+              - value: "0"
+                label: "-"
+              - value: "1"
+                label: "ООО Мэйл.ру"
+              - value: "2"
+                label: "ООО Деливери клаб"
+          - key: "personnel_number"
+            name: "По уникальному идентификатору сотрудника во внешней системе"
+            type: "text"
+          - key: "finished_at"
+            name: "По дате завершения заявки"
+            type: "timerange"
+          - key: "status"
+            name: "По этапу заявки"
+            type: "multiple"
+            options:
+              - value: "upload"
+                label: "Загрузка"
+              - value: "sign"
+                label: "Подписание"
+              - value: "accept"
+                label: "Проверка"
+              - value: "finished"
+                label: "Успешно закрыты"
+              - value: "canceled"
+                label: "Отменены"
+              - value: "in_paper"
+                label: "В бумаге"
+          - key: "show_closed_events"
+            name: "Показать завершенные"
+            type: "select"
+            options:
+              - value: "0"
+                label: "-"
+              - value: "1"
+                label: "Показать завершенные"
+          - key: "no_employee"
+            name: "Заявки без сотрудника"
+            type: "bool"
+    FilterText:
+      type: object
+      required: [ key, name, type ]
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: ["text"]
+    FilterSelect:
+      type: object
+      required: [ key, name, type, options ]
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: ["select"]
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/FilterSelectOption"
+    FilterMultiple:
+      type: object
+      required: [ key, name, type, options ]
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: ["multiple"]
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/FilterSelectOption"
+    FilterBool:
+      type: object
+      required: [ key, name, type ]
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: ["bool"]
+    FilterSelectOption:
+      type: object
+      required: [ value, label ]
+      properties:
+        value:
+          type: string
+        label:
+          type: string
+    FilterTimeRange:
+      type: object
+      required: [ key, name, type ]
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: ["timerange"]
+
+    EventListItem:
+      type: object
+      description: Данные о Заявке для листинга
+      required: [ id, active_nodes, event_type, company, created_at, documents ]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор Заявки
+        active_nodes:
+          type: array
+          description: Список активных этапов
+          items:
+            $ref: '#/components/schemas/ActiveNode'
+        event_type:
+          $ref: '#/components/schemas/EventTypeItem'
+        employee:
+          $ref: "#/components/schemas/EventEmployee"
+        company:
+          $ref: "#/components/schemas/CompanyItem"
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания
+        deadline:
+          type: string
+          format: date-time
+          description: Дата дедлайна Заявки при наличии
+    ActiveNode:
+      type: object
+      required: [ action, responsible, document_type_name ]
+      properties:
+        action:
+          $ref: '#/components/schemas/Action'
+        responsible:
+          type: string
+          description: На чьей стороне находится активный этап
+        document_type_name:
+          description: Тип документа, если он есть в активном этапе
+          type: string
+    Action:
+      type: object
+      required: [ name, type ]
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - upload
+            - accept
+            - company_sign
+            - company_sign_batch
+            - employee_sign
+            - ukep_sign
+            - ukep_sign_batch
+            - unep_sign
+            - unep_sign_batch
+            - pep_sign
+            - pep_sign_batch
+            - system
+            - generate_document_from_template
+            - decline
+            - decline_sign
+            - in_paper # not action but separate flag for event
+            - completed # temp fix until multiple active nodes redesign
+            - canceled # temp fix until multiple active nodes redesign
+            - declined # end state
+            - declined_sign # end state
+    SimpleDocument:
+      type: object
+      description: Сущность для подписания отдельного документа вне мероприятия.
+      required:
+      - id
+      - created_at
+      - updated_at
+      - status
+      - employee_id
+      - create_user_id
+      - zip_with_sign
+      - signatures
+      properties:
+        id:
+          type: string
+          format: uuid
+        employee_id:
+          type: string
+          format: uuid
+          description: Кем подписываем документ.
+        issuer_id:
+          type: string
+          format: uuid
+          description: ID, переданный при создании
+        create_user_id:
+          type: string
+          format: uuid
+          description: Кто инициировал подписание.
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания
+        updated_at:
+          type: string
+          format: date-time
+          description: Дата изменения
+        url_zip:
+          type: string
+          description: Урл с архивом с документом и подписью.
+        zip_with_sign:
+          type: boolean
+          description: В архиве есть подпись.
+        signatures:
+          type: array
+          description: Список подписантов
+          items:
+            $ref: '#/components/schemas/Signature'
+        status:
+          type: string
+          enum:
+          - new
+          - inited
+          - signed
+          - error
+
+    SimpleDocumentList:
+      type: object
+      description: Сущность простого докумена в листинге.
+      required:
+        - id
+        - created_at
+        - updated_at
+        - status
+        - employee_id
+        - create_user_id
+      properties:
+        id:
+          type: string
+          format: uuid
+        employee_id:
+          type: string
+          format: uuid
+          description: Кем подписываем документ.
+        issuer_id:
+          type: string
+          format: uuid
+          description: ID, переданный при создании
+        create_user_id:
+          type: string
+          format: uuid
+          description: Кто инициировал подписание.
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания
+        updated_at:
+          type: string
+          format: date-time
+          description: Дата изменения
+
+    Signature:
+      type: object
+      required:
+        - user_id
+        - signed_at
+        - type
+        - status
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        signed_at:
+          type: string
+          format: date-time
+        type:
+          type: string
+          enum:
+            - unep
+            - kep
+            - pep
+        status:
+          type: string
+          enum:
+            - new
+            - inited
+            - signed
+            - error
+    Event:
+      type: object
+      description: Данные о Заявке
+      required: [ id, event_type, company, created_at, active_nodes, documents, attributes, permissions ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        event_type:
+          $ref: '#/components/schemas/EventTypeItem'
+        employee:
+          $ref: "#/components/schemas/EventEmployee"
+        company:
+          $ref: "#/components/schemas/CompanyItem"
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания
+        active_nodes:
+          type: array
+          description: Список активных этапов
+          example:
+            - action:
+                name: Загрузка
+                type: upload
+              responsible: Сотрудник
+              document_type_name: Заявление на подключение PayDay
+          items:
+            $ref: '#/components/schemas/ActiveNode'
+        deadline:
+          type: string
+          description: Информация о дедлайне Заявки
+          format: date-time
+        canceled:
+          $ref: "#/components/schemas/CanceledDetails"
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/EventNode"
+        current_nodes:
+          description: Активные этапы, которые не могут быть выполнены текущим пользователем
+          type: array
+          items:
+            $ref: "#/components/schemas/EventNode"
+        documents:
+          type: array
+          description: Список документов в текущей Заявки
+          items:
+            $ref: "#/components/schemas/Document"
+          example:
+            - id: 123e4567-e89b-12d3-a456-426655440000
+              document_type_name: Заявление на смену ФИО
+              url: /event/1/document/1/file
+              signatures:
+                - signed_by: Сотрудник
+                  signed_by_name: "Иванов Иван Иванович"
+                  status: signed
+            - id: 123e4567-e89b-12d3-a456-426655440000
+              document_type_name: Заявление на смену ФИО
+              url: /event/1/document/1/file
+              signatures:
+                - signed_by: Сотрудник
+                  signed_by_name: "Иванов Иван Иванович"
+                  status: on_signing
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+          example:
+            - type: file
+              name: Скан паспорта
+              description: Скан паспорта
+              value: /event/123e4567-e89b-12d3-a456-426655440000/attribute/123e4567-e89b-12d3-a456-426655440001/file
+            - type: file
+              name: Скан свидетельства о смене фамилии
+              description: Скан свидетельства о смене фамилии
+              value: /event/123e4567-e89b-12d3-a456-426655440000/attribute/123e4567-e89b-12d3-a456-426655440002/file
+            - type: file_multiple
+              id: '48b94126-e56b-4bf7-a61f-1374b3620418'
+              name: Сканы диплома
+              description: Сканы диплома
+              value:
+                - id: 68447b42-ca39-473a-829c-88fb85e76953
+                  url: /event/68447b42-ca39-473a-829c-88fb85e76953/attribute/ec490c4e-145f-4978-b635-601a81c9afbd/file
+                - id: 68447b32-ca39-473a-829c-88fb85e76953
+                  url: /event/68447b32-ca39-473a-829c-88fb85e76953/attribute/ac480c4e-145f-4978-b635-601a81c9afbd/file
+                - id: 68447b42-ca39-473a-829c-88fb85e76953
+                  url: /event/68447b42-ca39-473a-829c-88fb85e76953/attribute/4c480c4e-145f-4978-b635-601a81c9afbd/file
+            - type: text
+              name: Номер счета получателя
+              description: Номер счета получателя
+              value: "00000000000001"
+            - type: text
+              name: ИНН получателя
+              description: ИНН получателя
+              value: "55555555555"
+            - type: date
+              name: Дата начала отпуска
+              description: Дата начала отпуска
+              value: "2022-01-01"
+            - type: year
+              name: Год за который нужна справка
+              description: Год за который нужна справка
+              value: "2021"
+        permissions:
+          type: object
+          required: [ cancel, restore ]
+          properties:
+            cancel:
+              type: boolean
+            restore:
+              type: boolean
+        returns:
+          type: array
+          items:
+            $ref: "#/components/schemas/EventReturn"
+    EventEmployee:
+      type: object
+      required: [ id, first_name, second_name, middle_name, personnel_number, display_number, birthday ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        personnel_number:
+          type: string
+          x-faker: random.number
+          maxLength: 36
+          description: Уникальный идентификатор сотрудника во внешней системе
+        display_number:
+          type: string
+          x-faker: random.number
+          maxLength: 36
+          description: Табельный номер сотрудника для отображения пользователям
+        birthday:
+          type: string
+          format: date
+          description: День рождения сотрудника
+        first_name:
+          type: string
+          description: Имя
+        second_name:
+          type: string
+          description: Фамилия
+        middle_name:
+          type: string
+          description: Отчество
+        dismissed_at:
+          type: string
+          description: Дата увольнения при наличии
+          format: date
+
+    CompanyItem:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: Наименование юр. лица
+
+    UnitItem:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    CanceledDetails:
+      type: object
+      required:
+        - canceled_at
+        - reason
+        - node_name
+        - responsible
+      properties:
+        canceled_at:
+          type: string
+          format: date-time
+          description: Дата отклонения
+        reason:
+          type: string
+          description: Причина отклонения
+        reason_id:
+          type: integer
+          description: Идентификатор причины отмены Заявки
+        document_type_name:
+          type: string
+          description: Тип документа
+        node_name:
+          type: string
+          description: Название этапа, на котором произошло отклонение
+        responsible:
+          type: string
+          description: Исполнитель этапа, на котором произошло отклонение
+        user_id:
+          type: string
+          description: ID пользователя, который отменил заявку
+        comment:
+          type: string
+          description: Комментарий к отклонению
+      example:
+        canceled_at: "2017-07-21T17:32:28Z"
+        reason: по дедлайну этапа
+        document_type_name: Приказ на смену ФИО
+        node_name: Подписание
+        responsible: Кадровики
+
+    EventNode:
+      type: object
+      required: [ name, node_id, actions ]
+      properties:
+        node_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        actions:
+          type: array
+          items:
+            $ref: "#/components/schemas/NodeAction"
+        deadline:
+          type: string
+          format: date-time
+
+    NodeAction:
+      type: object
+      required: [ is_primary, type, form_attributes, responsible, unep_type ]
+      properties:
+        unep_type:
+          description: "В случае 'disabled' не даём подписывать."
+          $ref: "#/components/schemas/UnepType"
+        name:
+          type: string
+        is_primary:
+          type: boolean
+        type:
+          type: string
+          enum:
+          - upload
+          - accept
+          - company_sign
+          - employee_sign
+          - ukep_sign
+          - unep_sign
+          - pep_sign
+          - generate_document_from_template
+          - decline
+          - decline_sign
+        document:
+          $ref: "#/components/schemas/Document"
+        document_info_required:
+          type: boolean
+          description: Ожидаем ли мы для данного документа инфу (дата и номер)
+        form_attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/FormAttribute"
+        extra:
+          oneOf:
+            - $ref: '#/components/schemas/ActionUploadExtra'
+        responsible:
+          type: array
+          items:
+            $ref: "#/components/schemas/NodeActionResponsible"
+        confirmation:
+          type: object
+          required: [ title, body ]
+          properties:
+            title:
+              type: string
+              example: "Условия пользования"
+            body:
+              type: string
+              example: "1. Вы соглашаетесь с тем, что (...)"
+
+    NodeActionResponsible:
+      type: object
+      required: [ role, name ]
+      properties:
+        role:
+          type: string
+        name:
+          type: string
+
+    FormAttribute:
+      type: object
+      required: [ id, type, name, description, required ]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор аттрибута
+        type:
+          type: string
+          enum: [ text, textarea, date, file, file_multiple, choice, year ]
+          description: Тип аттрибута
+        name:
+          type: string
+          description: Название поля
+        description:
+          type: string
+          description: Описание поля
+        required:
+          type: boolean
+          description: Обязательно ли заполнение
+        options:
+          $ref: "#/components/schemas/FormAttributeOptions"
+
+    FormAttributeOptions:
+      type: object
+      properties:
+        choices:
+          type: array
+          items:
+            $ref: "#/components/schemas/FormAttributeChoice"
+        expanded:
+          type: boolean
+          description: Вид элемента управления - radio если true, select если false
+        hide_when:
+          $ref: "#/components/schemas/FormAttributeHideWhen"
+        info:
+          oneOf:
+            - $ref: "#/components/schemas/FormAttributeInfoVacationDays"
+          discriminator:
+            propertyName: type
+
+    FormAttributeChoice:
+      type: object
+      required: [label, value]
+      properties:
+        label:
+          type: string
+        value:
+          type: string
+        default:
+          type: boolean
+
+    FormAttributeHideWhen:
+      type: object
+      required: [attribute_id, equal]
+      properties:
+        attribute_id:
+          type: string
+          format: uuid
+        equal:
+          type: array
+          items:
+            type: string
+
+    FormAttributeInfoVacationDays:
+      type: object
+      required: [type, vacation_days]
+      properties:
+        type:
+          type: string
+          enum: [vacation_days]
+        vacation_days:
+          type: integer
+
+    ActionUploadExtra:
+      type: object
+      required: [ document_type_name ]
+      properties:
+        document_type_name:
+          type: string
+          description: Название типа документа для загрузки
+
+    Document:
+      type: object
+      required: [ id, document_type_name, url, url_with_stamp, url_zip, signatures ]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор документа
+        document_type_name:
+          type: string
+          description: Название типа документа
+        url:
+          type: string
+          description: URL с самим документом
+        url_with_stamp:
+          type: string
+          description: URL с документом с отображением подписей
+        url_zip:
+          type: string
+          description: URL с архивом с документом и подписями
+        signatures:
+          type: array
+          description: Информация о подписях документа
+          items:
+            $ref: "#/components/schemas/DocumentSignature"
+        read_at:
+          type: string
+          format: date-time
+          description: Дата и время прочтения документа сотрудником
+          example: "2023-05-27T13:31:21Z"
+
+    DocumentSignature:
+      type: object
+      required: [ signed_by, status ]
+      properties:
+        signed_by:
+          type: string
+          description: Сотрудник или группа, подписавшая/у кого на подписании
+        signed_by_name:
+          type: string
+          description: Имя того, кто подписал
+        status:
+          $ref: "#/components/schemas/SignatureStatus"
+
+    SignatureStatus:
+      type: string
+      description: Информация о статусе подписания
+      enum:
+        - signed #подписано
+        - on_signing #на подписании
+        - can_sign #можно подписать
+        - not_signed #не подписано
+        - declined_sign #отказ от подписания
+
+    Attribute:
+      oneOf:
+        - $ref: '#/components/schemas/AttributeValueString'
+        - $ref: '#/components/schemas/AttributeValueFileMultiple'
+
+    AttributeValueString:
+      type: object
+      required: [ id, type, name, description, value ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [ text, textarea, date, file, choice, year ]
+        name:
+          type: string
+        description:
+          type: string
+        value:
+          type: string
+
+    AttributeValueFileMultiple:
+      type: object
+      required: [ id, type, name, description, value ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [ file_multiple ]
+        name:
+          type: string
+        description:
+          type: string
+        value:
+          type: array
+          items:
+            $ref: "#/components/schemas/AttributeValueFile"
+
+    AttributeValueFile:
+      type: object
+      required: [ id, url ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+
+    EventReturn:
+      type: object
+      required: [ created_at, user_role, comment, info ]
+      properties:
+        created_at:
+          type: string
+          format: date-time
+          description: Дата возврата на корректировнку
+        user:
+          $ref: "#/components/schemas/UserShortInfo"
+        user_role:
+          type: string
+        comment:
+          type: string
+        info:
+          type: string
+
+    UserShortInfo:
+      type: object
+      required: [ id, first_name, last_name ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        last_name:
+          type: string
+        middle_name:
+          type: string
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int64
+        message:
+          type: string
+
+    AcceptRequest:
+      type: object
+      required: [ attributes ]
+      properties:
+        attributes:
+          $ref: "#/components/schemas/Attributes"
+      example:
+        attributes[3fa85f64-5717-4562-b3fc-2c963f66afa1]: text
+        attributes[3fa85f64-5717-4562-b3fc-2c963f66afa2]: text
+        attributes[3fa85f64-5717-4562-b3fc-2c963f66afa3]: file upload
+
+    DeclineRequest:
+      type: object
+      required: [ attributes ]
+      properties:
+        attributes:
+          $ref: "#/components/schemas/Attributes"
+      example:
+        attributes[3fa85f64-5717-4562-b3fc-2c963f66afa1]: text
+        attributes[3fa85f64-5717-4562-b3fc-2c963f66afa2]: text
+        attributes[3fa85f64-5717-4562-b3fc-2c963f66afa3]: file upload
+
+    DeclineSignRequest:
+      type: object
+      required: [ attributes, comment ]
+      properties:
+        attributes:
+          $ref: "#/components/schemas/Attributes"
+        comment:
+          type: string
+      example:
+        attributes[3fa85f64-5717-4562-b3fc-2c963f66afa1]: text
+        attributes[3fa85f64-5717-4562-b3fc-2c963f66afa2]: text
+        attributes[3fa85f64-5717-4562-b3fc-2c963f66afa3]: file upload
+
+    ReturnRequest:
+      type: object
+      required:
+        - comment
+      properties:
+        comment:
+          type: string
+
+    GenerateDocumentRequest:
+      type: object
+      required: [ attributes ]
+      properties:
+        attributes:
+          $ref: "#/components/schemas/Attributes"
+        document_date:
+          type: string
+          format: date
+        document_number:
+          type: string
+      example:
+        attributes[3fa85f64-5717-4562-b3fc-2c963f66afa1]: text
+        attributes[3fa85f64-5717-4562-b3fc-2c963f66afa2]: text
+        attributes[3fa85f64-5717-4562-b3fc-2c963f66afa3]: file upload
+
+    UploadRequest:
+      type: object
+      required: [ attributes, document ]
+      properties:
+        attributes:
+          $ref: "#/components/schemas/Attributes"
+        document_date:
+          type: string
+          format: date
+        document_number:
+          type: string
+        document:
+          type: string
+          format: binary
+
+    UnepSignRequest:
+      type: object
+      required: [ attributes ]
+      properties:
+        attributes:
+          $ref: "#/components/schemas/Attributes"
+        code:
+          type: string
+          description: "Код СМС. Требуется для Контура. Не нужен для КриптоПро Simple."
+        signatures:
+          description: |
+            ## Подписи. Для КриптоПро Local. 
+            map of signatures with:
+            - key "signatures[index]", 
+            - value: {"document_hash": "xxx", "signature": "<base64_sig>"}
+            single param for unep_sign, repeated params for unep_sign_batch
+          type: object
+          additionalProperties:
+            description: text or file
+            type: string
+
+    UnepSignBatchRequest:
+      type: object
+      required: [ attributes ]
+      properties:
+        attributes:
+          $ref: "#/components/schemas/Attributes"
+        signatures:
+          description: |
+            ## Подписи. Для КриптоПро Local. 
+            map of signatures with:
+            - key "signatures[index]", 
+            - value: {"document_hash": "xxx", "signature": "<base64_sig>", "node_id": "<node_id>", "event_id": "<event_id>"}
+            single param for unep_sign, repeated params for unep_sign_batch
+          type: object
+          additionalProperties:
+            description: text or file
+            type: string
+
+    UkepSignRequest:
+      type: object
+      required: [ attributes, hash ]
+      properties:
+        attributes:
+          $ref: "#/components/schemas/Attributes"
+        hash:
+          type: string
+
+    UkepSignBatchRequest:
+      type: object
+      required: [ params ]
+      properties:
+        params:
+          type: array
+          items:
+            $ref: '#/components/schemas/UkepSignBatchRequestParam'
+
+    UkepSignBatchRequestParam:
+      type: object
+      required: [ event_id, node_id, hash ]
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        node_id:
+          type: string
+          format: uuid
+        hash:
+          type: string
+
+    UkepSignBatchResponse:
+      type: object
+      required: [ error_count ]
+      properties:
+        error_count:
+          type: integer
+
+    PepSignBatchRequest:
+      type: object
+      required: [ params ]
+      properties:
+        params:
+          type: array
+          items:
+            $ref: '#/components/schemas/PepSignBatchRequestParam'
+
+    PepSignBatchRequestParam:
+      type: object
+      required: [ event_id, node_id ]
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        node_id:
+          type: string
+          format: uuid
+
+    PepSignBatchResponse:
+      type: object
+      required: [ error_count ]
+      properties:
+        error_count:
+          type: integer
+
+    GetEventDocumentFileHashResponse:
+      type: object
+      required: [ hash ]
+      properties:
+        hash:
+          type: string
+
+    CancelReasonListResponse:
+      type: object
+      required: [ reasons ]
+      properties:
+        reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/CancelReasonItem'
+
+    CancelReasonItem:
+      type: object
+      description: Причина отмены Заявки
+      required: [ id, description]
+      properties:
+        id:
+          type: integer
+          description: Идентификатор причины отмены Заявки
+        description:
+          type: string
+          description: Описание причины отмены Заявки
+
+    CancelEventRequest:
+      type: object
+      required: [ reason_id ]
+      properties:
+        reason_id:
+          type: integer
+          description: Идентификатор причины отмены Заявки
+        comment:
+          type: string
+          description: Комментарий к отмене Заявки
+
+    CancelEventResponse:
+      type: object
+      required: [ event_id ]
+      properties:
+        event_id:
+          type: string
+          format: uuid
+
+    CreateEventTypeRequest:
+      type: object
+      required: [ name, company_id, workflow ]
+      properties:
+        name:
+          type: string
+        company_id:
+          $ref: "#/components/schemas/CompanyLegalId"
+        unit_id:
+          type: string
+          format: uuid
+        custom_type:
+          type: string
+        workflow:
+          $ref: "#/components/schemas/CreateWorkflow"
+
+    CreateEventTypeResponse:
+      type: object
+      required: [ id ]
+      properties:
+        id:
+          type: string
+          format: uuid
+
+    GetEventTypeResponse:
+      type: object
+      required: [ event_type, workflow ]
+      properties:
+        event_type:
+          $ref: "#/components/schemas/EventType"
+        workflow:
+          $ref: "#/components/schemas/Workflow"
+
+    UpdateEventTypeRequest:
+      type: object
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+        custom_type:
+          type: string
+        workflow:
+          $ref: "#/components/schemas/CreateWorkflow"
+
+    EventType:
+      type: object
+      required: [ id, name, company ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        company:
+          $ref: "#/components/schemas/CompanyItem"
+        unit:
+          $ref: "#/components/schemas/UnitItem"
+        custom_type:
+          type: string
+
+    Workflow:
+      type: object
+      required: [ nodes, participants ]
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkflowNode"
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkflowParticipant"
+
+    WorkflowParticipant:
+      type: object
+      required: [ role ]
+      properties:
+        role:
+          $ref: "#/components/schemas/RoleItem"
+        group:
+          $ref: "#/components/schemas/GroupItem"
+
+    WorkflowNode:
+      type: object
+      required: [ id, name, type, actions, employee_cancelable ]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          $ref: "#/components/schemas/NodeType"
+        actions:
+          description: Возможные действия на этапе
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkflowNodeAction"
+        deadline_settings:
+          $ref: "#/components/schemas/DeadlineSettings"
+        employee_cancelable:
+          description: Мероприятие может быть отменено сотрудником на этом этапе
+          type: boolean
+
+    WorkflowNodeAction:
+      type: object
+      required: [ type, is_employee ]
+      properties:
+        type:
+          $ref: "#/components/schemas/ActionType"
+        name:
+          type: string
+          description: Надпись на кнопке действия, если не указывать будут использованы значения по умолчанию - принять, подписать и т.д.
+        document_type:
+          $ref: "#/components/schemas/DocumentTypeItem"
+        signature_type:
+          $ref: "#/components/schemas/SignatureType"
+        is_employee:
+          type: boolean
+          description: Действие выполняется сотрудником
+        roles:
+          type: array
+          description: Список ролей, которые могут выполнить действие со стороны компании (только если is_employee = false)
+          items:
+            $ref: "#/components/schemas/RoleItem"
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkflowAttribute"
+
+    DeadlineSettings:
+      type: object
+      required: [ reference, time_unit, term, round_days, outcome ]
+      properties:
+        reference:
+          $ref: "#/components/schemas/DeadlineReference"
+        time_unit:
+          $ref: "#/components/schemas/TimeUnit"
+        term:
+          type: integer
+        round_days:
+          type: boolean
+        outcome:
+          $ref: "#/components/schemas/DeadlineOutcome"
+        attribute:
+          $ref: "#/components/schemas/AttributeItem"
+
+    CreateWorkflow:
+      type: object
+      required: [ nodes ]
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateWorkflowNode"
+
+    CreateWorkflowNode:
+      type: object
+      required: [ name, actions, employee_cancelable ]
+      properties:
+        type:
+          $ref: "#/components/schemas/NodeType"
+        name:
+          type: string
+        description:
+          type: string
+        actions:
+          description: Возможные действия на этапе
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateWorkflowNodeAction"
+        deadline_settings:
+          $ref: "#/components/schemas/CreateDeadlineSettings"
+        employee_cancelable:
+          description: Мероприятие может быть отменено сотрудником на этом этапе
+          type: boolean
+
+    CreateWorkflowNodeAction:
+      type: object
+      required: [ type, is_employee ]
+      properties:
+        type:
+          $ref: "#/components/schemas/ActionType"
+        name:
+          type: string
+          description: Надпись на кнопке действия, если не указывать будут использованы значения по умолчанию - принять, подписать и т.д.
+        document_type:
+          type: string
+          description: Название типа документа
+        signature_type:
+          $ref: "#/components/schemas/SignatureType"
+        is_employee:
+          type: boolean
+          description: Действие выполняется сотрудником
+        groups:
+          type: array
+          description: Список названий групп, которые могут выполнить действие со стороны компании (только если is_employee = false)
+          items:
+            type: string
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkflowAttribute"
+
+    CreateDeadlineSettings:
+      type: object
+      required: [ reference, time_unit, term, round_days, outcome ]
+      properties:
+        reference:
+          $ref: "#/components/schemas/DeadlineReference"
+        time_unit:
+          $ref: "#/components/schemas/TimeUnit"
+        term:
+          type: integer
+        round_days:
+          type: boolean
+        outcome:
+          $ref: "#/components/schemas/DeadlineOutcome"
+        attribute:
+          type: string
+          description: Название атрибута, от которого считается дедлайн
+
+    NodeType:
+      type: string
+      enum:
+        - begin
+        - middle
+        - end
+
+    ActionType:
+      type: string
+      enum:
+        - accept
+        - decline
+        - decline_sign
+        - sign
+        - upload
+        - generate_document_from_template
+        - return
+        - system
+        - system_validate_sign
+
+    DocumentTypeItem:
+      type: object
+      required: [ name ]
+      properties:
+        name:
+          type: string
+
+    SignatureType:
+      type: string
+      description: Тип подписания (ПЭП, УНЭП, УКЭП)
+      enum:
+        - pep
+        - unep
+        - ukep
+
+    WorkflowAttribute:
+      type: object
+      required: [ name, type, required ]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          $ref: "#/components/schemas/AttributeType"
+        required:
+          type: boolean
+          description: Обязателен для заполнения
+        options:
+          $ref: "#/components/schemas/AttributeOptions"
+
+    AttributeType:
+      type: string
+      enum:
+        - text
+        - textarea
+        - file
+        - file_multiple
+        - choice
+        - date
+        - year
+
+    AttributeOptions:
+      type: object
+      description: Дополнительные настройки атрибута
+      properties:
+        choices:
+          type: array
+          description: Список доступных значений для атрибута с типом choice
+          items:
+            $ref: "#/components/schemas/AttributeChoice"
+
+    AttributeChoice:
+      type: object
+      required: [ label, value ]
+      properties:
+        label:
+          type: string
+        value:
+          type: string
+
+    DeadlineReference:
+      type: string
+      description: Точка отсчета при расчете дедлайна
+      enum:
+        - node_active
+        - attribute
+        - created_date
+
+    TimeUnit:
+      type: string
+      enum:
+        - minute
+        - hour
+        - day
+        - workday
+
+    DeadlineOutcome:
+      type: string
+      description: Что происходит при наступлении дедлайна
+      enum:
+        - to_paper
+        - cancel
+        - skip
+
+    AttributeItem:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    Phone:
+      type: string
+      description: Номер телефона в формате 7xxxxxxxxxx
+
+    InitUnepSignBatchRequest:
+      type: object
+      required: [ node_ids ]
+      properties:
+        node_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    InitUnepSignBatchResponse:
+      type: object
+      required: [ request_id ]
+      properties:
+        request_id:
+          type: string
+          format: uuid
+
+    EmployeeCreateRequest:
+      type: object
+      required:
+        - company_id
+        - personnel_number
+        - person
+        - custom_type
+      properties:
+        unep_type:
+          $ref: "#/components/schemas/UnepType"
+        company_id:
+          type: string
+          example: "c8c545a7-f157-11e7-80c7-0050568955e9"
+          description: Идентификатор компании
+        personnel_number:
+          type: string
+          example: "033377a6-6d0a-11eb-a2d2-00155d01bd0a"
+          description: Уникальный идентификатор сотрудника во внешней системе
+        phone:
+          type: string
+          example: "79010001100"
+          description: Телефон для отправки приглашения и уведомлений
+        email:
+          type: string
+          example: "ololo@corp.mail.ru"
+          description: Емейл для отправки приглашения и уведомлений
+        work_start_date:
+          type: string
+          example: "01.01.2011"
+          description: Дата начала работы
+        dismissal_date:
+          type: string
+          example: "01.01.2021"
+          description: Дата увольнения
+        custom_type:
+          type: string
+          example: "warehouse"
+        person:
+          $ref: "#/components/schemas/Person"
+        unit_id:
+          type: string
+        legal_unit_id:
+          type: string
+
+    UserByPersonnelNumberResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Идентификатор пользователя
+
+    SimpleDocumentPepSignBatchRequest:
+      type: object
+      required: [ simple_document_id ]
+      properties:
+        simple_document_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    SimpleDocumentPepSignBatchRequestParam:
+      type: object
+      required: [ simple_document_id ]
+      properties:
+        simple_document_id:
+          type: string
+          format: uuid
+
+    SimpleDocumentPepSignBatchResponse:
+      type: object
+      required: [ error_count ]
+      properties:
+        error_count:
+          type: integer
+
+    SimpleDocumentUnepSignBatchInitRequest:
+      type: object
+      required: [ simple_document_ids ]
+      properties:
+        simple_document_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    SimpleDocumentUnepSignBatchInitResponse:
+      type: object
+      required: [ sign_request_id ]
+      properties:
+        sign_request_id:
+          type: string
+          format: uuid
+
+    SimpleDocumentUnepSignBatchConfirmRequest:
+      type: object
+      required: [ verification_code ]
+      properties:
+        verification_code:
+          type: string
+          description: Код подтверждения подписи
+
+    SimpleDocumentUkepSignBatchRequest:
+      type: object
+      required: [ documents ]
+      properties:
+        documents:
+          description: arrays of documents data
+          type: array
+          items:
+            $ref: '#/components/schemas/SimpleDocumentUkepSignDocument'
+
+    SimpleDocumentUkepSignDocument:
+      type: object
+      required: [ simple_document_id, hash ]
+      properties:
+        simple_document_id:
+          type: string
+          format: uuid
+        hash:
+          type: string
+
+    SimpleDocumentUkepSignBatchResponse:
+      type: object
+      required: [ error_count ]
+      properties:
+        error_count:
+          type: integer
+
+    SimpleDocumentListRequest:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        filters:
+          type: object
+          properties:
+            created_at:
+              $ref: "#/components/schemas/TimeRange"
+            issuer_id:
+              type: array
+              description: По issuer_id мероприятия
+              items:
+                type: string
+            personnel_number:
+              description: По табельному номеру
+              type: array
+              items:
+                type: string
+                format: uuid
+
+    SimpleDocumentListResponse:
+      type: object
+      required: [ documents, total_count ]
+      properties:
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/SimpleDocumentList'
+        total_count:
+          type: integer
+          example: 137
+          format: int64
+
+    Attributes:
+      description: |
+        # Список идентификаторов атрибутов
+        ### в качестве ключа использует uuid атрибута (attributes[uuid])
+        ### возможные значения
+        1. file
+        2. text
+        3. []file
+      type: object
+    UnepType:
+      type: string
+      enum: [ kontur, goskey, cryptopro_simple, cryptopro_local, disabled ]
+    Person:
+      type: object
+      required:
+        - snils
+        - last_name
+        - first_name
+        - passport
+        - identity_person_verified
+        - unit
+        - display_number
+        - position
+        - units
+      properties:
+        snils:
+          type: string
+          example: "000-11111"
+          description: СНИЛС
+        last_name:
+          type: string
+          example: "Иванов"
+          description: Фамилия
+        first_name:
+          type: string
+          example: "Иван"
+          description: Имя
+        middle_name:
+          type: string
+          example: "Иванович"
+          description: Отчество
+        inn:
+          type: string
+          example: "012345678"
+          description: Номер ИНН
+        display_number:
+          type: string
+          example: "3635f228-b440-11ec-b909-0242ac120002"
+        manager_id:
+          type: string
+          example: "033377a6-6d0a-11eb-a2d2-00155d01bd0a"
+        passport:
+          type: object
+          required:
+            - type
+            - birth_date
+          properties:
+            type:
+              type: string
+              default: russian_passport
+              enum:
+                - russian_passport
+                - foreign_passport
+                - other
+            series:
+              type: string
+              example: "0110"
+              description: Серия паспорта
+            number:
+              type: string
+              example: "123456"
+              description: Номер паспорта
+            issue_date:
+              type: string
+              example: "01.10.2020"
+              description: Дата выдачи паспорта
+            issue_organization:
+              type: string
+              example: "ОУФМС России"
+              description: Кем выдан паспорт
+            issue_organization_code:
+              type: string
+              example: "111-000"
+              description: Код поздразделения
+            birth_date:
+              type: string
+              example: "28.10.1980"
+              description: Дата рождения
+            birth_place:
+              type: string
+              example: "город Москва"
+              description: Место рождения
+        identity_person_verified:
+          type: boolean
+          example: true
+          description: Подтверждена ли личность сотрудником компании
+        position:
+          type: string
+          example: "Старший специалист отдела персонала"
+        unit:
+          type: string
+          description: Название подразделения
+          example: "Департамент персонала"
+        units:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: UUID-ы подразделений сотрудника
+        vacation_available_days:
+          type: integer
+          example: 42
+
+    GetFileRequestStateResponse:
+      type: object
+      required: [file_request]
+      properties:
+        file_request:
+          $ref: '#/components/schemas/FileRequest'
+
+    FileRequest:
+      type: object
+      required: [file_request_id, status]
+      properties:
+        file_request_id:
+            type: string
+            format: uuid
+        status:
+          type: string
+          enum:
+            - in_progress
+            - done
+            - expired
+            - error
+        expired_at:
+          type: string
+          format: date-time
+
+    EventListExportRequest:
+      type: object
+      properties:
+        filters:
+          $ref: '#/components/schemas/EventListRequestFilters'
+
+    EventListExportResponse:
+      type: object
+      required: [file_request_id]
+      properties:
+        file_request_id:
+          type: string
+          format: uuid
+
+    EmployeeStatus:
+      type: string
+      enum:
+        - data_received
+        - documents_verification
+        - unep_application_signing
+        - unep_releasing
+        - unep_release_failed
+        - invite_sent
+        - invite_expired
+        - active
+        - dismissed
+        - wait_registration
+
+    EmployeeFilter:
+      type: object
+      properties:
+        personnel_number_fio_query:
+          description: 'Фильтр для поиска по табельнику или ФИО.'
+          type: string
+        company_ids:
+          type: array
+          items:
+            type: string
+        employee_id:
+          type: string
+        statuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmployeeStatus"
+        status_changed_at:
+          $ref: '#/components/schemas/TimeRange'
+        employee_created_at:
+          $ref: '#/components/schemas/TimeRange'
+        unit_id:
+          type: string
+          format: uuid
+        segments:
+          type: array
+          items:
+            type: string
+        unep_type:
+          $ref: "#/components/schemas/UnepType"
+        only_representative:
+          type: boolean
+          description: "Выбираем только представителей компаний (сотрудников с группами)"
+
+    EmployeeListExportRequest:
+      properties:
+        filter:
+          $ref: "#/components/schemas/EmployeeFilter"
+
+    EmployeeListExportResponse:
+      type: object
+      required: [file_request_id]
+      properties:
+        file_request_id:
+            type: string
+            format: uuid
+    EventDeadline:
+      type: object
+      required:
+        - node_id
+        - deadline
+      properties:
+        node_id:
+          type: string
+          format: uuid
+          description: Идентификатор этапа мероприятия (uuid)
+        deadline:
+          type: string
+          format: date-time
+          description: Дата дедлайна мероприятия
+    GetTemplatesResponse:
+      type: object
+      required: [ templates ]
+      properties:
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateItem'
+
+    TemplateItem:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    GetTemplateResponse:
+      type: object
+      required: [ template ]
+      properties:
+        template:
+          $ref: "#/components/schemas/Template"
+
+    Template:
+      type: object
+      required: [ id, name, placeholders, event_types ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        placeholders:
+          type: array
+          items:
+            $ref: "#/components/schemas/TemplatePlaceholder"
+        event_types:
+          type: array
+          items:
+            $ref: "#/components/schemas/EventTypeItem"
+
+    TemplatePlaceholder:
+      type: object
+      required: [ key, placeholder, label, is_generic, in_file ]
+      properties:
+        key:
+          type: string
+        placeholder:
+          type: string
+        label:
+          type: string
+        is_generic:
+          type: boolean
+        in_file:
+          type: boolean
+        attribute:
+          $ref: "#/components/schemas/AttributeItem"
+
+    UploadTemplateFileRequest:
+      type: object
+      required: [ file ]
+      properties:
+        file:
+          type: string
+          format: binary
+
+    PreviewTemplateRequest:
+      type: object
+      required: [ placeholders ]
+      properties:
+        placeholders:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlaceholderValue"
+
+    PlaceholderValue:
+      type: object
+      required: [ key, value ]
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+
+    EmployeePolicyListRequest:
+      type: object
+      required: [ pagination, filters ]
+      properties:
+        pagination:
+          type: object
+          properties:
+            offset:
+              type: integer
+              format: int64
+            limit:
+              type: integer
+              format: int64
+        filters:
+          type: object
+          properties:
+            tag:
+              type: string
+              deprecated: true
+
+    AcceptPoliciesRequest:
+      type: object
+      required: [ policy_versions ]
+      properties:
+        policy_versions:
+          type: array
+          items:
+            type: object
+            required: [ policy_version_id, employee_id ]
+            properties:
+              policy_version_id:
+                type: string
+                format: uuid
+              employee_id:
+                type: string
+                format: uuid
+              signature:
+                type: string
+                description: Подпись для КриптоПро Local.
+
+    AcceptPoliciesResponse:
+      type: object
+      required: [ need_confirm ]
+      properties:
+        need_confirm:
+          description: list of policy_versions which need confirmation with /policy/accept-confirm
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    ConfirmAcceptPoliciesRequest:
+      type: object
+      required: [ policy_versions, code ]
+      properties:
+        code:
+          type: string
+        policy_versions:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    EmployeePolicyListResponse:
+      type: object
+      required: [ policies ]
+      properties:
+        policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmployeePolicyListItem'
+
+    EmployeePolicyListItem:
+      type: object
+      required: [ policy_id, policy_version_id, name, company, status, signature_type, employee_id ]
+      properties:
+        policy_id:
+          type: string
+          x-chance:
+            guid:
+              version: 5
+          format: uuid
+        policy_version_id:
+          type: string
+          x-chance:
+            guid:
+              version: 5
+          format: uuid
+        name:
+          type: string
+          x-chance: name
+        company:
+          $ref: '#/components/schemas/PolicyCompany'
+        status:
+          type: string
+          enum: [
+            "not_signed", # готово к подписанию
+            "in_progress", # проверка подписи / oтправлено Госключ и ждет в зависимости от signature_type
+            "signed",   # подписано
+            "canceled", # подписание отклонено в Госключе
+            "error" # некая ошибка (могут быть детали в signature_detailed_error)
+          ]
+        employee_id:
+          type: string
+          x-chance:
+            guid:
+              version: 5
+        signature_type:
+          type: string
+          description: "В случае 'unep_disabled' не даём подписывать."
+          enum: [ "pep", "unep_disabled", "unep_kontur", "unep_goskey", "unep_cryptopro_simple" ]
+        read_at:
+          type: string
+          format: date-time
+        signature_detailed_error:
+          type: string
+          enum: [ snils_not_found ]
+
+    PolicyCompany:
+      type: object
+      required: [ company_id, name ]
+      properties:
+        company_id:
+          type: string
+          x-chance:
+            guid:
+              version: 5
+          format: uuid
+        name:
+          type: string
+          x-chance: company
+        tsp_url:
+          type: string
+          description: 'Адрес TSP метки'
+          x-chance: company
+          example: 'http://pki.skbkontur.ru/tsp2012/tsp.srf'
+        hash_source:
+          type: string
+          enum: [ 'api', 'browser_plugin' ]
+          description: 'Где хотим хэшировать документ: в нашем API или в браузерном плагине КриптоПро.'
+
+    CompanyPolicyFilter:
+      type: object
+      properties:
+        company:
+          type: string
+          format: uuid
+        unit_id:
+          type: string
+          format: uuid
+        signature_type:
+          type: string
+          enum:
+          - pep
+          - unep
+        positions:
+          type: array
+          items:
+            type: string
+
+    CompanyPolicyExportRequest:
+      properties:
+        filters:
+          $ref: "#/components/schemas/CompanyPolicyFilter"
+
+    CompanyPolicyExportResponse:
+      type: object
+      required: [download_id]
+      properties:
+        download_id:
+          type: string
+          format: uuid
+
+    GetUnitTypesResponse:
+      type: object
+      required: [ types ]
+      properties:
+        types:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnitTypeItem"
+          example:
+            - type: "operational"
+              name: "Управленческая"
+            - type: "legal"
+              name: "Юридическая"
+
+    UnitTypeItem:
+      type: object
+      required: [ name, type ]
+      properties:
+        name:
+          type: string
+          example: "Управленческая"
+        type:
+          type: string
+          example: "operational"
+
+    UnitType:
+      type: string
+      enum:
+        - operational
+        - legal
+
+    GetUnitsTreeResponse:
+      type: object
+      properties:
+        root_unit:
+          $ref: "#/components/schemas/UnitNode"
+        permissions:
+          $ref: "#/components/schemas/UnitsPermissions"
+
+    UnitsPermissions:
+      type: object
+      required: [ edit_units, edit_manager_settings ]
+      properties:
+        edit_units:
+          type: boolean
+          description: Можно редактировать и добавлять подразделения
+        edit_manager_settings:
+          type: boolean
+          description: Можно редактировать только настройки согласования
+
+    UnitNode:
+      type: object
+      required: [ id, name, employee_count ]
+      properties:
+        id:
+          type: string
+          format: uuid
+          x-chance:
+            guid:
+              version: 5
+        name:
+          type: string
+          x-chance: company
+        manager:
+          $ref: "#/components/schemas/CompanyEmployee"
+        employee_count:
+          type: integer
+          format: int64
+          x-chance:
+            natural:
+              mim: 1
+              max: 9000
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnitNode"
+
+    CompanyEmployee:
+      type: object
+      required: [ id, name, company, personnel_number ]
+      properties:
+        id:
+          type: string
+          format: uuid
+          x-chance:
+            guid:
+              version: 5
+        name:
+          type: string
+          x-chance:
+            name:
+              middle: true
+        company:
+          $ref: "#/components/schemas/CompanyItem"
+        email:
+          description: "Can be empty because of personal data policy"
+          type: string
+          x-chance: email
+        phone:
+          description: "Can be empty because of personal data policy"
+          type: string
+          x-chance: phone
+        personnel_number:
+          description: "Can be empty because of personal data policy"
+          x-chance:
+            string:
+              length: 9
+              alpha: false
+              numeric: true
+          type: string
+        position:
+          x-chance:
+            profession:
+              rank: true
+          type: string
+
+    CreateUnitRequest:
+      type: object
+      required: [ name, unit_type ]
+      properties:
+        name:
+          type: string
+        parent_id:
+          type: string
+          format: uuid
+        manager_id:
+          type: string
+          format: uuid
+        manager_settings:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateUnitManagerSetting"
+        unit_type:
+          $ref: "#/components/schemas/UnitType"
+
+    CreateUnitResponse:
+      type: object
+      required: [ unit_id ]
+      properties:
+        unit_id:
+          type: string
+          format: uuid
+          x-chance:
+            guid:
+              version: 5
+
+    CreateUnitManagerSetting:
+      type: object
+      required: [ event_type_id, direct_only ]
+      properties:
+        event_type_id:
+          type: string
+          format: uuid
+        direct_only:
+          type: boolean
+
+    GetUnitResponse:
+      type: object
+      required: [ unit ]
+      properties:
+        unit:
+          $ref: "#/components/schemas/Unit"
+
+    Unit:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: string
+          format: uuid
+          x-chance:
+            guid:
+              version: 5
+        name:
+          type: string
+          x-chance: company
+        parent_id:
+          type: string
+          format: uuid
+          x-chance:
+            guid:
+              version: 5
+        manager:
+          $ref: "#/components/schemas/CompanyEmployee"
+        manager_settings:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnitManagerSetting"
+
+    UnitManagerSetting:
+      type: object
+      required: [ event_type, direct_only ]
+      properties:
+        event_type:
+          $ref: "#/components/schemas/CompanyEventTypeItem"
+        direct_only:
+          type: boolean
+
+    CompanyEventTypeItem:
+      type: object
+      required: [ id, name ]
+      properties:
+        id:
+          type: string
+          format: uuid
+          x-chance:
+            guid:
+              version: 5
+        name:
+          type: string
+          x-chance:
+            sentence:
+              words: 5
+
+    UpdateUnitRequest:
+      type: object
+      required: [ name ]
+      properties:
+        name:
+          type: string
+        parent_id:
+          type: string
+          format: uuid
+        manager_id:
+          type: string
+          format: uuid
+        manager_settings:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateUnitManagerSetting"
+
+    GetManagerSubstitutesListRequest:
+      type: object
+      required: [ company_id ]
+      properties:
+        company_id:
+          type: string
+          format: uuid
+        search_employee:
+          type: string
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    GetManagerSubstitutesListResponse:
+      type: object
+      required: [ substitutes, total ]
+      properties:
+        substitutes:
+          type: array
+          x-vkdoc: substituteList
+          items:
+            $ref: "#/components/schemas/ManagerSubstitutesEmployee"
+        total:
+          type: integer
+          format: int64
+          x-chance:
+            natural:
+              mim: 0
+              max: 100
+
+    ManagerSubstitutesEmployee:
+      type: object
+      required: [ employee, substitutes_count ]
+      properties:
+        employee:
+          $ref: "#/components/schemas/CompanyEmployee"
+        substitutes_count:
+          type: integer
+          format: int64
+          x-chance:
+            natural:
+              mim: 0
+              max: 130
+
+    GetManagerSubstitutesResponse:
+      type: object
+      required: [ event_types ]
+      properties:
+        event_types:
+          type: array
+          x-vkdoc: substitutesEventTypes
+          items:
+            $ref: "#/components/schemas/ManagerSubstitutesEventType"
+
+    ManagerSubstitutesEventType:
+      type: object
+      required: [ event_type, substitutes ]
+      properties:
+        event_type:
+          $ref: "#/components/schemas/CompanyEventTypeItem"
+        substitutes:
+          type: array
+          items:
+            $ref: "#/components/schemas/CompanyEmployee"
+
+    CreateManagerSubstituteRequest:
+      type: object
+      required: [ employee_id, event_types, substitute_id ]
+      properties:
+        employee_id:
+          type: string
+          format: uuid
+        event_types:
+          type: array
+          items:
+            type: string
+            format: uuid
+        substitute_id:
+          type: string
+          format: uuid
+
+    DeleteManagerSubstituteRequest:
+      type: object
+      required: [ employee_id, event_type_id, substitute_id ]
+      properties:
+        employee_id:
+          type: string
+          format: uuid
+        event_type_id:
+          type: string
+          format: uuid
+        substitute_id:
+          type: string
+          format: uuid
+
+    UnitEmployeesResponse:
+      type: object
+      required: [ employees ]
+      properties:
+        employees:
+          type: array
+          items:
+            $ref: "#/components/schemas/UnitEmployee"
+
+    UnitEmployee:
+      type: object
+      required: [ id, name, personnel_number, display_number ]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        personnel_number:
+          type: string
+        display_number:
+          type: string
+        position:
+          type: string
+
+    GetCompanyEventTypesResponse:
+      type: object
+      required: [ event_types]
+      properties:
+        event_types:
+          type: array
+          x-vkdoc: eventTypes
+          items:
+            $ref: "#/components/schemas/CompanyEventTypeItem"

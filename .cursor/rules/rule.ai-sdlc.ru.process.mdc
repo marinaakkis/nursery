@@ -1,0 +1,97 @@
+---
+description: Определяет обязательный многофазный процесс разработки с AI-агентом: Research → Design → Planning → Implementation → Release Gate. Каждая фаза имеет входы, выходы и гейт качества. Пропускать фазы нельзя.
+alwaysApply: false
+---
+
+# Процесс разработки с AI-агентом
+
+Любая задача разработки (фича, баг, рефакторинг) проходит через фазы в строгом порядке. AI пишет код только на фазе IMPLEMENTATION; все остальные фазы — подготовка контекста и контроль качества.
+
+Принцип: **разница не в модели — разница в процессе вокруг неё.**
+
+## Обязательный порядок фаз
+
+| # | Фаза | Скилл | Гейт |
+|---|---|---|---|
+| 1 | RESEARCH | `skill.ai-sdlc.ru.phase-1-research` | Research-документ проверен по чеклисту |
+| 2 | DESIGN | `skill.ai-sdlc.ru.phase-2-design` | Дизайн апрувлен; парное ревью с коллегой рекомендуется |
+| 3 | PLANNING | `skill.ai-sdlc.ru.phase-3-planning` | Phase-файлы апрувлены |
+| 4 | IMPLEMENTATION | `skill.ai-sdlc.ru.phase-4-implementation` | Автоматические гейты + инженер |
+| 5 | Release Gate | `skill.ai-sdlc.ru.phase-5-release-gate` | Security review + smoke + CI-пайплайн + ревьюер |
+
+Результат каждой фазы — входные данные для следующей. Планировщик не читает весь проект — у него есть research и дизайн. Реализатор не угадывает архитектуру — она уже зафиксирована.
+
+## Режимы работы процесса
+
+Каждый гейт качества может выполняться в одном из режимов. Режим задаётся один раз в начале задачи и применяется ко всем фазам.
+
+| Режим | Алиас | Описание | Когда использовать |
+|---|---|---|---|
+| **manual** | `1` | Инженер проверяет артефакт фазы вручную по чеклисту | Задачи высокой сложности или критичности |
+| **auto** | `2` | Отдельный агент автоматически проверяет артефакт по чеклисту; инженер не задействован | Рутинные задачи, CI-пайплайн, пакетная обработка |
+| **review** | `3` | Агент проверяет первым, затем инженер финально верифицирует _(по умолчанию)_ | Большинство задач разработки |
+| **plan-review** | — | Агент автоматически выполняет фазы 1–3, затем пауза для обсуждения открытых вопросов и внесения правок, затем фазы 4–5 | Когда нужна инженерная проверка плана перед реализацией без ручного управления каждой фазой |
+
+> **По умолчанию используется режим `review`.** Если режим не указан явно — применяется `review`. Числовые алиасы `1|2|3` поддерживаются как сокращения.
+
+Режим `auto` позволяет запускать процесс полностью в автоматическом режиме без участия человека на гейтах. Используется с командой `command.ai-sdlc.ru.run-all` для непрерывного прогона всех фаз.
+
+Режим `plan-review` выполняет фазы 1–3 автоматически, после чего предъявляет инженеру саммари, накопленные открытые вопросы и ожидает подтверждения перед запуском фаз 4–5. Используется через `command.ai-sdlc.ru.run-all mode=plan-review`.
+
+## Объём документации (`docs`)
+
+Ортогонально режиму гейтов процесс поддерживает параметр **объёма документации** `docs=compact|full` (задаётся один раз в начале задачи, хранится в поле «Объём документации» dev-process-plan).
+
+| Значение | Алиас | Описание |
+|---|---|---|
+| **compact** | — | _(по умолчанию)_ Формируются только артефакты, нужные ИИ-агенту: таблицы вместо Mermaid-диаграмм, без нарративных отчётов и без `docs/architecture.md`. Минимизирует токены, повышает пригодность для генерации кода |
+| **full** | — | Полный человеко-читаемый набор: Mermaid-диаграммы, нарративные Design Report / отчёты, обновление `docs/architecture.md` |
+
+> **По умолчанию `docs=compact`.** Параметр не зависит от `mode` (любые комбинации допустимы, напр. `mode=plan-review docs=full`). Конечный состав артефактов каждой фазы определён в `reference.artifacts.{compact,full}.md в каталоге соответствующего phase-скилла (skill.ai-sdlc.ru.phase-{1,2,3,5}-*/)`. Незыблемо в обоих профилях: dev-process-plan, dev-task, тест-стратегия, API-контракты, smoke-отчёт и объём проверок.
+
+## Запреты
+
+- Нельзя начинать DESIGN без завершённого и проверенного research-документа
+- Нельзя начинать PLANNING без апрувленного дизайна
+- Нельзя начинать IMPLEMENTATION без апрувленного плана
+- Нельзя создавать PR без прохождения Release Gate (фаза 5)
+- В research-документе — только факты AS-IS, никаких советов и мнений
+- Нельзя использовать один универсальный промпт для разных типов задач
+
+## Специализация по типу задачи
+
+Фича, баг и рефакторинг — разные процессы с разными артефактами:
+
+| Тип | RESEARCH | DESIGN | PLANNING |
+|---|---|---|---|
+| Новая фича | Все затронутые компоненты | C4 + DFD (при изменении потоков данных) + тест-стратегия; Sequence/ADR — при необходимости | Phase-файлы с acceptance criteria |
+| Баг | Как воспроизвести, причины, затронутый код | Минимальное исправление + регрессионный тест | Один шаг: fix + тест |
+| Рефакторинг | Текущие зависимости и паттерны | Целевая структура + migration path | Phase-файлы с шагами миграции |
+
+## Артефакт прогресса
+
+Для каждой задачи создаётся документ `docs/dev-requests/dev-request.r-<nnn>.<system-request-name>/dev-process-plan.r-<nnn>.<system-process-plan-name>.md` по шаблону `.agents/skills/skill.ai-sdlc.ru.phase-1-research/template.process-plan.md`. В нём отмечаются пройденные вехи и ссылки на артефакты каждой фазы.
+
+## Маппинг существующих скиллов/команд/правил на фазы
+
+### RESEARCH
+- *(нет специализированных — только `skill.ai-sdlc.ru.phase-1-research`)*
+
+### DESIGN
+- Скиллы: `skill.arch.ru.c4-diagrams`, `skill.arch.ru.sequence-diagrams`, `skill.arch.ru.workflow-diagrams`, `skill.arch.ru.bpmn-diagrams`, `skill.arch.ru.dfd-diagrams`, `skill.arch.en.architecture-md-artifact`, `skill.integration.ru.api-rest-standards`, `skill.arch.ru.architecture-requirements-interviewer`
+- Команды: `command.arch.ru.generate-architecture-artifacts-from-spec`
+- Правила: `rule.arch.ru.sequence-diagram-layout-and-naming`, `rule.governance.ru.architect-escalation-and-prohibited-patterns`, `rule.security.ru.secure-app-architecture-and-dependencies`
+
+### PLANNING
+- Скиллы: `skill.ai-sdlc.ru.phase-3-planning`, `skill.dev.ru.dev-planning`
+- Команды: `command.dev.ru.create-dev-plan`
+
+### IMPLEMENTATION
+- Скиллы: `skill.dev.ru.dotnet-csharp-standards`, `skill.dev.ru.frontend-ts-react-standards`, `skill.integration.ru.api-rest-standards`, `skill.security.en.security-review`
+- Команды: `command.security.ru.security-audit`, `command.integration.ru.sync-integration-passports-from-log`
+- Правила: `rule.dev.ru.code-quality-tests-docs-logging`, `rule.dev.ru.no-legacy-converters`, `rule.security.ru.secure-app-architecture-and-dependencies`, `rule.integration.ru.integration-passport-and-reliability-gate`
+
+### RELEASE GATE
+- Скиллы: `skill.devops.en.dokploy-repo-prep`, `skill.devops.en.helm-chart-scaffold`, `skill.devops.en.k8s-deploy-scaffold`, `skill.security.en.security-review`
+- Команды: `command.security.ru.security-audit`
+- Правила: `rule.devops.ru.deploy-containerization-and-runtime-config`, `rule.security.en.gitlab-ci-immutable-security-block`

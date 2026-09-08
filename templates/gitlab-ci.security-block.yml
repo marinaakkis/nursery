@@ -1,0 +1,29 @@
+####################################
+##    SECURITY PART FOR SANDBOX   ##
+####################################
+# more info about configuration: https://gitlab.biocad.ru/explore/catalog/iac/ci-components/main
+---
+include:
+  - component: $CI_SERVER_HOST/iac/ci-components/main/ci@2.1.2
+    inputs:
+      security-ci-stage: test
+      security-ci-gitlab-ultimate-stage: test
+      megalinter-stage: ".post"
+      megalinter-report-stage: ".post"
+      renovate-base-branches: master
+      renovate-rules:
+        - if: $CI_COMMIT_MESSAGE =~ /Merge branch.*renovate\//
+          when: on_success
+        - if: '$CI_COMMIT_BRANCH == "master"'
+          when: manual
+          allow_failure: true
+        - when: never
+      security-ci-gitlab-ultimate-dast-target-url: ''
+      security-ci-gitlab-ultimate-api-security-target-url: ''
+      security-ci-gitlab-ultimate-api-fuzzing-target-url: ''
+
+variables:
+  SECURITY_GITLAB_CI_ULTIMATE_ENABLED: "true"
+####################################
+stages: [test]
+####################################

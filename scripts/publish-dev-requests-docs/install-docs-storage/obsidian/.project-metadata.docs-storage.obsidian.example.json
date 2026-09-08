@@ -1,0 +1,9 @@
+{
+  "docsStorage": {
+    "backend": "obsidian",
+    "baseUrl": "https://127.0.0.1:27124",
+    "projectKey": "<project-key>",
+    "apiKey": "<вставить API-ключ из Local REST API>",
+    "vaultPath": "<путь к Obsidian vault, напр. C:\\Users\\<user-name>\\dev-vaults\\my-project>"
+  }
+}

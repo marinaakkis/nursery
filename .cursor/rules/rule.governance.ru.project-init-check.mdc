@@ -1,0 +1,101 @@
+---
+description: Проверка инициализации проекта через .project-metadata.local.json перед началом работы
+alwaysApply: false
+---
+
+# Проверка инициализации проекта
+
+При начале работы в репозитории агент обязан проверить файл `.project-metadata.local.json` и убедиться, что проект инициализирован.
+
+## Алгоритм проверки
+
+1. Прочитать `.project-metadata.local.json` из корня репозитория.
+2. Если файл отсутствует или `isGitHooksInited: false` — вывести предупреждение и **предложить запустить полный init-скрипт**, ожидая подтверждения пользователя. Полный init также устанавливает проверенный AI security hook.
+3. После получения подтверждения — выполнить скрипт через инструмент запуска команд.
+4. Если `projectName` равен `null`, пустой строке или отсутствует — вывести предупреждение:
+
+```
+⚠️ projectName не задан в .project-metadata.local.json
+Укажите имя проекта (сервиса) вручную:
+  Откройте .project-metadata.local.json и заполните поле "projectName": "<имя-сервиса>"
+Это поле используется в скиллах и командах для идентификации проекта.
+```
+
+5. Не блокировать работу принудительно, но чётко сообщить о необходимости инициализации.
+
+## Скрипты инициализации по ОС
+
+| № | ОС | Полная инициализация (AI security hook + Cursor + git hooks) | Только git hooks |
+|---|----|--------------------------------------------|-----------------|
+| 1 | Windows | `config-win.bat` | `scripts\git-hooks\git-hooks.win.install.ps1` |
+| 2 | Linux / macOS | `./config-lin-mac.sh` | `./scripts/git-hooks/git-hooks.lin-mac.install.sh` |
+
+## Скрипты деинициализации
+
+| № | ОС | Удаление git hooks |
+|---|----|--------------------|
+| 1 | Windows | `scripts\git-hooks\git-hooks.win.uninstall.ps1` |
+| 2 | Linux / macOS | `./scripts/git-hooks/git-hooks.lin-mac.uninstall.sh` |
+
+## Поле `isGitHooksInited`
+
+Поле показывает только наличие `pre-commit` и `pre-push`. Состояние AI security
+hook в него не записывается: runner проверяет кеш и SHA-256 при каждом запуске.
+
+| Значение | Условие установки |
+|----------|-------------------|
+| `true` | Успешное завершение `config-win.bat`, `config-lin-mac.sh`, `git-hooks.win.install.ps1` или `git-hooks.lin-mac.install.sh` |
+| `false` | Значение по умолчанию; восстанавливается после успешного завершения `git-hooks.win.uninstall.ps1` или `git-hooks.lin-mac.uninstall.sh` |
+
+## Сообщение агента при `isGitHooksInited: false`
+
+Агент выводит предупреждение и **предлагает выполнить скрипт сам** — пользователю нужно только подтвердить:
+
+```
+⚠️ ПРОЕКТ НЕ ИНИЦИАЛИЗИРОВАН
+Файл .project-metadata.local.json содержит isGitHooksInited: false.
+Git hooks не установлены — pre-commit и pre-push проверки не будут выполняться.
+
+Могу запустить инициализацию прямо сейчас:
+  Windows  : config-win.bat
+  Linux/macOS: ./config-lin-mac.sh
+
+Или только установку git hooks:
+  Windows  : scripts\git-hooks\git-hooks.win.install.ps1
+  Linux/macOS: ./scripts/git-hooks/git-hooks.lin-mac.install.sh
+
+Подтвердите — и я выполню нужный скрипт автоматически.
+```
+
+После подтверждения агент запускает соответствующий скрипт через доступный инструмент выполнения команд.
+
+## Проверка и восстановление AI security hook
+
+Полная инициализация обязана выполнить:
+
+```bash
+node scripts/ai-hooks/run-hook-tool.mjs gitleaks --install
+```
+
+Если Cursor, Claude Code или Codex сообщает об отсутствии бинарника, ошибке
+скачивания или несовпадении SHA-256, агент должен предложить и после подтверждения
+выполнить эту же команду из корня проекта. Не отключать hook и не переводить его
+в `warn`, чтобы обойти ошибку. Первый install требует доступа к registry;
+проверенный кеш далее работает без сети.
+
+## Git hooks, устанавливаемые скриптами
+
+Скрипты инициализации (`config-win.bat`, `config-lin-mac.sh`) устанавливают AI
+security hook для Cursor, Claude Code и Codex, а вместе с git-hook installers —
+следующие репозиторные хуки:
+
+| Хук | Файл | Назначение |
+|---|---|---|
+| pre-commit | `.githooks/pre-commit` | Проверки перед коммитом (линтеры, форматирование) |
+| pre-push | `.githooks/pre-push` | Проверки перед пушем (тесты, безопасность) |
+
+## Связанные правила и скрипты
+
+- `rule.governance.ru.project-bootstrap-and-registration.mdc` — регистрация и структура проекта.
+- `rule.integration.ru.integration-passport-and-reliability-gate.mdc` — хуки также проверяют паспорта интеграций.
+- `.githooks/integration-passports.validate.mjs` — скрипт валидации, запускаемый хуками.

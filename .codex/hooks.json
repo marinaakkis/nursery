@@ -5,8 +5,35 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$(git rev-parse --show-toplevel)/.cursor/hooks/before-submit-prompt.js\"",
-            "statusMessage": "Scanning prompt for secrets"
+            "command": "node -e \\\"const fs=require('node:fs'),p=require('node:path'),u=require('node:url');let d=process.cwd();for(;;){const f=p.join(d,'scripts','ai-hooks','run-hook-tool.mjs');if(fs.existsSync(f)){process.argv.splice(1,0,f);import(u.pathToFileURL(f).href);break;}const n=p.dirname(d);if(n===d){console.error('ai-hook: repository root not found');process.exit(1);}d=n;}\\\" gitleaks -- --client codex",
+            "timeout": 15,
+            "statusMessage": "Scanning prompt for secrets and PII"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \\\"const fs=require('node:fs'),p=require('node:path'),u=require('node:url');let d=process.cwd();for(;;){const f=p.join(d,'scripts','ai-hooks','run-hook-tool.mjs');if(fs.existsSync(f)){process.argv.splice(1,0,f);import(u.pathToFileURL(f).href);break;}const n=p.dirname(d);if(n===d){console.error('ai-hook: repository root not found');process.exit(1);}d=n;}\\\" gitleaks -- --client codex",
+            "timeout": 15,
+            "statusMessage": "Scanning tool input for secrets and PII"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \\\"const fs=require('node:fs'),p=require('node:path'),u=require('node:url');let d=process.cwd();for(;;){const f=p.join(d,'scripts','ai-hooks','run-hook-tool.mjs');if(fs.existsSync(f)){process.argv.splice(1,0,f);import(u.pathToFileURL(f).href);break;}const n=p.dirname(d);if(n===d){console.error('ai-hook: repository root not found');process.exit(1);}d=n;}\\\" gitleaks -- --client codex",
+            "timeout": 15,
+            "statusMessage": "Scanning tool output for secrets and PII"
           }
         ]
       }

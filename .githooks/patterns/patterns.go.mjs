@@ -1,0 +1,126 @@
+// Detection patterns for Go stack
+export const STACK_ID = "go";
+
+export const DETECTORS = [
+  {
+    id: "grpc-integration",
+    stack: "gRPC",
+    autoScope: null,
+    markerLabel: "gRPC integration",
+    passportFileName: "integration-passport.grpc-integration.md",
+    patterns: [
+      /\bgrpc\.Dial\b/,
+      /\bgrpc\.NewClient\b/,
+      /['"]google\.golang\.org\/grpc['"]/,
+    ],
+  },
+  {
+    id: "kafka-integration",
+    stack: "Kafka",
+    autoScope: null,
+    markerLabel: "Kafka integration",
+    passportFileName: "integration-passport.kafka-integration.md",
+    patterns: [
+      /['"]github\.com\/[^'"]*kafka[^'"]*['"]/i,
+      /['"]github\.com\/IBM\/sarama['"]/,
+    ],
+  },
+  {
+    id: "rabbitmq-integration",
+    stack: "RabbitMQ",
+    autoScope: null,
+    markerLabel: "RabbitMQ integration",
+    passportFileName: "integration-passport.rabbitmq-integration.md",
+    patterns: [
+      /\bamqp\.Dial\b/,
+      /['"]github\.com\/[^'"]*(?:amqp|rabbitmq)[^'"]*['"]/i,
+    ],
+  },
+  {
+    id: "external-http-api",
+    stack: "REST",
+    autoScope: null,
+    markerLabel: "External HTTP API",
+    passportFileName: "integration-passport.external-http-api.md",
+    patterns: [
+      /\bhttp\.NewRequest\b/,
+      /\bhttp\.Get\s*\(/,
+      /\bhttp\.Post\s*\(/,
+    ],
+    configPatterns: [/https?:\/\/(?!localhost\b|127\.|0\.0\.0\.0\b)[a-zA-Z0-9][\w.-]*\.[a-zA-Z]{2,}/i],
+  },
+  {
+    id: "s3-object-storage",
+    stack: "S3",
+    autoScope: "external",
+    markerLabel: "S3 / Object Storage",
+    passportFileName: "integration-passport.s3-object-storage.md",
+    patterns: [
+      /['"]github\.com\/aws\/aws-sdk-go[^'"]*\/s3['"]/i,
+      /['"]github\.com\/aws\/aws-sdk-go-v2\/service\/s3['"]/i,
+      /['"]gocloud\.dev\/blob['"]/i,
+    ],
+  },
+  {
+    id: "redis-cache",
+    stack: "Redis",
+    autoScope: null,
+    markerLabel: "Redis",
+    passportFileName: "integration-passport.redis-cache.md",
+    patterns: [
+      /['"]github\.com\/redis\/go-redis[^'"]*['"]/i,
+      /['"]github\.com\/go-redis\/redis[^'"]*['"]/i,
+    ],
+  },
+  {
+    id: "elasticsearch",
+    stack: "Elasticsearch",
+    autoScope: null,
+    markerLabel: "Elasticsearch",
+    passportFileName: "integration-passport.elasticsearch.md",
+    patterns: [/['"]github\.com\/elastic\/go-elasticsearch[^'"]*['"]/i],
+  },
+  {
+    id: "db-postgresql",
+    stack: "PostgreSQL",
+    autoScope: null,
+    markerLabel: "PostgreSQL",
+    passportFileName: "integration-passport.db-postgresql.md",
+    patterns: [
+      /['"]github\.com\/lib\/pq['"]/,
+      /['"]github\.com\/jackc\/pgx[^'"]*['"]/i,
+    ],
+  },
+  {
+    id: "db-mysql",
+    stack: "MySQL",
+    autoScope: null,
+    markerLabel: "MySQL",
+    passportFileName: "integration-passport.db-mysql.md",
+    patterns: [/['"]github\.com\/go-sql-driver\/mysql['"]/],
+  },
+  {
+    id: "db-mongodb",
+    stack: "MongoDB",
+    autoScope: null,
+    markerLabel: "MongoDB",
+    passportFileName: "integration-passport.db-mongodb.md",
+    patterns: [/['"]go\.mongodb\.org\/mongo-driver[^'"]*['"]/i],
+  },
+  {
+    id: "db-mssql",
+    stack: "SQL Server",
+    autoScope: null,
+    markerLabel: "SQL Server",
+    passportFileName: "integration-passport.db-mssql.md",
+    patterns: [/['"]github\.com\/denisenkom\/go-mssqldb['"]/],
+  },
+  {
+    id: "db-sqlite",
+    stack: "SQLite",
+    autoScope: "internal",
+    markerLabel: "SQLite",
+    passportFileName: "integration-passport.db-sqlite.md",
+    patterns: [/['"]github\.com\/mattn\/go-sqlite3['"]/],
+  },
+];

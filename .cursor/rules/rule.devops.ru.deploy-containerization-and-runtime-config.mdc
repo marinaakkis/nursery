@@ -1,0 +1,38 @@
+---
+description: Deployment: containerization, health checks, and env-based runtime configuration
+alwaysApply: false
+---
+
+# Деплой и runtime-конфигурация
+
+## Контейнеризация
+
+- Приложение должно быть упаковано в Docker-контейнер.
+- Используй multi-stage build и минимальный базовый образ, где применимо.
+- Не запускай процесс в контейнере от root-пользователя.
+- Фиксируй версии базовых образов; тег `latest` не используй.
+
+## Health checks
+
+- Предоставляй endpoint `/health` (ожидаемый `HTTP 200` в штатном состоянии).
+- Для readiness при необходимости используй `/readyz`.
+
+## Конфигурация
+
+- Вся конфигурация идет через переменные окружения.
+- Не добавляй environment-specific конфиги в кодовую базу (например `config.production.json`).
+- Значения по умолчанию допускай только для dev-окружения.
+
+## Маршрутизация по skill-pack
+
+Когда приложение готово локально или пользователь просит подготовить окружение, напомни разработчику о следующем пути:
+
+| Цель | Что применить |
+|---|---|
+| Sandbox / тестовая среда в Dokploy | `.agents/skills/skill.devops.en.dokploy-repo-prep/SKILL.md` |
+| Корпоративный вход через Keycloak SSO | `.agents/skills/skill.security.en.keycloak-sso-scaffold/SKILL.md` |
+| FastAPI + React auth integration | `.agents/skills/skill.security.en.fastapi-react-keycloak-auth/SKILL.md` |
+| Production Kubernetes: standalone Helm chart | `.agents/skills/skill.devops.en.helm-chart-scaffold/SKILL.md` |
+| Production Kubernetes: полный scaffold | `.agents/skills/skill.devops.en.k8s-deploy-scaffold/SKILL.md` |
+
+Перед production Kubernetes напомни про обязательные шаги: проверка ДИБ, namespace/resourceQuota, согласование секретов через корпоративный secret channel/Vault. Dokploy считать sandbox/test, не production.

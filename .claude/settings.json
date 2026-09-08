@@ -1,6 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
+    "defaultMode": "default",
     "deny": [
       "Read(./.env)",
       "Read(./.env.*)",
@@ -8,6 +9,7 @@
       "Read(./*.key)",
       "Read(./*.pem)",
       "Read(./*.p12)",
+      "Read(./id_rsa)",
       "Read(./.aws/credentials)",
       "Bash(curl * | bash)",
       "Bash(wget * | sh)",
@@ -32,13 +34,39 @@
     ]
   },
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/scripts/ai-hooks/run-hook-tool.mjs",
+              "gitleaks",
+              "--",
+              "--client",
+              "claude"
+            ],
+            "timeout": 15
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "",
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/gitleaks-launcher.mjs"
+            "command": "node",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/scripts/ai-hooks/run-hook-tool.mjs",
+              "gitleaks",
+              "--",
+              "--client",
+              "claude"
+            ],
+            "timeout": 15
           }
         ]
       }
@@ -49,37 +77,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/gitleaks-launcher.mjs"
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/gitleaks-launcher.mjs"
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.cursor/hooks/before-submit-prompt.js"
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/sanitizer-launcher.mjs claude-in",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/sanitizer-launcher.mjs claude-stop",
-            "timeout": 10
+            "command": "node",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/scripts/ai-hooks/run-hook-tool.mjs",
+              "gitleaks",
+              "--",
+              "--client",
+              "claude"
+            ],
+            "timeout": 15
           }
         ]
       }

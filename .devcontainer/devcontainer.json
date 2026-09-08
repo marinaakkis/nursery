@@ -1,7 +1,6 @@
 {
     "name": "Cursor Secure Development Environment",
     "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-  
     // "features": {
     //   "docker.biocad.ru/ghcr.io/devcontainers/features/git:1": {},
     //   "docker.biocad.ru/ghcr.io/devcontainers/features/python:1": {
@@ -19,10 +18,11 @@
       "vscode": {
         "settings": {
           "cursor.ghostMode": true,
-          "cursor.privacyMode": "strict",
+          "cursor.privacyMode": true,
           "cursor.autoRun": false,
-          "cursor.telemetry.enableTelemetry": false,
-          "cursor.telemetry.enableCrashReporter": false
+          "telemetry.telemetryLevel": "off",
+          "telemetry.enableTelemetry": false,
+          "telemetry.enableCrashReporter": false
         },
         "extensions": []
       }
@@ -34,7 +34,7 @@
     "containerEnv": {
       "GIT_EDITOR": "code --wait"
     },
-    "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && pip install pre-commit && pre-commit install",
+    "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && bash scripts/git-hooks.lin-mac.install.sh",
   
     "forwardPorts": [3000, 8080],
     "portsAttributes": {
@@ -44,4 +44,3 @@
       }
     }
   }
-  

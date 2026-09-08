@@ -1,0 +1,26 @@
+title = "ai-project-template gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Template repository — all scaffold configs, hooks, skills, and scripts are allowlisted"
+paths = [
+  '''(^|/)\.cursor/''',
+  '''(^|/)\.claude/''',
+  '''(^|/)\.codex/''',
+  '''(^|/)\.opencode/''',
+  '''(^|/)\.agents/''',
+  '''(^|/)\.devcontainer/''',
+  '''(^|/)\.githooks/''',
+  '''(^|/)scripts/''',
+  '''(^|/)config-lin-mac\.sh$''',
+  '''(^|/)config-win\.bat$''',
+  '''(^|/)\.gitlab-ci\.yml$''',
+  '''(^|/)AGENTS\.md$''',
+  '''(^|/)README\.md$''',
+  '''(^|/)\.gitignore$''',
+  '''(^|/)\.cursorignore$''',
+  '''(^|/)\.cursorindexingignore$''',
+  '''(^|/)gitleaks\.toml$''',
+]

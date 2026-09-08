@@ -1,0 +1,11 @@
+{
+  "repository": "https://gitlab.biocad.ru/common/ai_templates/public/skills/deploy.git",
+  "branch": "master",
+  "lastSyncedCommit": "47919089a8c59dc0346f03398eaca60afae17b66",
+  "skills": {
+    "helm-chart-scaffold": "skill.devops.en.helm-chart-scaffold",
+    "kubernetes-one-off-jobs": "skill.devops.en.kubernetes-one-off-jobs",
+    "dokploy-repo-prep": "skill.devops.en.dokploy-repo-prep",
+    "k8s-deploy-scaffold": "skill.devops.en.k8s-deploy-scaffold"
+  }
+}

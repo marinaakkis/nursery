@@ -1,53 +1,41 @@
 {
   "version": 1,
   "hooks": {
-    "sessionStart": [
-      {"command": "node .cursor/hooks/gitleaks-launcher.mjs"},
-      {"command": "node .cursor/hooks/sanitizer-launcher.mjs cursor-session", "timeout": 10}
+    "beforeSubmitPrompt": [
+      {"command": "node scripts/ai-hooks/run-hook-tool.mjs gitleaks -- --client cursor", "timeout": 15, "failClosed": true}
     ],
     "preToolUse": [
-      {"command": "node .cursor/hooks/gitleaks-launcher.mjs"},
-      {"command": "node .cursor/hooks/sanitizer-launcher.mjs cursor-file-write", "timeout": 10, "matcher": "Write|Edit"}
+      {"command": "node scripts/ai-hooks/run-hook-tool.mjs gitleaks -- --client cursor", "timeout": 15, "failClosed": true}
     ],
     "postToolUse": [
-      {"command": "node .cursor/hooks/gitleaks-launcher.mjs"},
-      {"command": "node .cursor/hooks/sanitizer-launcher.mjs cursor-file-read", "timeout": 10, "matcher": "Read"}
+      {"command": "node scripts/ai-hooks/run-hook-tool.mjs gitleaks -- --client cursor", "timeout": 15}
     ],
-    "postToolUseFailure":   [{"command": "node .cursor/hooks/gitleaks-launcher.mjs"}],
-    "beforeShellExecution": [{"command": "node .cursor/hooks/gitleaks-launcher.mjs"}],
-    "afterShellExecution":  [{"command": "node .cursor/hooks/gitleaks-launcher.mjs"}],
-    "beforeMCPExecution":   [
-      {"command": "node .cursor/hooks/gitleaks-launcher.mjs"},
-      {"command": "node .cursor/hooks/before-mcp-execution.js"}
+    "postToolUseFailure": [
+      {"command": "node scripts/ai-hooks/run-hook-tool.mjs gitleaks -- --client cursor", "timeout": 15}
     ],
-    "afterMCPExecution":    [
-      {"command": "node .cursor/hooks/gitleaks-launcher.mjs"},
-      {"command": "node .cursor/hooks/after-mcp-execution.js"}
+    "beforeShellExecution": [
+      {"command": "node scripts/ai-hooks/run-hook-tool.mjs gitleaks -- --client cursor", "timeout": 15, "failClosed": true}
     ],
-    "beforeReadFile":       [
-      {"command": "node .cursor/hooks/gitleaks-launcher.mjs"},
-      {"command": "node .cursor/hooks/before-read-file.js"}
+    "afterShellExecution": [
+      {"command": "node scripts/ai-hooks/run-hook-tool.mjs gitleaks -- --client cursor", "timeout": 15}
     ],
-    "beforeTabFileRead":    [
-      {"command": "node .cursor/hooks/gitleaks-launcher.mjs"},
-      {"command": "node .cursor/hooks/before-tab-file-read.js"}
+    "beforeMCPExecution": [
+      {"command": "node scripts/ai-hooks/run-hook-tool.mjs gitleaks -- --client cursor", "timeout": 15, "failClosed": true}
     ],
-    "afterFileEdit":        [{"command": "node .cursor/hooks/gitleaks-launcher.mjs"}],
-    "afterTabFileEdit":     [{"command": "node .cursor/hooks/gitleaks-launcher.mjs"}],
-    "beforeSubmitPrompt":   [
-      {"command": "node .cursor/hooks/gitleaks-launcher.mjs"},
-      {"command": "node .cursor/hooks/before-submit-prompt.js"},
-      {"command": "node .cursor/hooks/sanitizer-launcher.mjs cursor-in", "timeout": 10}
+    "afterMCPExecution": [
+      {"command": "node scripts/ai-hooks/run-hook-tool.mjs gitleaks -- --client cursor", "timeout": 15}
     ],
-    "afterAgentResponse":   [
-      {"command": "node .cursor/hooks/gitleaks-launcher.mjs"},
-      {"command": "node .cursor/hooks/sanitizer-launcher.mjs cursor-out", "timeout": 10}
+    "beforeReadFile": [
+      {"command": "node scripts/ai-hooks/run-hook-tool.mjs gitleaks -- --client cursor", "timeout": 15, "failClosed": true}
     ],
-    "afterAgentThought":    [{"command": "node .cursor/hooks/gitleaks-launcher.mjs"}],
-    "subagentStart":        [{"command": "node .cursor/hooks/gitleaks-launcher.mjs"}],
-    "subagentStop":         [{"command": "node .cursor/hooks/gitleaks-launcher.mjs"}],
-    "sessionEnd":           [{"command": "node .cursor/hooks/gitleaks-launcher.mjs"}],
-    "stop":                 [{"command": "node .cursor/hooks/gitleaks-launcher.mjs"}],
-    "preCompact":           [{"command": "node .cursor/hooks/gitleaks-launcher.mjs"}]
+    "beforeTabFileRead": [
+      {"command": "node scripts/ai-hooks/run-hook-tool.mjs gitleaks -- --client cursor", "timeout": 15, "failClosed": true}
+    ],
+    "afterFileEdit": [
+      {"command": "node scripts/ai-hooks/run-hook-tool.mjs gitleaks -- --client cursor", "timeout": 15}
+    ],
+    "afterTabFileEdit": [
+      {"command": "node scripts/ai-hooks/run-hook-tool.mjs gitleaks -- --client cursor", "timeout": 15}
+    ]
   }
 }
