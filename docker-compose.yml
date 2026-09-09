@@ -1,0 +1,48 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000"
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER:-nursery}:${POSTGRES_PASSWORD:?Укажите POSTGRES_PASSWORD в Environment}@db:5432/${POSTGRES_DB:-nursery}
+      - LLM_PROVIDER=${LLM_PROVIDER:-rules}
+      - LLM_BASE_URL=${LLM_BASE_URL:-}
+      - LLM_API_KEY=${LLM_API_KEY:-}
+      - LLM_MODEL=${LLM_MODEL:-}
+      - APP_TIMEZONE=${APP_TIMEZONE:-Europe/Moscow}
+      - SEED_ON_START=${SEED_ON_START:-true}
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5432"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-nursery}
+      - POSTGRES_USER=${POSTGRES_USER:-nursery}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Укажите POSTGRES_PASSWORD в Environment}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nursery}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:
+  uploads:
