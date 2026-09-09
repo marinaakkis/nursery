@@ -1,0 +1,98 @@
+.intro {
+  margin: var(--sp-1) 0 var(--sp-3);
+  color: var(--text-muted);
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.line {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+}
+
+/* Название — самостоятельная ссылка на карточку, а не текст в предложении:
+   зона нажатия обязана быть полной. Замер поймал 18px. */
+.name a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  color: inherit;
+  text-decoration: none;
+}
+
+.name a:hover {
+  text-decoration: underline;
+}
+
+.latin {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+/* Количество — не поле ввода: на телефоне цифровая клавиатура ради «2» лишняя,
+   а диапазон 1..99 держит сервис. */
+.count {
+  min-width: var(--tap);
+  text-align: center;
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+.sum {
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+.total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin: var(--sp-4) 0 0;
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.totalValue {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+}
+
+.barTotal {
+  color: var(--text-muted);
+}
+
+.barAction {
+  flex: 1;
+  text-decoration: none;
+}

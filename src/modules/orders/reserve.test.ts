@@ -16,11 +16,15 @@ const createdPlants: number[] = [];
 const createdOrders: number[] = [];
 let customerId = 0;
 
+/** Свой покупатель, а не первый из базы: тест не должен трогать корзину
+ *  демо-пользователя — перед показом это стоило бы дорого. */
 async function makeCustomer() {
   if (customerId) return customerId;
-  const db = getDb();
-  const [existing] = await db.select().from(users).where(eq(users.role, "customer")).limit(1);
-  customerId = existing.id;
+  const [created] = await getDb()
+    .insert(users)
+    .values({ name: `Тестовый покупатель ${Date.now()}`, role: "customer" })
+    .returning();
+  customerId = created.id;
   return customerId;
 }
 
@@ -75,6 +79,10 @@ afterAll(async () => {
   await db.execute(sql`delete from cart_items where plant_id in (${plantList})`);
   await db.execute(sql`delete from batches where plant_id in (${plantList})`);
   await db.execute(sql`delete from plants where id in (${plantList})`);
+  if (customerId) {
+    await db.execute(sql`delete from cart_items where customer_id = ${customerId}`);
+    await db.delete(users).where(eq(users.id, customerId));
+  }
 });
 
 describe.skipIf(!hasDb)("резерв остатка при создании заказа", () => {
