@@ -278,6 +278,8 @@ dump.rdb
 
 # Per-developer project state — not shared via git
 .project-metadata.local.json
+CLAUDE.local.md
+.claude/settings.local.json
 
 # Добавьте сюда файлы, специфичные для вашего проекта
 
