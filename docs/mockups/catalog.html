@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мокап · Каталог · 375px</title>
+<!-- Токены подключены из приложения, не скопированы: мокап врать о палитре не может. -->
+<link rel="stylesheet" href="../../src/ui/tokens.css">
+<style>
+  body { background: var(--surface-sunken); padding: var(--sp-4) 0; }
+  .frame {
+    width: 375px; margin: 0 auto; background: var(--bg);
+    border: 1px solid var(--border-control); border-radius: var(--r-md);
+    overflow: hidden;
+  }
+  .label {
+    width: 375px; margin: 0 auto var(--sp-2); color: var(--text-muted);
+    font-size: var(--fs-base);
+  }
+
+  .top {
+    position: sticky; top: 0; z-index: 2;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    padding: var(--sp-3) var(--sp-3) var(--sp-2);
+  }
+  .top h1 { margin-bottom: var(--sp-1); }
+  .count { color: var(--text-muted); }
+
+  .facet { padding: var(--sp-2) 0 0; }
+  .facet-name {
+    padding: 0 var(--sp-3) var(--sp-1);
+    color: var(--text-muted); font-size: var(--fs-base);
+  }
+  .chips {
+    display: flex; gap: var(--sp-2); overflow-x: auto;
+    padding: 0 var(--sp-3) var(--sp-2); scrollbar-width: none;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    /* min-width наравне с min-height: без него чип с одной цифрой («зона 3»)
+       выходит 43px и не дотягивает до нормы зоны нажатия. */
+    flex: 0 0 auto; min-height: var(--tap); min-width: var(--tap);
+    justify-content: center;
+    display: inline-flex; align-items: center; padding: 0 var(--sp-3);
+    border: 1px solid var(--border-control); border-radius: var(--r-sm);
+    background: var(--surface); color: var(--text);
+    font: inherit; cursor: pointer; white-space: nowrap;
+  }
+  .chip[aria-pressed="true"] {
+    background: var(--accent-weak); border-color: var(--accent);
+    color: var(--accent-ink); font-weight: 600;
+  }
+
+  .grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: var(--sp-2); padding: var(--sp-3);
+  }
+  .card {
+    display: flex; flex-direction: column;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-md); overflow: hidden;
+    color: inherit; text-decoration: none;
+  }
+  .photo {
+    aspect-ratio: 4 / 3; display: grid; place-items: center;
+    background: var(--surface-sunken); border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  .card-body {
+    display: flex; flex-direction: column; gap: var(--sp-1);
+    padding: var(--sp-2); flex: 1;
+  }
+  .name { font-family: var(--font-display); font-weight: 600; line-height: var(--lh-tight); }
+  .latin { color: var(--text-muted); font-style: italic; }
+  .price { margin-top: auto; padding-top: var(--sp-1); font-size: var(--fs-md); font-weight: 600; }
+
+  .badge {
+    align-self: flex-start;
+    display: inline-flex; align-items: center;
+    padding: var(--sp-1) var(--sp-2); border-radius: var(--r-sm);
+    background: var(--status-warning-bg); color: var(--status-warning-ink);
+  }
+  .badge--out { background: var(--status-danger-bg); color: var(--status-danger-ink); }
+</style>
+</head>
+<body>
+
+<p class="label">Мокап каталога, 375px. Только для глаз: в приложение этот файл не идёт.</p>
+
+<div class="frame">
+  <header class="top">
+    <h1>Каталог</h1>
+    <p class="count muted">12 растений под ваши условия</p>
+
+    <div class="facet">
+      <p class="facet-name">Свет</p>
+      <div class="chips">
+        <button class="chip" type="button" aria-pressed="false">Солнце</button>
+        <button class="chip" type="button" aria-pressed="true">Полутень</button>
+        <button class="chip" type="button" aria-pressed="true">Тень</button>
+      </div>
+    </div>
+
+    <div class="facet">
+      <p class="facet-name">Зона морозостойкости</p>
+      <div class="chips">
+        <button class="chip" type="button" aria-pressed="false">2</button>
+        <button class="chip" type="button" aria-pressed="true">3</button>
+        <button class="chip" type="button" aria-pressed="false">4</button>
+        <button class="chip" type="button" aria-pressed="false">5</button>
+        <button class="chip" type="button" aria-pressed="false">6</button>
+      </div>
+    </div>
+
+    <div class="facet">
+      <p class="facet-name">Сезон посадки</p>
+      <div class="chips">
+        <button class="chip" type="button" aria-pressed="false">Весна</button>
+        <button class="chip" type="button" aria-pressed="false">Осень</button>
+        <button class="chip" type="button" aria-pressed="false">Весна и осень</button>
+      </div>
+    </div>
+
+    <div class="facet">
+      <p class="facet-name">Уход</p>
+      <div class="chips">
+        <button class="chip" type="button" aria-pressed="true">Низкий</button>
+        <button class="chip" type="button" aria-pressed="false">Средний</button>
+        <button class="chip" type="button" aria-pressed="false">Высокий</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="grid">
+    <a class="card" href="plant.html">
+      <div class="photo">фото</div>
+      <div class="card-body">
+        <span class="name">Гортензия метельчатая</span>
+        <span class="latin">Hydrangea paniculata</span>
+        <span class="badge">Осталось 2</span>
+        <span class="price">1 450 ₽</span>
+      </div>
+    </a>
+
+    <a class="card" href="plant.html">
+      <div class="photo">фото</div>
+      <div class="card-body">
+        <span class="name">Хоста Форчуна</span>
+        <span class="latin">Hosta fortunei</span>
+        <span class="price">480 ₽</span>
+      </div>
+    </a>
+
+    <a class="card" href="plant.html">
+      <div class="photo">фото</div>
+      <div class="card-body">
+        <span class="name">Бруннера крупнолистная</span>
+        <span class="latin">Brunnera macrophylla</span>
+        <span class="price">430 ₽</span>
+      </div>
+    </a>
+
+    <a class="card" href="plant.html">
+      <div class="photo">фото</div>
+      <div class="card-body">
+        <span class="name">Дёрен белый</span>
+        <span class="latin">Cornus alba</span>
+        <span class="badge badge--out">Нет в наличии</span>
+        <span class="price">620 ₽</span>
+      </div>
+    </a>
+
+    <a class="card" href="plant.html">
+      <div class="photo">фото</div>
+      <div class="card-body">
+        <span class="name">Страусник обыкновенный</span>
+        <span class="latin">Matteuccia struthiopteris</span>
+        <span class="price">460 ₽</span>
+      </div>
+    </a>
+
+    <a class="card" href="plant.html">
+      <div class="photo">фото</div>
+      <div class="card-body">
+        <span class="name">Купена многоцветковая</span>
+        <span class="latin">Polygonatum multiflorum</span>
+        <span class="badge">Осталось 3</span>
+        <span class="price">420 ₽</span>
+      </div>
+    </a>
+  </main>
+</div>
+
+</body>
+</html>
