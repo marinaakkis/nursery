@@ -280,6 +280,7 @@ dump.rdb
 .project-metadata.local.json
 CLAUDE.local.md
 .claude/settings.local.json
+*.tsbuildinfo
 
 # Добавьте сюда файлы, специфичные для вашего проекта
 
