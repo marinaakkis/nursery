@@ -1,6 +1,6 @@
-import { and, asc, eq, lte, sql, type SQL } from "drizzle-orm";
+import { and, eq, lte, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
-import { getDb } from "@/db/client";
+import { getDb, getSql } from "@/db/client";
 import { fail, ok, type Result } from "@/lib/result";
 import { plants } from "./schema";
 
@@ -13,6 +13,21 @@ export const plantFiltersSchema = z.object({
 });
 
 export type PlantFilters = z.infer<typeof plantFiltersSchema>;
+
+const RU_COLLATION = "ru-RU-x-icu";
+
+/** Есть ли в базе русская ICU-коллация. Проверяется один раз: на стенде образ БД
+ *  может быть собран без ICU, и жёсткая ссылка на коллацию уронила бы запрос. */
+let ruCollation: Promise<boolean> | null = null;
+
+function hasRuCollation(): Promise<boolean> {
+  if (!ruCollation) {
+    ruCollation = getSql()`select 1 from pg_collation where collname = ${RU_COLLATION} limit 1`
+      .then((rows) => rows.length > 0)
+      .catch(() => false);
+  }
+  return ruCollation;
+}
 
 export type PlantListItem = {
   id: number;
@@ -43,6 +58,8 @@ export async function searchPlants(
   const where = and(...conditions);
   const db = getDb();
 
+  const collated = await hasRuCollation();
+
   const items = await db
     .select({
       id: plants.id,
@@ -56,7 +73,10 @@ export async function searchPlants(
     })
     .from(plants)
     .where(where)
-    .orderBy(asc(plants.nameRu));
+    // Сортировка по русскому алфавиту: коллация в БД, иначе — на сервере после выборки.
+    .orderBy(collated ? sql`${plants.nameRu} collate "ru-RU-x-icu"` : plants.nameRu);
+
+  if (!collated) items.sort((a, b) => a.nameRu.localeCompare(b.nameRu, "ru"));
 
   const [counted] = await db
     .select({ total: sql<number>`count(*)::int` })
