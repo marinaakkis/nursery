@@ -22,6 +22,9 @@ const day = (shift: number): string => {
   return d.toISOString().slice(0, 10);
 };
 
+/** Значения статуса заказа: тип нужен, чтобы цепочка переходов не выродилась в string[]. */
+type OrderStatus = NonNullable<(typeof orders.$inferInsert)["status"]>;
+
 const SLOT_INTERVALS = ["10:00–13:00", "13:00–16:00", "16:00–19:00"];
 
 async function seed() {
@@ -102,7 +105,7 @@ async function seed() {
     { customer: igor.id, status: "cancelled" as const, fulfillment: "pickup" as const, slot: null },
   ];
 
-  const HISTORY: Record<string, string[]> = {
+  const HISTORY: Record<OrderStatus, OrderStatus[]> = {
     new: ["new"],
     assembling: ["new", "assembling"],
     ready_for_pickup: ["new", "assembling", "ready_for_pickup"],
@@ -141,8 +144,8 @@ async function seed() {
     await db.insert(orderStatusHistory).values(
       chain.map((to, idx) => ({
         orderId: order.id,
-        fromStatus: idx === 0 ? null : (chain[idx - 1] as typeof to),
-        toStatus: to as typeof to,
+        fromStatus: idx === 0 ? null : chain[idx - 1],
+        toStatus: to,
         actorRole: idx === 0 ? "customer" : plan.status === "cancelled" ? "customer" : "warehouse",
       })),
     );
