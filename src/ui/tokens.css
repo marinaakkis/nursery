@@ -1,36 +1,96 @@
-/* Токены интерфейса. Источник правды — docs/ui-rules.md.
-   Ситуативных значений вне этих переменных в разметке быть не должно. */
+/* Токены интерфейса. Источник правды — docs/ui-rules.md, раздел «Направление».
+   Ситуативных значений вне этих переменных в разметке быть не должно.
+   Каждая текстовая пара ниже проверена на контраст: минимум 4.5:1 для текста,
+   3:1 для границ, по которым опознаётся элемент управления. */
 
 :root {
-  --bg: #faf8f4;
+  /* Поверхности. Тёплая бумажная нейтраль: фон — бумага, карточки белые.
+     Градиентов и фоновых иллюстраций нет ни одной. */
+  --bg: #f7f5f0;
   --surface: #ffffff;
-  --border: #e5e0d8;
-  --text: #1f2420;
-  --text-muted: #5f6660;
-  --accent: #2f7a4d;
-  --accent-weak: #e8f2eb;
-  --danger: #b3261e;
-  --warning: #8a5a00;
-  --success: #2f7a4d;
+  --surface-sunken: #f1eee7;
+  --scrim: rgb(31 35 29 / 45%);
 
-  --fs-sm: 14px;
+  /* Границы вместо теней: глубина строится линией, а не размытием.
+     --border — разделители и рамки карточек, смысла не несут.
+     --border-control — рамка поля, чипа, вторичной кнопки: по ней элемент
+     опознаётся как управляемый, поэтому 3.8:1 к белому и 3.5:1 к фону. */
+  --border: #e3dfd5;
+  --border-control: #8a8272;
+
+  /* Текст. 14.6:1 и 5.9:1 к фону. */
+  --text: #1f231d;
+  --text-muted: #5c6155;
+  --text-on-accent: #ffffff;
+
+  /* Акцент один — оливково-зелёный. Только действия и активное состояние:
+     ни заголовков, ни декоративных плашек этим цветом не красим.
+     6.0:1 к белому; белый текст на нём — те же 6.0:1. */
+  --accent: #4f6b2e;
+  --accent-hover: #3f5624;
+  --accent-weak: #edf0e4;
+  --accent-ink: #3b5222;
+
+  /* Смысловые цвета для текста вне бейджа: подпись ошибки под полем и т.п. */
+  --danger: #8c3327;
+  --warning: #7a5a12;
+  --success: #4f6b2e;
+
+  /* Статусы — приглушённые бейджи: подложка плюс тёмный текст той же гаммы.
+     Цвет никогда не единственный носитель смысла, рядом всегда подпись. */
+  --status-neutral-bg: #efede7;
+  --status-neutral-ink: #4a4f45;
+  --status-progress-bg: #e7edf0;
+  --status-progress-ink: #35505e;
+  --status-success-bg: #e8efe3;
+  --status-success-ink: #3e5c2a;
+  --status-warning-bg: #f5eddd;
+  --status-warning-ink: #6b4e12;
+  --status-danger-bg: #f6e7e4;
+  --status-danger-ink: #7a2e24;
+
+  /* Шрифты. Гротеск — системный, он же покрывает кириллицу на всех платформах.
+     Serif — в заголовках каталога и карточки растения; тоже системный,
+     чтобы сборка контейнера не зависела от сети. */
+  --font-text: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --font-display: Georgia, "Iowan Old Style", "Times New Roman", "Noto Serif",
+    "Liberation Serif", serif;
+
+  /* Размеры. Ниже 16px текста не бывает — включая латинские названия
+     и подписи: «мельче» делается цветом и начертанием, а не кеглем. */
   --fs-base: 16px;
-  --fs-lg: 20px;
+  --fs-md: 18px;
+  --fs-lg: 22px;
   --fs-xl: 28px;
 
+  --lh: 1.5;
+  --lh-tight: 1.25;
+
+  /* Отступы. Значений вне шкалы нет. */
   --sp-1: 4px;
   --sp-2: 8px;
   --sp-3: 16px;
   --sp-4: 24px;
   --sp-5: 32px;
 
-  --r-sm: 6px;
+  /* Радиусы 8 и 12. Больше — не бывает, меньше — тоже. */
+  --r-sm: 8px;
   --r-md: 12px;
-  --shadow: 0 2px 12px rgb(31 36 32 / 8%);
 
+  /* Минимальная зона нажатия. */
   --tap: 44px;
+}
 
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+/* Служебные роли — склад и агроном. Тот же кит, плотнее и без serif:
+   здесь читают таблицы и списки, а не карточки товара. */
+[data-ui="service"] {
+  --font-display: var(--font-text);
+  --lh: 1.4;
+  --fs-lg: 18px;
+  --fs-xl: 22px;
+  --sp-4: 16px;
+  --sp-5: 24px;
 }
 
 * {
@@ -41,23 +101,47 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font);
+  font-family: var(--font-text);
   font-size: var(--fs-base);
-  line-height: 1.5;
+  line-height: var(--lh);
+  -webkit-text-size-adjust: 100%;
 }
 
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+}
+
+h1 {
+  font-size: var(--fs-xl);
+}
+
+h2 {
+  font-size: var(--fs-lg);
+}
+
+h3 {
+  font-size: var(--fs-md);
+}
+
+/* Базовая ширина — 375px, одна колонка; десктоп получает поля и потолок. */
 .page {
   max-width: 960px;
   margin: 0 auto;
-  padding: var(--sp-4) var(--sp-3);
+  padding: var(--sp-3);
 }
 
 .muted {
   color: var(--text-muted);
-  font-size: var(--fs-sm);
 }
 
+/* Фокус виден всегда. outline: none без замены запрещён. */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+  border-radius: var(--r-sm);
 }
