@@ -37,7 +37,8 @@ ENV HOSTNAME=0.0.0.0 \
 EXPOSE 3000
 
 # 127.0.0.1 вместо localhost: busybox-wget в alpine резолвит localhost через DNS и падает
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+# start-period 40 с: при первом старте контейнер сначала накатывает миграции и наливает сид
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
   CMD wget -qO- http://127.0.0.1:3000/health || exit 1
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
