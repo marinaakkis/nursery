@@ -1,0 +1,63 @@
+/* Токены интерфейса. Источник правды — docs/ui-rules.md.
+   Ситуативных значений вне этих переменных в разметке быть не должно. */
+
+:root {
+  --bg: #faf8f4;
+  --surface: #ffffff;
+  --border: #e5e0d8;
+  --text: #1f2420;
+  --text-muted: #5f6660;
+  --accent: #2f7a4d;
+  --accent-weak: #e8f2eb;
+  --danger: #b3261e;
+  --warning: #8a5a00;
+  --success: #2f7a4d;
+
+  --fs-sm: 14px;
+  --fs-base: 16px;
+  --fs-lg: 20px;
+  --fs-xl: 28px;
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 16px;
+  --sp-4: 24px;
+  --sp-5: 32px;
+
+  --r-sm: 6px;
+  --r-md: 12px;
+  --shadow: 0 2px 12px rgb(31 36 32 / 8%);
+
+  --tap: 44px;
+
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--fs-base);
+  line-height: 1.5;
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--sp-4) var(--sp-3);
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
