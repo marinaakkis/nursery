@@ -7,9 +7,9 @@ export async function GET() {
     await getSql()`select 1`;
     return Response.json({ ok: true, db: "up" });
   } catch (error) {
-    return Response.json(
-      { ok: false, db: "down", error: error instanceof Error ? error.message : "unknown" },
-      { status: 503 },
-    );
+    // Наружу причина не уходит: текст ошибки драйвера содержит адрес и порт базы.
+    // Диагностика остаётся в логах контейнера.
+    console.error("health: база недоступна", error);
+    return Response.json({ ok: false, db: "down" }, { status: 503 });
   }
 }
