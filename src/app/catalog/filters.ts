@@ -91,3 +91,19 @@ export function plantsWord(count: number): string {
 export function formatPrice(priceCents: number): string {
   return `${new Intl.NumberFormat("ru-RU").format(Math.round(priceCents / 100))} ₽`;
 }
+
+/** «Раз в 7 дней» / «раз в 4 дня» / «раз в 1 день». */
+export function daysWord(count: number): string {
+  const mod100 = count % 100;
+  const mod10 = count % 10;
+  if (mod100 >= 11 && mod100 <= 14) return "дней";
+  if (mod10 === 1) return "день";
+  if (mod10 >= 2 && mod10 <= 4) return "дня";
+  return "дней";
+}
+
+export const CARE_TYPE_LABEL: Record<string, string> = {
+  watering: "Полив",
+  feeding: "Подкормка",
+  pruning: "Обрезка",
+};

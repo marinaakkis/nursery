@@ -1,0 +1,107 @@
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: var(--tap);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.photo {
+  aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
+  margin: 0 calc(-1 * var(--sp-3));
+  background: var(--surface-sunken);
+  border-block: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+/* «Нет в наличии»: фото уходит на второй план прозрачностью — она нетекстовая.
+   Текст приглушать opacity нельзя, контраст считается заново. */
+.dimmed {
+  opacity: 0.5;
+}
+
+.latin {
+  margin: var(--sp-1) 0 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.price {
+  margin: var(--sp-3) 0 0;
+  font-size: var(--fs-lg);
+  font-weight: 600;
+}
+
+.badgeRow {
+  margin-top: var(--sp-2);
+}
+
+.reqs {
+  margin: var(--sp-4) 0 0;
+  padding: 0;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.reqs li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: var(--tap);
+  padding: var(--sp-3);
+}
+
+.reqs li + li {
+  border-top: 1px solid var(--border);
+}
+
+.reqIcon {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+}
+
+.reqName {
+  flex: 0 0 104px;
+  color: var(--text-muted);
+}
+
+.reqValue {
+  font-weight: 600;
+}
+
+.about {
+  margin: var(--sp-4) 0 0;
+}
+
+.about h2 {
+  margin-bottom: var(--sp-2);
+}
+
+.about p {
+  margin: 0;
+}
+
+.stub {
+  margin: var(--sp-3) 0 0;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--status-neutral-bg);
+  color: var(--status-neutral-ink);
+  border-radius: var(--r-sm);
+}
+
+.barPrice {
+  color: var(--text-muted);
+}
+
+.added {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}

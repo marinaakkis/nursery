@@ -175,9 +175,7 @@ export function CatalogScreen() {
           </p>
           <div className={styles.grid}>
             {result.items.map((plant) => (
-              // 🔶 Карточка пока не ссылка: экран растения ещё не собран,
-              // и вести покупателя на несуществующий адрес хуже, чем не вести.
-              <Card key={plant.id}>
+              <Card key={plant.id} href={`/catalog/${plant.id}`}>
                 <CardPhoto />
                 <CardBody>
                   <span className={styles.name}>{plant.nameRu}</span>
