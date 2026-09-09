@@ -1,0 +1,15 @@
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--status-danger-bg);
+  border: 1px solid var(--danger);
+  border-radius: var(--r-md);
+  color: var(--status-danger-ink);
+}
+
+.message {
+  margin: 0;
+}

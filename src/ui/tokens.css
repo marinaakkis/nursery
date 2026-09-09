@@ -139,6 +139,20 @@ h3 {
   color: var(--text-muted);
 }
 
+/* Подпись только для скринридера: скелетон озвучивается словами,
+   а не остаётся немой серой заглушкой. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* Фокус виден всегда. outline: none без замены запрещён. */
 :focus-visible {
   outline: 2px solid var(--accent);

@@ -1,0 +1,14 @@
+/* Липкая нижняя панель под главное действие экрана. Один primary на экран. */
+.bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  /* Домашняя полоса iPhone не должна перекрывать кнопку. */
+  padding-bottom: max(var(--sp-3), env(safe-area-inset-bottom));
+}

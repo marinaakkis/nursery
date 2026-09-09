@@ -1,0 +1,26 @@
+.input {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font: inherit;
+  /* 16px обязателен: на меньшем кегле iOS зумит страницу при фокусе. */
+  font-size: var(--fs-base);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.input:disabled {
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}

@@ -1,0 +1,13 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-base);
+}
+
+.neutral { background: var(--status-neutral-bg); color: var(--status-neutral-ink); }
+.progress { background: var(--status-progress-bg); color: var(--status-progress-ink); }
+.success { background: var(--status-success-bg); color: var(--status-success-ink); }
+.warning { background: var(--status-warning-bg); color: var(--status-warning-ink); }
+.danger { background: var(--status-danger-bg); color: var(--status-danger-ink); }

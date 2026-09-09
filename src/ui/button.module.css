@@ -1,0 +1,74 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: var(--tap);
+  padding: 0 var(--sp-3);
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-on-accent);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.secondary {
+  background: var(--surface);
+  border-color: var(--border-control);
+  color: var(--text);
+}
+
+.secondary:hover:not(:disabled) {
+  background: var(--surface-sunken);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--accent);
+}
+
+.ghost:hover:not(:disabled) {
+  background: var(--accent-weak);
+}
+
+.button:disabled {
+  /* Не opacity: полупрозрачный белый по акценту даёт ~2.6:1. Явные цвета —
+     5.5:1 и то же «выключено» на глаз. */
+  background: var(--surface-sunken);
+  border-color: var(--border);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* Кольцо из границы, не градиент: градиенты запрещены правилами визуала. */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentcolor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
+}

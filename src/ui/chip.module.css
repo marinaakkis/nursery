@@ -1,0 +1,40 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  /* min-width наравне с min-height: чип с одной цифрой («зона 3») иначе
+     выходит 43px и не дотягивает до нормы зоны нажатия. Поймано на мокапе. */
+  min-width: var(--tap);
+  min-height: var(--tap);
+  padding: 0 var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.chip:hover {
+  background: var(--surface-sunken);
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.removable {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.cross {
+  flex: 0 0 auto;
+}

@@ -1,0 +1,50 @@
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  background: var(--scrim);
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 85vh;
+  background: var(--surface);
+  /* Теней нет: поднятая поверхность отделяется границей и затемнением фона. */
+  border-top: 1px solid var(--border-control);
+  border-radius: var(--r-md) var(--r-md) 0 0;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tap);
+  min-height: var(--tap);
+  background: transparent;
+  border: 0;
+  border-radius: var(--r-sm);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.close:hover {
+  background: var(--surface-sunken);
+}
+
+.body {
+  overflow-y: auto;
+  padding: var(--sp-3);
+}

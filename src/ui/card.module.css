@@ -1,0 +1,42 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+}
+
+.link:hover {
+  border-color: var(--border-control);
+}
+
+/* «Нет в наличии»: карточка уходит на второй план, но остаётся читаемой.
+   Текст приглушается цветом (6.4:1), а не прозрачностью: opacity на тексте
+   даёт ~3.1:1. Смысл при этом несёт подпись бейджа, не оформление. */
+.dimmed .photo {
+  opacity: 0.5;
+}
+
+.dimmed .body {
+  color: var(--text-muted);
+}
+
+.photo {
+  aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
+  background: var(--surface-sunken);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-2);
+}

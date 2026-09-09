@@ -1,0 +1,32 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+}
+
+/* Пульсация цветом, не мерцающий градиент: градиенты запрещены правилами визуала. */
+.shape {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.text { height: var(--tap); }
+.block { height: 120px; }
+.card { height: 220px; border-radius: var(--r-md); }
+
+@keyframes pulse {
+  0%, 100% { background: var(--surface-sunken); }
+  50% { background: var(--border); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shape { animation: none; }
+}
