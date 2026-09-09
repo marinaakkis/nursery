@@ -363,6 +363,9 @@ export type OrderSummary = {
 };
 
 export async function listOrders(customerId: number): Promise<Result<OrderSummary[]>> {
+  // Агрегат берётся join + group by, а не коррелированным подзапросом в sql``:
+  // там drizzle подставляет колонку без имени таблицы, и подзапрос молча
+  // ловит чужую — memory/mistakes/2026-09-10-nekvalificirovannaya-kolonka-v-sql.md
   const rows = await getDb()
     .select({
       id: orders.id,
@@ -370,10 +373,12 @@ export async function listOrders(customerId: number): Promise<Result<OrderSummar
       fulfillment: orders.fulfillment,
       totalCents: orders.totalCents,
       createdAt: orders.createdAt,
-      itemCount: sql<number>`(select coalesce(sum(quantity), 0)::int from order_items where order_id = ${orders.id})`,
+      itemCount: sql<number>`coalesce(sum(${orderItems.quantity}), 0)::int`,
     })
     .from(orders)
+    .leftJoin(orderItems, eq(orderItems.orderId, orders.id))
     .where(eq(orders.customerId, customerId))
+    .groupBy(orders.id)
     .orderBy(desc(orders.createdAt), desc(orders.id));
 
   return ok(
