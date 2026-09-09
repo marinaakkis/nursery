@@ -1,5 +1,5 @@
 import type { Tool } from "@/agent/types";
-import { plantFiltersSchema, searchPlants } from "./service";
+import { getPlant, plantFiltersSchema, plantIdSchema, searchPlants } from "./service";
 
 export const tools: Tool[] = [
   {
@@ -10,5 +10,13 @@ export const tools: Tool[] = [
     audience: "buyer",
     // Инструмент зовёт ту же функцию, что и интерфейс: своей логики у агента нет.
     handler: async (args) => searchPlants(args),
+  },
+  {
+    name: "catalog.get_plant",
+    description:
+      "Открыть карточку растения по идентификатору: описание, почва, свет, зона, сезон посадки, режим ухода.",
+    parameters: plantIdSchema,
+    audience: "buyer",
+    handler: async (args) => getPlant(args),
   },
 ];

@@ -1,5 +1,5 @@
 import type { ModuleRoute } from "@/modules/types";
-import { searchPlants } from "./service";
+import { getPlant, searchPlants } from "./service";
 
 export const routes: ModuleRoute[] = [
   {
@@ -7,5 +7,10 @@ export const routes: ModuleRoute[] = [
     action: "plants",
     // Каталог виден всем ролям — ограничения по ролям нет.
     handler: async ({ query }) => searchPlants(Object.fromEntries(query.entries())),
+  },
+  {
+    method: "GET",
+    action: "plant",
+    handler: async ({ query }) => getPlant(Object.fromEntries(query.entries())),
   },
 ];

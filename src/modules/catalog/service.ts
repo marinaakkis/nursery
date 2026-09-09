@@ -1,8 +1,8 @@
-import { and, eq, lte, sql, type SQL } from "drizzle-orm";
+import { and, asc, eq, lte, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { getDb, getSql } from "@/db/client";
 import { fail, ok, type Result } from "@/lib/result";
-import { plants } from "./schema";
+import { careRules, plants } from "./schema";
 
 export const plantFiltersSchema = z.object({
   light: z.enum(["sun", "partial", "shade"]).optional(),
@@ -84,4 +84,65 @@ export async function searchPlants(
     .where(where);
 
   return ok({ total: counted?.total ?? items.length, items });
+}
+
+export const plantIdSchema = z.object({ id: z.coerce.number().int().positive() });
+
+export type CareRule = { type: string; periodDays: number; seasonOnly: boolean };
+
+export type PlantCard = {
+  id: number;
+  nameRu: string;
+  nameLat: string;
+  description: string;
+  light: string;
+  minZone: number;
+  plantingSeason: string;
+  careLevel: string;
+  soil: string;
+  priceCents: number;
+  isActive: boolean;
+  careRules: CareRule[];
+};
+
+/** Полная карточка растения: требования, описание, правила ухода.
+ *  🔶 Наличие сюда не входит — его отдаёт warehouse.getStock отдельным вызовом.
+ *  Причина техническая: схема warehouse уже импортирует catalog, и обращение
+ *  обратно замкнуло бы модули в цикл. */
+export async function getPlant(raw: unknown): Promise<Result<PlantCard>> {
+  const parsed = plantIdSchema.safeParse(raw);
+  if (!parsed.success) {
+    return fail("validation_failed", "Неверный идентификатор растения", parsed.error.issues);
+  }
+
+  const db = getDb();
+  const [plant] = await db.select().from(plants).where(eq(plants.id, parsed.data.id)).limit(1);
+  if (!plant) return fail("not_found", "Такого растения нет в каталоге");
+
+  const rules = await db
+    .select({
+      type: careRules.type,
+      periodDays: careRules.periodDays,
+      seasonOnly: careRules.seasonOnly,
+    })
+    .from(careRules)
+    .where(eq(careRules.plantId, plant.id))
+    .orderBy(asc(careRules.type));
+
+  return ok({
+    id: plant.id,
+    nameRu: plant.nameRu,
+    nameLat: plant.nameLat,
+    description: plant.description,
+    light: plant.light,
+    minZone: plant.minZone,
+    plantingSeason: plant.plantingSeason,
+    careLevel: plant.careLevel,
+    soil: plant.soil,
+    priceCents: plant.priceCents,
+    // Снятое с продажи растение остаётся читаемым: карточка не ломается,
+    // меняется только доступность действия — см. spec §3.1.
+    isActive: plant.isActive,
+    careRules: rules,
+  });
 }
