@@ -16,7 +16,7 @@ type CartLine = {
 };
 
 type Cart = { lines: CartLine[]; totalCents: number };
-type Loadout = { key: string; cart: Cart | null; forbidden: boolean };
+type Loadout = { key: string; cart: Cart | null; forbidden: string | null };
 
 export function CartScreen() {
   const [loadout, setLoadout] = useState<Loadout | null>(null);
@@ -32,19 +32,21 @@ export function CartScreen() {
       .then((r) => r.json())
       .then((payload) => {
         if (payload.ok) {
-          setLoadout({ key: requestKey, cart: payload.data, forbidden: false });
+          setLoadout({ key: requestKey, cart: payload.data, forbidden: null });
           return;
         }
         setLoadout({
           key: requestKey,
           cart: null,
-          forbidden: payload.error?.code === "forbidden",
+          // Сообщение от сервера: он различает «пользователь не выбран»
+          // и «эта роль сюда не ходит».
+          forbidden: payload.error?.code === "forbidden" ? payload.error.message : null,
         });
       })
       .catch((error: unknown) => {
         if (controller.signal.aborted) return;
         console.error("корзина: запрос не удался", error);
-        setLoadout({ key: requestKey, cart: null, forbidden: false });
+        setLoadout({ key: requestKey, cart: null, forbidden: null });
       });
 
     return () => controller.abort();
@@ -67,7 +69,7 @@ export function CartScreen() {
           setActionError(payload.error?.message ?? "Не удалось изменить корзину");
           return;
         }
-        setLoadout({ key: requestKey, cart: payload.data, forbidden: false });
+        setLoadout({ key: requestKey, cart: payload.data, forbidden: null });
       } catch (error) {
         console.error("корзина: изменение не прошло", error);
         setActionError("Корзина не отвечает. Попробуйте ещё раз.");
@@ -82,11 +84,11 @@ export function CartScreen() {
 
   if (settled === null) return <Skeleton variant="block" count={3} label="Загружаем корзину" />;
 
-  if (settled.forbidden) {
+  if (settled.forbidden !== null) {
     return (
       <EmptyState
-        title="Не выбран покупатель"
-        description="Корзина у каждого покупателя своя. Выберите пользователя в шапке — она появится."
+        title="Корзина недоступна"
+        description={`${settled.forbidden}. Корзина есть только у покупателя, и у каждого она своя.`}
         action={
           <Link href="/catalog">
             <Button variant="secondary">Пока в каталог</Button>

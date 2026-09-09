@@ -1,0 +1,135 @@
+.section {
+  margin: var(--sp-4) 0 0;
+}
+
+.section h2 {
+  margin-bottom: var(--sp-2);
+}
+
+.methods {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+/* Радио — нативные: они уже умеют клавиатуру, стрелки и группировку,
+   и переписывать это на div с ролями значит терять поведение. */
+.method {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: var(--tap);
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+
+.method:has(input:checked) {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+}
+
+.method input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+
+.methodText {
+  display: flex;
+  flex-direction: column;
+}
+
+.methodHint {
+  color: var(--text-muted);
+}
+
+.day {
+  margin-top: var(--sp-3);
+}
+
+.dayName {
+  margin: 0 0 var(--sp-2);
+  color: var(--text-muted);
+}
+
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.slot {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: var(--tap);
+  padding: 0 var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+
+.slot:has(input:checked) {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.slot:has(input:disabled) {
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.slot input {
+  accent-color: var(--accent);
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  margin: var(--sp-4) 0 0;
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.summaryLine {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--border);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+/* Заглушка помечена на самом экране, а не только в документации — spec §8. */
+.payStub {
+  margin: var(--sp-3) 0 0;
+  padding: var(--sp-3);
+  background: var(--status-warning-bg);
+  color: var(--status-warning-ink);
+  border-radius: var(--r-sm);
+}
+
+.errorBlock {
+  margin-top: var(--sp-3);
+}
+
+.barTotal {
+  color: var(--text-muted);
+}
