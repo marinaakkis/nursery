@@ -1,0 +1,85 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+/* На 375px бренд, навигация и переключатель в одну строку не влезают —
+   переключатель уходит на свою строку. Проверено замером: без этого
+   страница получает горизонтальную прокрутку 502px. */
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--sp-2) var(--sp-3);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--sp-2);
+  border-radius: var(--r-sm);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.link:hover {
+  background: var(--accent-weak);
+}
+
+.switcher {
+  display: flex;
+  flex: 1 1 100%;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+@media (width >= 560px) {
+  .switcher {
+    flex: 0 1 auto;
+  }
+}
+
+.select {
+  width: 100%;
+  max-width: 100%;
+  min-height: var(--tap);
+  padding: 0 var(--sp-2);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-base);
+}
+
+/* Заглушка обозначена на самом экране, а не только в документации — spec §8. */
+.stub {
+  padding: var(--sp-1) var(--sp-3);
+  background: var(--status-neutral-bg);
+  color: var(--status-neutral-ink);
+  text-align: center;
+}

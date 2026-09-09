@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import "@/ui/tokens.css";
+import { Header } from "./header";
 
 export const metadata = {
   title: "Питомник растений",
@@ -9,7 +10,10 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body>
+        <Header />
+        {children}
+      </body>
     </html>
   );
 }
