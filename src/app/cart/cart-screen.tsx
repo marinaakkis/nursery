@@ -171,34 +171,55 @@ export function CartScreen() {
                 </Button>
               </span>
               <span className={styles.sum}>{formatPrice(line.sumCents)}</span>
-            </div>
-
-            <span className={styles.wide}>
+              {/* Удаление — иконкой рядом с ценой, а не отдельной строкой:
+                  «Убрать из корзины» весило столько же, сколько название
+                  растения, и спорило с ним за внимание. */}
               <Button
                 variant="ghost"
                 disabled={busyPlant === line.plantId}
+                aria-label={`Убрать из корзины: ${line.nameRu}`}
                 onClick={() => send("cart-remove", { plantId: line.plantId }, line.plantId)}
               >
-                Убрать из корзины
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M3 5.5h14M8 5.5V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1.5M5.5 5.5 6.3 16a1 1 0 0 0 1 .9h5.4a1 1 0 0 0 1-.9l.8-10.5M8.5 9v5M11.5 9v5" />
+                </svg>
               </Button>
-            </span>
+            </div>
           </div>
         ))}
       </div>
 
       {actionError ? <ErrorState message={actionError} /> : null}
 
+      {/* Итог и действие вместе: на десктопе кнопка живёт здесь, а липкая
+          полоса внизу экрана остаётся только телефону, где итог иначе
+          уезжает за край. */}
       <div className={styles.total}>
-        <span>Итого</span>
+        <span className={styles.totalLabel}>Итого</span>
         <span className={styles.totalValue}>{formatPrice(cart.totalCents)}</span>
+        <Link className={styles.totalAction} href="/checkout">
+          <Button size="large">Оформить</Button>
+        </Link>
       </div>
 
-      <ActionBar>
-        <span className={styles.barTotal}>{formatPrice(cart.totalCents)}</span>
-        <Link className={styles.barAction} href="/checkout">
-          <Button fullWidth>Оформить</Button>
-        </Link>
-      </ActionBar>
+      <div className={styles.mobileBar}>
+        <ActionBar>
+          <span className={styles.barTotal}>{formatPrice(cart.totalCents)}</span>
+          <Link className={styles.barAction} href="/checkout">
+            <Button fullWidth>Оформить</Button>
+          </Link>
+        </ActionBar>
+      </div>
     </>
   );
 }

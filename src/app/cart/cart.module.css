@@ -82,14 +82,15 @@
 
 /* Итог — отдельный блок на утопленной подложке: он не позиция списка,
    и глазом должен читаться как другой уровень. */
+/* Итог с действием: на десктопе строкой, на телефоне столбиком. */
 .total {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--sp-2);
-  margin: var(--sp-4) 0 0;
-  padding: var(--sp-3);
-  background: var(--surface-sunken);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: var(--sp-6) 0 0;
+  padding: var(--sp-4);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
 }
@@ -107,4 +108,45 @@
 .barAction {
   flex: 1;
   text-decoration: none;
+}
+
+.totalLabel {
+  color: var(--text-muted);
+}
+
+/* Кнопка прижата вправо: между суммой и действием — воздух, а не пустая
+   догадка о том, где кнопка. */
+.totalAction {
+  margin-left: auto;
+  text-decoration: none;
+}
+
+.totalAction button {
+  min-width: 240px;
+  border-radius: var(--r-md);
+}
+
+/* Липкая полоса — только телефону: на десктопе её роль играет блок «Итого». */
+@media (width >= 700px) {
+  .mobileBar {
+    display: none;
+  }
+}
+
+@media (width < 700px) {
+  .totalAction {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .totalAction button {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Кнопка удаления не должна тянуть строку: она икона, а не действие-абзац. */
+.controls button[aria-label^="Убрать"] {
+  min-width: var(--tap);
+  padding: 0;
 }
