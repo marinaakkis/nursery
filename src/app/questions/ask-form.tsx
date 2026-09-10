@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Button, ErrorState, Field, InlineSuccess } from "@/ui";
+import { Button, ErrorState, Field, FileField, InlineSuccess, Select, Textarea } from "@/ui";
 import styles from "./questions.module.css";
 
 type GardenPlant = { plantId: number; nameRu: string };
@@ -92,9 +92,8 @@ export function AskForm({ plants }: { plants: GardenPlant[] }) {
         required
       >
         {(control) => (
-          <textarea
+          <Textarea
             {...control}
-            className={styles.textarea}
             value={text}
             onChange={(event) => setText(event.target.value)}
             placeholder="Листья желтеют снизу, поливаю через день…"
@@ -104,9 +103,8 @@ export function AskForm({ plants }: { plants: GardenPlant[] }) {
 
       <Field id="question-plant" label="Растение из вашего сада" hint="Необязательно, но с ним ответ точнее">
         {(control) => (
-          <select
+          <Select
             {...control}
-            className={styles.select}
             value={plantId}
             onChange={(event) => setPlantId(event.target.value)}
           >
@@ -116,19 +114,17 @@ export function AskForm({ plants }: { plants: GardenPlant[] }) {
                 {plant.nameRu}
               </option>
             ))}
-          </select>
+          </Select>
         )}
       </Field>
 
       <Field id="question-photo" label="Фото">
         {(control) => (
-          <input
+          <FileField
             {...control}
-            className={styles.file}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            onChange={async (event) => {
-              const file = event.target.files?.[0];
+            fileName={photoName}
+            previewUrl={photo}
+            onPick={async (file) => {
               if (!file) {
                 setPhoto(null);
                 setPhotoName("");
@@ -142,11 +138,14 @@ export function AskForm({ plants }: { plants: GardenPlant[] }) {
                 setError("Снимок не прочитался. Вопрос можно отправить и без него.");
               }
             }}
+            onClear={() => {
+              setPhoto(null);
+              setPhotoName("");
+            }}
           />
         )}
       </Field>
 
-      {photoName ? <p className="muted">Приложен: {photoName}</p> : null}
       <p className={styles.stub}>
         Фото сохраняется как есть: ни сжатия, ни распознавания болезней в демо нет.
       </p>

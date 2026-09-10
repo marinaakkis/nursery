@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { Button, EmptyState, ErrorState, Field, InlineSuccess, Skeleton } from "@/ui";
+import { Button, EmptyState, ErrorState, Field, InlineSuccess, Input, Select, Skeleton } from "@/ui";
 import styles from "../warehouse.module.css";
 
 type Batch = {
@@ -127,9 +127,8 @@ export function BatchesScreen() {
         <div className={styles.formRow}>
           <Field id="receive-plant" label="Растение" required>
             {(control) => (
-              <select
+              <Select
                 {...control}
-                className={styles.select}
                 value={plantId}
                 onChange={(event) => setPlantId(event.target.value)}
               >
@@ -139,14 +138,13 @@ export function BatchesScreen() {
                     {plant.nameRu}
                   </option>
                 ))}
-              </select>
+              </Select>
             )}
           </Field>
           <Field id="receive-qty" label="Количество" required>
             {(control) => (
-              <input
+              <Input
                 {...control}
-                className={styles.input}
                 type="number"
                 min="1"
                 inputMode="numeric"
@@ -157,9 +155,8 @@ export function BatchesScreen() {
           </Field>
           <Field id="receive-supplier" label="Поставщик" required>
             {(control) => (
-              <input
+              <Input
                 {...control}
-                className={styles.input}
                 value={supplier}
                 onChange={(event) => setSupplier(event.target.value)}
               />
@@ -242,9 +239,8 @@ export function BatchesScreen() {
           <div className={styles.formRow}>
             <Field id="wo-reason" label="Причина" hint="Останется в журнале списаний" required>
               {(control) => (
-                <input
+                <Input
                   {...control}
-                  className={styles.input}
                   value={writeOffReason}
                   onChange={(event) => setWriteOffReason(event.target.value)}
                   placeholder="подмёрзли при перевозке"
@@ -253,9 +249,8 @@ export function BatchesScreen() {
             </Field>
             <Field id="wo-qty" label="Количество" required>
               {(control) => (
-                <input
+                <Input
                   {...control}
-                  className={styles.input}
                   type="number"
                   min="1"
                   inputMode="numeric"

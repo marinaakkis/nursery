@@ -2,7 +2,18 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { BrandMark, Button, EmptyState, ErrorState, Field, InlineSuccess, Input, Skeleton } from "@/ui";
+import {
+  BrandMark,
+  Button,
+  Checkbox,
+  EmptyState,
+  ErrorState,
+  Field,
+  InlineSuccess,
+  Input,
+  PlantPhoto,
+  Skeleton,
+} from "@/ui";
 import type { AgentAnswer } from "@/agent/runner";
 import { formatPrice } from "../catalog/filters";
 import { askAgent, confirmAddToCart, confirmCreateOrder } from "./actions";
@@ -228,12 +239,18 @@ export function AssistantScreen() {
                     <>
                       <div className={styles.picks}>
                         {turn.answer.suggestions.map((pick) => (
-                          <label className={styles.pick} key={pick.plantId}>
-                            <input
-                              type="checkbox"
+                          <span className={styles.pick} key={pick.plantId}>
+                            <Checkbox
                               checked={turn.chosen.includes(pick.plantId)}
                               onChange={() => toggle(turn.id, pick.plantId)}
                               aria-label={`Взять: ${pick.nameRu}`}
+                            >
+                              <span className="sr-only">{pick.nameRu}</span>
+                            </Checkbox>
+                            <PlantPhoto
+                              name={pick.nameRu}
+                              photoUrl={pick.photoUrl}
+                              variant="thumb"
                             />
                             <span className={styles.pickBody}>
                               <span className={styles.pickName}>
@@ -250,7 +267,7 @@ export function AssistantScreen() {
                                 {formatPrice(pick.priceCents)} · в наличии {pick.available}
                               </span>
                             </span>
-                          </label>
+                          </span>
                         ))}
                       </div>
 

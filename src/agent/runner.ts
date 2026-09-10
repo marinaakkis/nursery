@@ -22,6 +22,7 @@ export type Suggestion = {
   plantId: number;
   nameRu: string;
   nameLat: string;
+  photoUrl: string | null;
   priceCents: number;
   available: number;
   why: string;
@@ -50,6 +51,7 @@ type PlantListItem = {
   id: number;
   nameRu: string;
   nameLat: string;
+  photoUrl: string | null;
   light: string;
   minZone: number;
   plantingSeason: string;
@@ -253,6 +255,7 @@ export async function ask(request: string, ctx: ToolContext): Promise<AgentAnswe
           plantId: plant.id,
           nameRu: plant.nameRu,
           nameLat: plant.nameLat,
+          photoUrl: plant.photoUrl,
           priceCents: plant.priceCents,
           available,
           why: whyThis(plant),

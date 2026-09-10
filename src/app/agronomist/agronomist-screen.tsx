@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Badge, Button, EmptyState, ErrorState, InlineSuccess, Skeleton } from "@/ui";
+import { Badge, Button, EmptyState, ErrorState, InlineSuccess, Skeleton, Textarea } from "@/ui";
 import styles from "./agronomist.module.css";
 
 type QueueItem = {
@@ -283,9 +283,8 @@ export function AgronomistScreen({ initialQuestionId }: { initialQuestionId: num
                   <label className="sr-only" htmlFor="draft-text">
                     Текст ответа покупателю
                   </label>
-                  <textarea
+                  <Textarea
                     id="draft-text"
-                    className={styles.draftText}
                     value={draftText}
                     onChange={(event) => setDraftText(event.target.value)}
                   />

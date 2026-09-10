@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Badge, Button, EmptyState, ErrorState, Field, Skeleton } from "@/ui";
+import { Badge, Button, EmptyState, ErrorState, Field, Skeleton, Textarea } from "@/ui";
 import styles from "../questions.module.css";
 
 type Message = {
@@ -169,9 +169,8 @@ export function ThreadScreen({ questionId }: { questionId: string }) {
       <div className={styles.form}>
         <Field id="reply" label="Дополнить вопрос" hint="Агроном увидит сообщение в этой же переписке">
           {(control) => (
-            <textarea
+            <Textarea
               {...control}
-              className={styles.textarea}
               value={reply}
               onChange={(event) => setReply(event.target.value)}
             />
@@ -179,7 +178,7 @@ export function ThreadScreen({ questionId }: { questionId: string }) {
         </Field>
         {error ? <ErrorState message={error} /> : null}
         <Button loading={sending} disabled={reply.trim().length === 0} onClick={send}>
-          Отправить
+          Отправить агроному
         </Button>
       </div>
     </>

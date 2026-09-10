@@ -1,0 +1,24 @@
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-base);
+  line-height: var(--lh);
+  /* Ручка ресайза убрана: поле растёт по содержимому само, а таскать угол
+     мышью — жест, которого нет на телефоне. */
+  resize: none;
+  overflow: hidden;
+}
+
+.textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.textarea[aria-invalid="true"] {
+  border-color: var(--danger);
+}

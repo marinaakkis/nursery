@@ -162,6 +162,18 @@ h3 {
 }
 
 /* Фокус виден всегда. outline: none без замены запрещён. */
+/* Ссылка без заданного цвета отдаётся браузеру: #0000EE, подчёркнутая,
+   посещённая — фиолетовая. Задаём один раз здесь, чтобы не вспоминать
+   про каждую новую ссылку отдельно. */
+a {
+  color: var(--accent-ink);
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;

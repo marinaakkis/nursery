@@ -1,0 +1,40 @@
+.wrap {
+  position: relative;
+  display: block;
+}
+
+.select {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 calc(var(--sp-4) + var(--sp-2)) 0 var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font: inherit;
+  /* 16px обязателен: на меньшем кегле iOS зумит страницу при фокусе. */
+  font-size: var(--fs-base);
+  /* Системная стрелка убрана — рисуем свою, чтобы контрол выглядел
+     одинаково в Safari, Chrome и Firefox. */
+  appearance: none;
+  cursor: pointer;
+}
+
+.select:disabled {
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.select[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  right: var(--sp-3);
+  translate: 0 -50%;
+  color: var(--text-muted);
+  pointer-events: none;
+}

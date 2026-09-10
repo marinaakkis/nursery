@@ -1,0 +1,51 @@
+/* Своя рамка вместо системной галки: нативный чекбокс не красится
+   и в разных браузерах выглядит по-разному. Сам input остаётся —
+   на нём держатся клавиатура и скринридер. */
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: var(--tap);
+  cursor: pointer;
+}
+
+.input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  color: transparent;
+}
+
+.input:checked + .box {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-on-accent);
+}
+
+.input:focus-visible + .box {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.input:disabled + .box {
+  background: var(--surface-sunken);
+  border-color: var(--border);
+}
+
+.text {
+  min-width: 0;
+}

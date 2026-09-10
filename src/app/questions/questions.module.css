@@ -145,6 +145,14 @@
   font-size: var(--fs-base);
 }
 
+/* Самостоятельные ссылки, а не текст в предложении: зона нажатия полная. */
+.meta a,
+a.stub {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+}
+
 .stub {
   padding: var(--sp-2) var(--sp-3);
   background: var(--status-neutral-bg);
