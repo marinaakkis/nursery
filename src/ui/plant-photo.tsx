@@ -1,5 +1,6 @@
 import Image from "next/image";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { photoFocusFor } from "@/lib/photo-credits";
 import styles from "./plant-photo.module.css";
 
 type PlantPhotoProps = {
@@ -30,10 +31,12 @@ export function PlantPhoto({
   priority = false,
 }: PlantPhotoProps) {
   const src = photoUrl ?? null;
+  // Точка кадрирования — свойство снимка; по умолчанию верхняя треть.
+  const focus = { "--photo-focus": photoFocusFor(photoUrl) } as CSSProperties;
   const letter = name.trim().charAt(0).toUpperCase();
 
   return (
-    <div className={[styles.photo, styles[variant]].join(" ")}>
+    <div className={[styles.photo, styles[variant]].join(" ")} style={focus}>
       {src ? (
         <Image
           className={dimmed ? styles.dimmedPhoto : undefined}

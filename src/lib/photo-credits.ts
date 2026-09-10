@@ -28,7 +28,7 @@ const PHOTOS: Record<string, PhotoCredit & { file: string }> = {
   "Paeonia lactiflora": { file: "paeonia-lactiflora.jpg", author: "KENPEI", license: "CC BY-SA 3.0", url: "https://commons.wikimedia.org/wiki/File:Paeonia_lactiflora1.jpg" },
   "Hemerocallis hybrida": { file: "hemerocallis-hybrida.jpg", author: "Jerzy Opioła", license: "CC BY-SA 3.0", url: "https://commons.wikimedia.org/wiki/File:Hemerocallis_x_hybrida_a1.jpg" },
   "Rosa rugosa": { file: "rosa-rugosa.jpg", author: "Qwert1234", license: "CC BY-SA 3.0", url: "https://commons.wikimedia.org/wiki/File:Rosa_rugosa_Tokyo.JPG" },
-  "Polygonatum multiflorum": { file: "polygonatum-multiflorum.jpg", author: "Dmitry Makeev", license: "CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:2020_year._Herbarium._Polygonatum_multiflorum._img-014.jpg" },
+  "Polygonatum multiflorum": { file: "polygonatum-multiflorum.jpg", author: "Borealis55", license: "CC0", url: "https://commons.wikimedia.org/wiki/File:Polygonatum_multiflorum_7778.jpg" },
   "Spiraea japonica": { file: "spiraea-japonica.jpg", author: "Jean-Pol GRANDMONT", license: "CC BY-SA 3.0", url: "https://commons.wikimedia.org/wiki/File:0_Spiraea_japonica_(2)_-_Yvoire.JPG" },
   "Philadelphus coronarius": { file: "philadelphus-coronarius.jpg", author: "NTNU Vitenskapsmuseet", license: "CC BY 2.0", url: "https://commons.wikimedia.org/wiki/File:Ringve_botaniske_hage_foto-%C3%85ge_Hojem,_NTNU_Vitenskapsmuseet_dsc9291_(15100600617).jpg" },
   "Berberis thunbergii": { file: "berberis-thunbergii.jpg", author: "Opioła Jerzy (Poland)", license: "CC BY 2.5", url: "https://commons.wikimedia.org/wiki/File:Berberis_thunbergii_%60Atropurpureum%60.jpg" },
@@ -61,6 +61,34 @@ export function photoCreditFor(nameLat: string): PhotoCredit | null {
 
 /** Все привязки — нужны сиду, чтобы записать photo_url в базу. */
 export const ALL_PHOTOS = PHOTOS;
+
+/**
+ * Точка кадрирования: снимки от 0.75 до 1.5 по соотношению сторон, а рамка
+ * везде 4:3, и центр обрезки по умолчанию срезал бы верх куста.
+ *
+ * 50% 30% подошло почти всем: у растения сюжет обычно в верхней части кадра —
+ * соцветие, крона, лист. Исключения ниже, каждое проверено глазами.
+ *
+ * 🔶 Карта живёт рядом с самим файлом, а не в колонке базы: это свойство
+ * снимка, а не растения, и второе поле пришлось бы тянуть через шесть
+ * сервисов — ровно тем путём, которым вчера потерялся photoUrl.
+ */
+const FOCUS: Record<string, string> = {
+  // Ягоды и завязь у смородины и крыжовника — в середине куста, а не сверху.
+  "ribes-nigrum.jpg": "50% 45%",
+  "ribes-uva-crispa.jpg": "50% 45%",
+  // Куст ирги снят на фоне воды: при 30% в кадр лезет горизонт.
+  "amelanchier-alnifolia.jpg": "50% 40%",
+};
+
+export const DEFAULT_FOCUS = "50% 30%";
+
+/** Точка кадрирования по пути снимка. Путь приходит из базы. */
+export function photoFocusFor(photoUrl: string | null | undefined): string {
+  if (!photoUrl) return DEFAULT_FOCUS;
+  const file = photoUrl.split("/").pop() ?? "";
+  return FOCUS[file] ?? DEFAULT_FOCUS;
+}
 
 /** Снимки главной. Ключ смысловой, к таблице растений отношения не имеет. */
 export const HOME_PHOTOS = {

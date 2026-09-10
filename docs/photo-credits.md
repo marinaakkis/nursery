@@ -27,7 +27,7 @@
 | `paeonia-lactiflora.jpg` | Пион молочноцветковый | KENPEI | CC BY-SA 3.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Paeonia_lactiflora1.jpg) |
 | `hemerocallis-hybrida.jpg` | Лилейник гибридный | Jerzy Opioła | CC BY-SA 3.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Hemerocallis_x_hybrida_a1.jpg) |
 | `rosa-rugosa.jpg` | Роза морщинистая | Qwert1234 | CC BY-SA 3.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Rosa_rugosa_Tokyo.JPG) |
-| `polygonatum-multiflorum.jpg` | Купена многоцветковая | Dmitry Makeev | CC BY-SA 4.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:2020_year._Herbarium._Polygonatum_multiflorum._img-014.jpg) |
+| `polygonatum-multiflorum.jpg` | Купена многоцветковая | Borealis55 | CC0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Polygonatum_multiflorum_7778.jpg) |
 | `spiraea-japonica.jpg` | Спирея японская | Jean-Pol GRANDMONT | CC BY-SA 3.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:0_Spiraea_japonica_(2)_-_Yvoire.JPG) |
 | `philadelphus-coronarius.jpg` | Чубушник венечный | NTNU Vitenskapsmuseet | CC BY 2.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Ringve_botaniske_hage_foto-%C3%85ge_Hojem,_NTNU_Vitenskapsmuseet_dsc9291_(15100600617).jpg) |
 | `berberis-thunbergii.jpg` | Барбарис Тунберга | Opioła Jerzy (Poland) | CC BY 2.5 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Berberis_thunbergii_%60Atropurpureum%60.jpg) |
