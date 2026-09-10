@@ -14,7 +14,6 @@ import {
   PlantPhoto,
   Skeleton,
 } from "@/ui";
-import { photoCreditFor } from "@/lib/photo-credits";
 import { CARE_TYPE_LABEL, daysWord, formatPrice, labelOf } from "../filters";
 import { byStockThenName } from "../sort";
 import { CalendarIcon, DropIcon, SoilIcon, SunIcon, ZoneIcon } from "./icons";
@@ -148,7 +147,6 @@ export function PlantScreen({ plantId }: { plantId: string }) {
 
   const watering = plant.careRules.find((r) => r.type === "watering");
   // CC BY и CC BY-SA требуют указания автора — подпись едет вместе со снимком.
-  const credit = photoCreditFor(plant.nameLat);
 
   async function addToCart() {
     setAdd("sending");
@@ -203,16 +201,6 @@ export function PlantScreen({ plantId }: { plantId: string }) {
           }
         />
       </div>
-
-      {credit ? (
-        <p className={styles.credit}>
-          Фото:{" "}
-          <a href={credit.url} target="_blank" rel="noreferrer noopener">
-            {credit.author}
-          </a>
-          , {credit.license}, Wikimedia Commons
-        </p>
-      ) : null}
 
       <h1>{plant.nameRu}</h1>
       <p className={styles.latin}>{plant.nameLat}</p>

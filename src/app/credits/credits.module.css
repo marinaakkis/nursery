@@ -1,0 +1,57 @@
+.lead {
+  margin: var(--sp-3) 0 var(--sp-6);
+  color: var(--text-muted);
+}
+
+.second {
+  margin-top: var(--sp-6);
+}
+
+.scroll {
+  overflow-x: auto;
+  margin-top: var(--sp-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: var(--sp-2) var(--sp-3);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table th {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.table tbody tr {
+  border-top: 1px solid var(--border);
+}
+
+.table td a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+}
+
+.latin {
+  font-style: italic;
+}
+
+.back {
+  margin-top: var(--sp-6);
+}
+
+.back a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+}

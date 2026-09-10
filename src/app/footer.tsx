@@ -36,10 +36,19 @@ export function Footer() {
               <Link href="/catalog">Каталог</Link>
             </li>
             <li>
-              <Link href="/assistant">Помощник по подбору</Link>
+              <Link href="/assistant">AI-помощник</Link>
+            </li>
+            <li>
+              <Link href="/questions">Вопрос агроному</Link>
             </li>
             <li>
               <Link href="/orders">Мои заказы</Link>
+            </li>
+            <li>
+              {/* Атрибуция снимков вынесена на отдельную страницу: лицензии
+                  CC BY и CC BY-SA требуют указать автора, но не требуют делать
+                  это на той же странице, где стоит снимок. */}
+              <Link href="/credits">Фото и лицензии</Link>
             </li>
           </ul>
         </div>

@@ -43,18 +43,6 @@ const FACTS = [
 ];
 
 /** Подпись к снимку: CC BY и CC BY-SA требуют указания автора. */
-function PhotoCredit({ photo }: { photo: { author: string; license: string; url: string } }) {
-  return (
-    <p className={styles.photoCredit}>
-      Фото:{" "}
-      <a href={photo.url} target="_blank" rel="noreferrer noopener">
-        {photo.author}
-      </a>
-      , {photo.license}
-    </p>
-  );
-}
-
 export default function HomePage() {
   const hero = HOME_PHOTOS.garden;
   const seedling = HOME_PHOTOS.seedling;
@@ -89,13 +77,6 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
-        <p className={styles.heroCredit}>
-          Фото:{" "}
-          <a href={hero.url} target="_blank" rel="noreferrer noopener">
-            {hero.author}
-          </a>
-          , {hero.license}
-        </p>
       </section>
 
       <section className={styles.section}>
@@ -132,7 +113,6 @@ export default function HomePage() {
                 sizes="(max-width: 700px) 100vw, 40vw"
               />
             </div>
-            <PhotoCredit photo={seedling} />
           </div>
           <ol className={styles.steps}>
           {STEPS.map((step, index) => (
