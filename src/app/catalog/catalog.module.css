@@ -40,8 +40,24 @@
   gap: var(--sp-2);
 }
 
+/* На широком экране колонок больше: карточка не должна растягиваться
+   на пол-экрана только потому, что место есть. */
+@media (width >= 700px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-3);
+  }
+}
+
+@media (width >= 900px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 .name {
   font-family: var(--font-display);
+  font-size: var(--fs-md);
   font-weight: 600;
   line-height: var(--lh-tight);
 }
@@ -54,8 +70,8 @@
 
 .price {
   margin-top: auto;
-  padding-top: var(--sp-1);
-  font-size: var(--fs-md);
+  padding-top: var(--sp-2);
+  font-size: var(--fs-lg);
   font-weight: 600;
 }
 
@@ -65,7 +81,9 @@
 
 .facetName {
   margin: 0 0 var(--sp-2);
-  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
 }
 
 .chips {

@@ -7,20 +7,9 @@
   text-decoration: none;
 }
 
-.photo {
-  aspect-ratio: 4 / 3;
-  display: grid;
-  place-items: center;
+/* Снимок во всю ширину экрана: поля страницы тут гасятся. */
+.hero {
   margin: 0 calc(-1 * var(--sp-3));
-  background: var(--surface-sunken);
-  border-block: 1px solid var(--border);
-  color: var(--text-muted);
-}
-
-/* «Нет в наличии»: фото уходит на второй план прозрачностью — она нетекстовая.
-   Текст приглушать opacity нельзя, контраст считается заново. */
-.dimmed {
-  opacity: 0.5;
 }
 
 .latin {
@@ -39,38 +28,92 @@
   margin-top: var(--sp-2);
 }
 
-.reqs {
+/* Требования плитками 2x2: четыре равных условия читаются сеткой быстрее,
+   чем списком, где взгляд идёт по одной колонке. */
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
   margin: var(--sp-4) 0 0;
   padding: 0;
   list-style: none;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-height: var(--tap);
+  padding: var(--sp-3);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
 }
 
-.reqs li {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
-  min-height: var(--tap);
-  padding: var(--sp-3);
-}
-
-.reqs li + li {
-  border-top: 1px solid var(--border);
-}
-
 .reqIcon {
-  flex: 0 0 auto;
   color: var(--text-muted);
 }
 
 .reqName {
-  flex: 0 0 104px;
   color: var(--text-muted);
 }
 
 .reqValue {
+  font-weight: 600;
+}
+
+.soil {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: var(--tap);
+  margin: var(--sp-2) 0 0;
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+/* Как ухаживать: те же правила, из которых потом строится календарь сада. */
+.care {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.care li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+}
+
+.care li + li {
+  border-top: 1px solid var(--border);
+}
+
+.careEvery {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.similar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+
+.similarName {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+}
+
+.similarPrice {
+  margin-top: auto;
+  padding-top: var(--sp-1);
   font-weight: 600;
 }
 

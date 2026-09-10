@@ -6,9 +6,12 @@ import {
   ActionBar,
   Badge,
   Button,
+  Card,
+  CardBody,
   EmptyState,
   ErrorState,
   InlineSuccess,
+  PlantPhoto,
   Skeleton,
 } from "@/ui";
 import { CARE_TYPE_LABEL, daysWord, formatPrice, labelOf } from "../filters";
@@ -34,9 +37,17 @@ type PlantCard = {
 
 type Stock = { available: number; low: boolean };
 
+type Similar = { id: number; nameRu: string; nameLat: string; priceCents: number };
+
 /** Что загрузилось и для какой попытки. Фаза считается при рендере:
  *  «загружаем» — производное, а не эффект. */
-type Loadout = { key: string; plant: PlantCard | null; stock: Stock | null; missing: boolean };
+type Loadout = {
+  key: string;
+  plant: PlantCard | null;
+  stock: Stock | null;
+  missing: boolean;
+  similar: Similar[];
+};
 
 type AddState = "idle" | "sending" | "added" | "failed";
 
@@ -57,22 +68,38 @@ export function PlantScreen({ plantId }: { plantId: string }) {
       fetch(`/api/catalog/plant?id=${plantId}`, options).then((r) => r.json()),
       fetch(`/api/warehouse/stock?plantId=${plantId}`, options).then((r) => r.json()),
     ])
-      .then(([card, stock]) => {
+      .then(async ([card, stock]) => {
         if (!card.ok) {
-          setLoadout({ key: requestKey, plant: null, stock: null, missing: true });
+          setLoadout({ key: requestKey, plant: null, stock: null, missing: true, similar: [] });
           return;
         }
+
+        // «Похожие» — тот же поиск по каталогу с условиями этого растения.
+        // Своей логики подбора здесь нет, это те же фильтры.
+        const plant = card.data as PlantCard;
+        const near = await fetch(
+          `/api/catalog/plants?light=${plant.light}&zone=${plant.minZone}`,
+          options,
+        )
+          .then((r) => r.json())
+          .catch(() => ({ ok: false }));
+
+        const similar: Similar[] = near.ok
+          ? (near.data.items as Similar[]).filter((item) => item.id !== plant.id).slice(0, 3)
+          : [];
+
         setLoadout({
           key: requestKey,
-          plant: card.data,
+          plant,
           stock: stock.ok ? stock.data : { available: 0, low: false },
           missing: false,
+          similar,
         });
       })
       .catch((error: unknown) => {
         if (controller.signal.aborted) return;
         console.error("карточка растения: запрос не удался", error);
-        setLoadout({ key: requestKey, plant: null, stock: null, missing: false });
+        setLoadout({ key: requestKey, plant: null, stock: null, missing: false, similar: [] });
       });
 
     return () => controller.abort();
@@ -85,8 +112,8 @@ export function PlantScreen({ plantId }: { plantId: string }) {
   if (settled.missing) {
     return (
       <EmptyState
-        title="Растение не найдено"
-        description="Возможно, его убрали из каталога или в ссылке опечатка."
+        title="Такого растения нет"
+        description="Возможно, его убрали из каталога или в ссылке опечатка. В каталоге сейчас тридцать других."
         action={
           <Link href="/catalog">
             <Button variant="secondary">В каталог</Button>
@@ -150,36 +177,41 @@ export function PlantScreen({ plantId }: { plantId: string }) {
         ← В каталог
       </Link>
 
-      <div className={`${styles.photo} ${canBuy ? "" : styles.dimmed}`}>фото</div>
+      <div className={styles.hero}>
+        <PlantPhoto
+          name={plant.nameRu}
+          variant="hero"
+          dimmed={!canBuy}
+          overlay={
+            withdrawn ? (
+              <Badge tone="neutral">Снято с продажи</Badge>
+            ) : soldOut ? (
+              <Badge tone="danger">Нет в наличии</Badge>
+            ) : stock.low ? (
+              <Badge tone="warning">Осталось {stock.available}</Badge>
+            ) : (
+              <Badge tone="success">Есть в наличии</Badge>
+            )
+          }
+        />
+      </div>
 
       <h1>{plant.nameRu}</h1>
       <p className={styles.latin}>{plant.nameLat}</p>
       <p className={styles.price}>{formatPrice(plant.priceCents)}</p>
 
-      <div className={styles.badgeRow}>
-        {withdrawn ? (
-          <Badge tone="neutral">Снято с продажи</Badge>
-        ) : soldOut ? (
-          <Badge tone="danger">Нет в наличии</Badge>
-        ) : stock.low ? (
-          <Badge tone="warning">Осталось {stock.available}</Badge>
-        ) : (
-          <Badge tone="success">Есть в наличии</Badge>
-        )}
-      </div>
-
-      <ul className={styles.reqs}>
-        <li>
+      <ul className={styles.tiles}>
+        <li className={styles.tile}>
           <SunIcon className={styles.reqIcon} />
           <span className={styles.reqName}>Свет</span>
           <span className={styles.reqValue}>{labelOf("light", plant.light)}</span>
         </li>
-        <li>
+        <li className={styles.tile}>
           <ZoneIcon className={styles.reqIcon} />
           <span className={styles.reqName}>Зона</span>
           <span className={styles.reqValue}>{plant.minZone} и теплее</span>
         </li>
-        <li>
+        <li className={styles.tile}>
           <DropIcon className={styles.reqIcon} />
           <span className={styles.reqName}>Полив</span>
           <span className={styles.reqValue}>
@@ -188,17 +220,18 @@ export function PlantScreen({ plantId }: { plantId: string }) {
               : `уход ${labelOf("care", plant.careLevel).toLowerCase()}`}
           </span>
         </li>
-        <li>
+        <li className={styles.tile}>
           <CalendarIcon className={styles.reqIcon} />
           <span className={styles.reqName}>Посадка</span>
           <span className={styles.reqValue}>{labelOf("season", plant.plantingSeason)}</span>
         </li>
-        <li>
-          <SoilIcon className={styles.reqIcon} />
-          <span className={styles.reqName}>Почва</span>
-          <span className={styles.reqValue}>{plant.soil}</span>
-        </li>
       </ul>
+
+      <p className={styles.soil}>
+        <SoilIcon className={styles.reqIcon} />
+        <span className={styles.reqName}>Почва</span>
+        <span className={styles.reqValue}>{plant.soil}</span>
+      </p>
 
       <section className={styles.about}>
         <h2>Описание</h2>
@@ -206,16 +239,45 @@ export function PlantScreen({ plantId }: { plantId: string }) {
         <p className={styles.stub}>
           Фото — заглушка: загрузка изображений в демо не подключена.
         </p>
-        {plant.careRules.length > 0 ? (
-          <p className="muted">
-            В календарь ухода попадёт:{" "}
-            {plant.careRules
-              .map((r) => `${(CARE_TYPE_LABEL[r.type] ?? r.type).toLowerCase()} раз в ${r.periodDays} ${daysWord(r.periodDays)}`)
-              .join(", ")}
-            .
-          </p>
-        ) : null}
       </section>
+
+      {plant.careRules.length > 0 ? (
+        <section className={styles.about}>
+          <h2>Как ухаживать</h2>
+          <ul className={styles.care}>
+            {plant.careRules.map((rule) => (
+              <li key={rule.type}>
+                <span>
+                  {CARE_TYPE_LABEL[rule.type] ?? rule.type}
+                  {rule.seasonOnly ? " (в сезон)" : ""}
+                </span>
+                <span className={styles.careEvery}>
+                  раз в {rule.periodDays} {daysWord(rule.periodDays)}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="muted">Эти же правила лягут в календарь ухода после покупки.</p>
+        </section>
+      ) : null}
+
+      {settled.similar.length > 0 ? (
+        <section className={styles.about}>
+          <h2>Похожие по условиям</h2>
+          <p className="muted">Тот же свет и та же зона — подойдут на то же место.</p>
+          <div className={styles.similar}>
+            {settled.similar.map((item) => (
+              <Card key={item.id} href={`/catalog/${item.id}`}>
+                <PlantPhoto name={item.nameRu} />
+                <CardBody>
+                  <span className={styles.similarName}>{item.nameRu}</span>
+                  <span className={styles.similarPrice}>{formatPrice(item.priceCents)}</span>
+                </CardBody>
+              </Card>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {add === "added" ? (
         <div className={styles.added}>

@@ -7,10 +7,10 @@ import {
   Button,
   Card,
   CardBody,
-  CardPhoto,
   Chip,
   EmptyState,
   ErrorState,
+  PlantPhoto,
   Sheet,
   Skeleton,
 } from "@/ui";
@@ -108,7 +108,7 @@ export function CatalogScreen() {
 
   return (
     <>
-      <p className={styles.intro}>Подберите растения под свет, зону и сезон вашего участка.</p>
+      <p className={styles.intro}>Тридцать проверенных растений. Отберите те, что приживутся именно у вас.</p>
 
       <div className={styles.bar}>
         <Button variant="secondary" onClick={openSheet}>
@@ -148,11 +148,11 @@ export function CatalogScreen() {
 
       {result !== null && result.items.length === 0 ? (
         <EmptyState
-          title="Под эти условия ничего нет"
+          title={appliedCount > 0 ? "Слишком узко" : "Каталог наполняется"}
           description={
             appliedCount > 0
-              ? "Набор фильтров слишком узкий: под такой участок в продаже сейчас пусто. Снимите последний фильтр — выдача расширится."
-              : "В каталоге сейчас нет активных растений. Загляните позже — поступления бывают каждую неделю."
+              ? "Под такой участок в продаже сейчас пусто. Снимите одно условие — скорее всего, зону: она отсекает больше всего."
+              : "Новая партия приезжает каждую неделю. Загляните через пару дней."
           }
           action={
             appliedCount > 0 ? (
@@ -175,8 +175,11 @@ export function CatalogScreen() {
           </p>
           <div className={styles.grid}>
             {result.items.map((plant) => (
+              // Бейджа наличия здесь нет: остаток отдаётся по одному растению,
+              // а функции «остатки списком» в warehouse не существует. Тянуть
+              // тридцать запросов из компонента — писать логику в интерфейсе.
               <Card key={plant.id} href={`/catalog/${plant.id}`}>
-                <CardPhoto />
+                <PlantPhoto name={plant.nameRu} />
                 <CardBody>
                   <span className={styles.name}>{plant.nameRu}</span>
                   <span className={styles.latin}>{plant.nameLat}</span>
