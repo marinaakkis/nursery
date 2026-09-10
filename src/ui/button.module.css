@@ -1,4 +1,11 @@
+/* Движение только там, где меняется состояние: цвет, граница, тень.
+   Никаких анимаций появления — элемент, который «выезжает», задерживает
+   человека ровно на длину своей анимации. */
 .button {
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -10,7 +17,7 @@
   min-height: var(--tap);
   padding: 0 var(--sp-3);
   border: 1px solid transparent;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-md);
   font: inherit;
   font-weight: 600;
   cursor: pointer;

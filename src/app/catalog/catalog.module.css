@@ -73,6 +73,7 @@
   padding-top: var(--sp-2);
   font-size: var(--fs-lg);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .facet {

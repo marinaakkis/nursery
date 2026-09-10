@@ -1,4 +1,8 @@
 .card {
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
   display: flex;
   flex-direction: column;
   background: var(--surface);
@@ -9,8 +13,21 @@
   text-decoration: none;
 }
 
+/* Подъём на пиксель и более тёмная граница: карточка отзывается,
+   но не прыгает. Тени в продукте нет — её роль играет граница. */
 .link:hover {
   border-color: var(--border-control);
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+
+  .link:hover {
+    transform: none;
+  }
 }
 
 /* «Нет в наличии»: карточка уходит на второй план, но остаётся читаемой.

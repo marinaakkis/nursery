@@ -28,10 +28,12 @@
   font-style: italic;
 }
 
-.price {
-  margin: var(--sp-3) 0 0;
-  font-size: var(--fs-lg);
-  font-weight: 600;
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+  margin: 0 0 var(--sp-4);
 }
 
 .badgeRow {
@@ -133,6 +135,7 @@
   margin-top: auto;
   padding-top: var(--sp-1);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .about {
@@ -151,7 +154,9 @@
 }
 
 .barPrice {
+  flex: 0 0 auto;
   color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .added {
@@ -160,4 +165,56 @@
   align-items: flex-start;
   gap: var(--sp-2);
   margin-top: var(--sp-3);
+}
+
+/* Две колонки от 900px: содержание слева, покупка липкой колонкой справа. */
+.layout {
+  display: block;
+}
+
+.main {
+  min-width: 0;
+}
+
+.buy {
+  display: none;
+}
+
+@media (width >= 900px) {
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: var(--sp-5);
+    align-items: start;
+  }
+
+  .buy {
+    position: sticky;
+    top: var(--sp-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    padding: var(--sp-3);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+  }
+
+  .buy button {
+    min-width: 240px;
+  }
+
+  /* На десктопе липкая полоса снизу не нужна: её роль играет колонка. */
+  .mobileBar {
+    display: none;
+  }
+}
+
+/* Цена всегда одной строкой: «1 450» и «₽» на разных строках читаются
+   как две разные цифры. */
+.buyPrice {
+  margin: 0;
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  white-space: nowrap;
 }

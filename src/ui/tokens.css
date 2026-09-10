@@ -207,6 +207,7 @@ h3 {
 a {
   color: var(--accent-ink);
   text-underline-offset: 2px;
+  transition: color 150ms ease;
 }
 
 a:hover {

@@ -193,6 +193,7 @@
 
 .pickPrice {
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .actions {
@@ -225,6 +226,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
+  white-space: nowrap;
 }
 
 .summary li {
@@ -245,6 +247,7 @@
 
 .summaryTotal {
   font-weight: 600;
+  white-space: nowrap;
 }
 
 /* Поле ввода закреплено внизу: в чате оно всегда под рукой, а не в конце

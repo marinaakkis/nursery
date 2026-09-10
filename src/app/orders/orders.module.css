@@ -45,6 +45,7 @@
 
 .sum {
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .head {

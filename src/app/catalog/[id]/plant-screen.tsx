@@ -188,8 +188,17 @@ export function PlantScreen({ plantId }: { plantId: string }) {
           variant="hero"
           priority
           dimmed={!canBuy}
-          overlay={
-            withdrawn ? (
+        />
+      </div>
+
+      <div className={styles.layout}>
+        <div className={styles.main}>
+          <h1>{plant.nameRu}</h1>
+          {/* Бейдж наличия рядом с названием, а не поверх снимка: в углу фото
+              он спорил с самим снимком и терялся на светлых кадрах. */}
+          <p className={styles.titleRow}>
+            <span className={styles.latin}>{plant.nameLat}</span>
+            {withdrawn ? (
               <Badge tone="neutral">Снято с продажи</Badge>
             ) : soldOut ? (
               <Badge tone="danger">Нет в наличии</Badge>
@@ -197,14 +206,8 @@ export function PlantScreen({ plantId }: { plantId: string }) {
               <Badge tone="warning">Осталось {stock.available}</Badge>
             ) : (
               <Badge tone="success">Есть в наличии</Badge>
-            )
-          }
-        />
-      </div>
-
-      <h1>{plant.nameRu}</h1>
-      <p className={styles.latin}>{plant.nameLat}</p>
-      <p className={styles.price}>{formatPrice(plant.priceCents)}</p>
+            )}
+          </p>
 
       <ul className={styles.tiles}>
         <li className={styles.tile}>
@@ -253,7 +256,7 @@ export function PlantScreen({ plantId }: { plantId: string }) {
         <span className={styles.reqValue}>{plant.soil}</span>
       </p>
 
-      <section className={styles.about}>
+      <section className={`${styles.about} prose`}>
         <h2>Описание</h2>
         <p>{plant.description}</p>
       </section>
@@ -307,20 +310,42 @@ export function PlantScreen({ plantId }: { plantId: string }) {
 
       {add === "failed" ? <ErrorState message={addError} /> : null}
 
-      <ActionBar>
-        {canBuy ? (
-          <>
-            <span className={styles.barPrice}>{formatPrice(plant.priceCents)}</span>
-            <Button fullWidth loading={add === "sending"} onClick={addToCart}>
+        </div>
+
+        {/* Цена и действие на десктопе — липкой колонкой справа от описания.
+            Полоса во всю ширину экрана под контентом там смотрелась мобильной
+            заплаткой. На телефоне колонка прячется, остаётся ActionBar. */}
+        <aside className={styles.buy}>
+          <p className={styles.buyPrice}>{formatPrice(plant.priceCents)}</p>
+          {canBuy ? (
+            <Button size="large" loading={add === "sending"} onClick={addToCart}>
               В корзину
             </Button>
-          </>
-        ) : (
-          <Button fullWidth disabled>
-            {withdrawn ? "Снято с продажи" : "Нет в наличии"}
-          </Button>
-        )}
-      </ActionBar>
+          ) : (
+            <Button size="large" disabled>
+              {withdrawn ? "Снято с продажи" : "Нет в наличии"}
+            </Button>
+          )}
+          <p className="muted">Заказ можно собрать из нескольких растений — оформление одно.</p>
+        </aside>
+      </div>
+
+      <div className={styles.mobileBar}>
+        <ActionBar>
+          {canBuy ? (
+            <>
+              <span className={styles.barPrice}>{formatPrice(plant.priceCents)}</span>
+              <Button fullWidth loading={add === "sending"} onClick={addToCart}>
+                В корзину
+              </Button>
+            </>
+          ) : (
+            <Button fullWidth disabled>
+              {withdrawn ? "Снято с продажи" : "Нет в наличии"}
+            </Button>
+          )}
+        </ActionBar>
+      </div>
     </>
   );
 }

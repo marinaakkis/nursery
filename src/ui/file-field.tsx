@@ -44,16 +44,40 @@ export function FileField({
           </svg>
           {label}
         </label>
-        {fileName ? <span className={styles.name}>{fileName}</span> : null}
-        {fileName && onClear ? (
-          <button type="button" className={styles.button} onClick={onClear}>
-            Убрать
-          </button>
-        ) : null}
       </span>
-      {previewUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element -- data-URL из формы, файла на диске ещё нет
-        <img className={styles.preview} src={previewUrl} alt="Предпросмотр приложенного снимка" />
+
+      {/* Превью и действие в одной строке: снимок и кнопка «убрать» относятся
+          друг к другу, и разносить их по разным строкам незачем. */}
+      {previewUrl || fileName ? (
+        <span className={styles.picked}>
+          {previewUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- data-URL из формы, файла на диске ещё нет
+            <img className={styles.preview} src={previewUrl} alt="Предпросмотр приложенного снимка" />
+          ) : null}
+          {fileName ? <span className={styles.name}>{fileName}</span> : null}
+          {onClear ? (
+            <button
+              type="button"
+              className={styles.remove}
+              onClick={onClear}
+              aria-label="Убрать фото"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M3 5.5h14M8 5.5V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1.5M5.5 5.5 6.3 16a1 1 0 0 0 1 .9h5.4a1 1 0 0 0 1-.9l.8-10.5M8.5 9v5M11.5 9v5" />
+              </svg>
+            </button>
+          ) : null}
+        </span>
       ) : null}
     </span>
   );

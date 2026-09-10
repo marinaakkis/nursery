@@ -77,6 +77,7 @@
 .sum {
   font-size: var(--fs-md);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 /* Итог — отдельный блок на утопленной подложке: он не позиция списка,
@@ -96,6 +97,7 @@
 .totalValue {
   font-size: var(--fs-lg);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .barTotal {

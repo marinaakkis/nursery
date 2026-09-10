@@ -1,4 +1,7 @@
+/* Шрифт задан явно: внутри подложки снимка бейдж наследовал display-шрифт
+   и выглядел заголовком, а не меткой. */
 .badge {
+  font-family: var(--font-text);
   display: inline-flex;
   align-items: center;
   padding: var(--sp-1) var(--sp-2);

@@ -290,6 +290,7 @@
   margin-top: auto;
   padding-top: var(--sp-1);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .more {

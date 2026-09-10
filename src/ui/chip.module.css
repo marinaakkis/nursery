@@ -1,4 +1,8 @@
 .chip {
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;

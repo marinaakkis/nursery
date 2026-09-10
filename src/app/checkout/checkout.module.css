@@ -93,6 +93,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
+  white-space: nowrap;
 }
 
 .summaryLine {
@@ -100,6 +101,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--sp-3);
+  white-space: nowrap;
 }
 
 .summaryWhat {
@@ -107,6 +109,7 @@
   flex: 1;
   align-items: center;
   gap: var(--sp-3);
+  white-space: nowrap;
 }
 
 /* Итог вынесен из карточки состава на утопленную подложку. */
@@ -121,6 +124,7 @@
   border-radius: var(--r-md);
   font-size: var(--fs-md);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 /* Заглушка помечена на самом экране, а не только в документации — spec §8. */

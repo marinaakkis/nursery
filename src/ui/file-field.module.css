@@ -59,3 +59,30 @@
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
 }
+
+/* Превью, имя файла и кнопка «убрать» — одной строкой. */
+.picked {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap);
+  height: var(--tap);
+  flex: 0 0 auto;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.remove:hover {
+  background: var(--status-danger-bg);
+  color: var(--status-danger-ink);
+}
