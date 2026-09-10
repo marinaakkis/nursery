@@ -82,8 +82,8 @@ export function OrdersScreen() {
   if (settled.orders.length === 0) {
     return (
       <EmptyState
-        title="Заказов пока нет"
-        description="Здесь появятся заказы со статусом и составом — как только оформите первый."
+        title="Здесь будет история покупок"
+        description="Каждый заказ с составом, статусом и датой. Первый можно собрать прямо сейчас."
         action={
           <Link href="/catalog">
             <Button>В каталог</Button>

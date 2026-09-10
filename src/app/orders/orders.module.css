@@ -73,7 +73,7 @@
 .items {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-1);
+  gap: var(--sp-2);
   padding: var(--sp-3);
   background: var(--surface);
   border: 1px solid var(--border);
@@ -82,19 +82,92 @@
 
 .item {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
 }
 
+.itemWhat {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+/* Итог — отдельный блок на утопленной подложке, не строка списка. */
 .total {
   display: flex;
   justify-content: space-between;
   gap: var(--sp-2);
   margin-top: var(--sp-2);
-  padding-top: var(--sp-2);
-  border-top: 1px solid var(--border);
+  padding: var(--sp-3);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
   font-size: var(--fs-md);
   font-weight: 600;
+}
+
+/* Шкала шагов: где заказ сейчас и что будет дальше. Состояние несёт
+   не только цвет — у пройденного стоит галочка, у текущего точка. */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: var(--sp-3) 0 0;
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 40px;
+  color: var(--text-muted);
+}
+
+.stepMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  border: 1px solid var(--border-control);
+  border-radius: 50%;
+  background: var(--surface);
+}
+
+.stepDone .stepMark {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.stepDone {
+  color: var(--text);
+}
+
+.stepCurrent .stepMark {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-on-accent);
+}
+
+.stepCurrent {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.stepLine {
+  width: 1px;
+  height: 12px;
+  margin-left: 12px;
+  background: var(--border-control);
 }
 
 .history {

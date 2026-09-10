@@ -51,3 +51,24 @@ export function formatSlot(slot: { slotDate: string; interval: string } | null):
   const [year, month, day] = slot.slotDate.split("-").map(Number);
   return `${dayOnly.format(new Date(year, month - 1, day))}, ${slot.interval}`;
 }
+
+export type StatusStep = { label: string; state: "done" | "current" | "ahead" };
+
+/**
+ * Шкала шагов заказа под его способ получения. Порядок берётся из того же
+ * графа, что и переходы: новый → в сборке → выдача либо доставка → выполнен.
+ * Отменённый заказ шкалы не имеет — он с неё сошёл.
+ */
+export function statusSteps(status: string, fulfillment: string): StatusStep[] {
+  if (status === "cancelled") return [];
+
+  const middle = fulfillment === "pickup" ? "готов к выдаче" : "передан в доставку";
+  const order = ["new", "assembling", fulfillment === "pickup" ? "ready_for_pickup" : "handed_to_delivery", "done"];
+  const labels = ["новый", "в сборке", middle, "выполнен"];
+
+  const at = order.indexOf(status);
+  return labels.map((label, index) => ({
+    label,
+    state: index < at ? "done" : index === at ? "current" : "ahead",
+  }));
+}

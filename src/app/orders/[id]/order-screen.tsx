@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Badge, Button, EmptyState, ErrorState, Sheet, Skeleton } from "@/ui";
+import { Badge, Button, EmptyState, ErrorState, PlantPhoto, Sheet, Skeleton } from "@/ui";
 import { formatPrice } from "../../catalog/filters";
 import styles from "../orders.module.css";
-import { formatSlot, formatWhen, STATUS_TONE, whatNext } from "../status";
+import { formatSlot, formatWhen, statusSteps, STATUS_TONE, whatNext } from "../status";
 
 type OrderView = {
   id: number;
@@ -63,7 +63,7 @@ export function OrderScreen({ orderId }: { orderId: string }) {
   if (settled.missing || settled.forbidden) {
     return (
       <EmptyState
-        title={settled.forbidden ? "Заказ недоступен" : "Заказ не найден"}
+        title={settled.forbidden ? "Это чужой заказ" : "Заказа с таким номером нет"}
         description={
           settled.forbidden
             ? "Этот заказ оформлен другим покупателем. Переключите пользователя в шапке или откройте свой список."
@@ -96,6 +96,7 @@ export function OrderScreen({ orderId }: { orderId: string }) {
   const canCancel = order.nextStatuses.includes("cancelled");
   // Каждый переход статуса пишет уведомление; создание заказа — нет.
   const notified = Math.max(order.history.length - 1, 0);
+  const steps = statusSteps(order.status, order.fulfillment);
 
   async function cancel() {
     setCancelling(true);
@@ -140,6 +141,35 @@ export function OrderScreen({ orderId }: { orderId: string }) {
             ? "Самовывоз из питомника"
             : `Доставка — ${slotText ?? "слот не выбран"}`}
         </p>
+
+        {steps.length > 0 ? (
+          <ol className={styles.steps} aria-label="Путь заказа">
+            {steps.map((step, index) => (
+              <li key={step.label}>
+                <span
+                  className={[
+                    styles.step,
+                    step.state === "done" ? styles.stepDone : "",
+                    step.state === "current" ? styles.stepCurrent : "",
+                  ]
+                    .join(" ")
+                    .trim()}
+                >
+                  <span className={styles.stepMark} aria-hidden="true">
+                    {step.state === "done" ? "✓" : step.state === "current" ? "•" : ""}
+                  </span>
+                  <span>
+                    {step.label}
+                    {step.state === "current" ? " — сейчас" : ""}
+                  </span>
+                </span>
+                {index < steps.length - 1 ? (
+                  <span className={styles.stepLine} aria-hidden="true" />
+                ) : null}
+              </li>
+            ))}
+          </ol>
+        ) : null}
       </section>
 
       <section className={styles.section}>
@@ -147,16 +177,20 @@ export function OrderScreen({ orderId }: { orderId: string }) {
         <div className={styles.items}>
           {order.items.map((item) => (
             <span className={styles.item} key={item.plantId}>
-              <span>
-                {item.nameRu} · {item.quantity} шт.
+              <span className={styles.itemWhat}>
+                <PlantPhoto name={item.nameRu} variant="thumb" />
+                <span>
+                  {item.nameRu} · {item.quantity} шт.
+                </span>
               </span>
               <span>{formatPrice(item.priceCents * item.quantity)}</span>
             </span>
           ))}
-          <span className={styles.total}>
-            <span>Итого</span>
-            <span>{formatPrice(order.totalCents)}</span>
-          </span>
+        </div>
+
+        <div className={styles.total}>
+          <span>Итого</span>
+          <span>{formatPrice(order.totalCents)}</span>
         </div>
         <p className={styles.stub}>
           Тестовый платёж — деньги не списывались.
