@@ -1,176 +1,311 @@
-# Multi-Agent Template
+# Северный сад
 
-Production-grade baseline for AI-assisted engineering with Codex, Claude Code,
-Cursor, and OpenCode.
+Онлайн-питомник растений: покупатель подбирает саженцы под свой участок, оформляет
+заказ и дальше ведёт «Мой сад» — календарь ухода с напоминаниями. Питомник со своей
+стороны видит остатки по партиям, собирает заказы и планирует закупки.
 
-The template separates shared instructions, canonical skills, tool runtime
-configuration, scoped rules, hooks, and setup scripts. Security controls are
-real enforcement points, not decorative prompt text.
+Внутри продукта два агента: **помощник по подбору** собирает подборку под описание
+участка и доводит до оформления, **консультант** готовит агроному черновик ответа
+на вопрос о больном растении. Оба действуют через инструменты продукта — те же
+функции, что зовёт интерфейс.
 
-## Repository Layout
+Что и зачем делаем, сценарии и критерии приёмки — [`docs/spec.md`](docs/spec.md).
+Состояние каждой функции с доказательством — [`docs/verify.md`](docs/verify.md).
 
-| Path | Role |
+---
+
+## Архитектура
+
+**Модульный монолит.** Пять модулей в `src/modules/`: `catalog`, `orders`, `garden`,
+`consult`, `warehouse`. Модуль — это папка с четырьмя экспортами через `index.ts`:
+
+| Экспорт | Файл | Что это |
+|---|---|---|
+| Схема | `schema.ts` | Таблицы, связи, ограничения; источник типов модуля |
+| Сервисы | `service.ts` | Вся бизнес-логика: транзакции, инварианты, переходы статусов |
+| Роуты | `routes.ts` | HTTP-обвязка: разбор запроса, коды ответов; логики не содержит |
+| Инструменты | `tools.ts` | Описания инструментов агента, вызывающие **те же** функции из `service.ts` |
+
+**Реестр** `src/agent/registry.ts` — единственное место, где перечислены модули.
+Роуты и инструменты он собирает сам. Совпадение имён инструментов — ошибка на старте,
+а не тихая перезапись.
+
+**Один catch-all роут** `src/app/api/[module]/[[...path]]/route.ts` обслуживает все
+модули: разбирает `/api/<module>/<action>`, достаёт пользователя из cookie, проверяет
+роль и зовёт обработчик. В `src/app/api` ровно один каталог — `[module]`; отдельных
+файлов под модуль там не появляется. Единственное исключение вне `api` — `/uploads`,
+он отдаёт бинарные файлы, чего JSON-диспетчер не умеет.
+
+**Ошибки — значения.** Сервис возвращает `Result<T>` — `{ ok: true, data }` либо
+`{ ok: false, error: { code, message } }`. HTTP-слой переводит код в статус в одном
+месте (`src/lib/result.ts`). `throw` допустим только внутри колбэка транзакции, ради
+отката.
+
+### Агент за интерфейсом провайдера
+
+Провайдер языковой модели объявлен интерфейсом `LlmProvider` и имеет две реализации:
+
+- **`rules`** — детерминированный разбор по ключевым словам. Работает без сети,
+  поэтому продукт показывается и тестируется всегда одинаково.
+- **`http`** — точка расширения под внешнюю модель. Интерфейс есть, реализации нет;
+  при `LLM_PROVIDER=http` продукт честно говорит об этом, а не подменяет молча
+  детерминированным подбором.
+
+Провайдер **не ходит в базу и не вызывает инструменты сам**. Он возвращает намерение —
+что понял из запроса, — а инструмент вызывает наш код через реестр. Благодаря этому
+модель без tool-calling подключается без правок остальной системы: меняется один файл.
+
+**Необратимое закрыто воротами.** `orders.add_to_cart` и `orders.create_order`
+перечислены в `IRREVERSIBLE` и без явного подтверждения не вызываются вообще. Флаг
+`confirmed` ставится в обработчике кнопки и из текста запроса прийти не может.
+То же на вопросах: ответ агента существует как черновик и становится сообщением
+покупателю единственным способом — через `approveDraft`.
+
+### Почему `reserve` и `release` — не инструменты
+
+Резерв и возврат остатка экспортируются модулем `warehouse`, но в `tools.ts` их нет,
+и это намеренно.
+
+1. **Они не самостоятельны.** Обе принимают чужую транзакцию и обязаны выполняться
+   внутри неё — той же, в которой создаётся или отменяется заказ. Вызванные отдельно,
+   они оставили бы остаток списанным без заказа.
+2. **Агенту нечего ими решать.** Инструмент выражает намерение пользователя
+   («оформи заказ»), а не шаг реализации. Резерв — часть того, как устроено
+   оформление, и меняться он должен вместе с ним.
+3. **Ворота подтверждения стояли бы не там.** Человек подтверждает «создать заказ»,
+   а не «списать три штуки из партии от 12 мая».
+
+Правило общее: **инструментом становится то, что покупатель мог бы попросить словами.**
+Всё остальное — внутренности сервиса.
+
+---
+
+## Стек
+
+Next.js (App Router) · TypeScript · PostgreSQL · Drizzle · Vercel AI SDK.
+Один процесс приложения плюс база.
+
+Почему так и что рассматривали — [ADR 0001](memory/decisions/0001-stack.md).
+Модель данных, инварианты и чем за них платим — [ADR 0002](memory/decisions/0002-data-model.md).
+
+Коротко: конкуренция за последний экземпляр требует реляционной базы и ограничений
+уровня схемы, а не проверок в коде; фоновых процессов в продукте нет — события ухода
+материализуются в момент действия, «просрочено» вычисляется при чтении.
+
+---
+
+## Запуск
+
+### Локально
+
+```bash
+docker compose up --build
+```
+
+Приложение на `http://localhost:3000`, миграции применяются при старте, демо-данные
+наливаются в пустую базу. Переменные окружения — в [`DEPLOY.md`](DEPLOY.md);
+для локального запуска обязателен только `POSTGRES_PASSWORD`.
+
+Без Docker понадобится свой PostgreSQL и `DATABASE_URL`:
+
+```bash
+npm ci && npx drizzle-kit migrate && npx tsx src/db/seed.ts && npm run dev
+```
+
+### На стенде
+
+Docker Compose в Dokploy. Подробности, healthcheck и разбор частых отказов —
+[`DEPLOY.md`](DEPLOY.md).
+
+Две вещи, на которых деплой ломался и которые стоит знать заранее:
+
+- `output: "standalone"` **не включает `public/`** — каталог копируется в образ
+  отдельной строкой Dockerfile. Без неё страницы работают, а фотографии отдают 404,
+  и `/health` этого не замечает.
+- Все страницы объявлены динамическими. Данные в продукте живые, а пререндер страницы,
+  которая ходит в базу, валит сборку образа: базы на этапе сборки нет.
+
+### Проверки
+
+```bash
+./check.sh
+```
+
+Одна команда, пять шагов, падает на первом же провале:
+
+| Шаг | Что делает |
 |---|---|
-| `AGENTS.md` | Shared standing instructions for all coding agents. |
-| `QUICK-START.md` | Step-by-step onboarding guide (prereqs, setup, git hooks, dev process, publishing). |
-| `.agents/skills/` | Canonical shared Agent Skills corpus. |
-| `.codex/` | Codex project runtime config and hook wiring. |
-| `.claude/` | Claude Code project memory, settings, and generated command and skill adapters. |
-| `.cursor/` | Cursor project rules, commands, and notes for skill discovery. |
-| `.opencode/` | OpenCode config and commands. |
-| `scripts/ai-hooks/` | Cross-platform security-hook runner and pinned tool manifest. |
-| `scripts/ai-template-indexing/` | Skill/command adapter sync and tooling-index generation. |
-| `.githooks/` | Repository git hooks and integration passport validator. |
-| `scripts/` | Bootstrap, validation, adapter sync, index generation, docs publishing, Serena MCP, and git-hook installers (`scripts/git-hooks/`). |
-| `docs/ai-tooling-index.md` | Generated full index of skills, rules, commands, and hooks. |
+| 1. Типы | `next typegen` + `tsc --noEmit` |
+| 2. Линтер | `eslint` по `src` |
+| 3. Тесты | `vitest run` — 71 тест; интеграционные идут против настоящего PostgreSQL и пропускаются без `DATABASE_URL` |
+| 4. Миграции | Накатываются на свежесозданную пустую базу и она удаляется |
+| 5. Сборка | `next build` **без переменных окружения** — ровно как в контейнере, плюс проверка, что статических страниц не появилось |
 
-## Quick Start
+Пятый шаг запускается через `env -i`: сборка, проверенная в окружении с базой,
+ничего не доказывает.
 
-For detailed step-by-step onboarding (prerequisites, git hooks, dev process, docs publishing), see `QUICK-START.md`.
+---
 
-1. Install Node.js 18+.
-2. Run the safe bootstrap for your OS:
+## Интерфейсы для агентов
+
+Реестр отдаёт агентскому циклу не весь список, а срез по роли пользователя.
+
+### Покупатель
+
+| Инструмент | Что делает |
+|---|---|
+| `catalog.search_plants` | Подбор по свету, зоне, сезону посадки, уровню ухода |
+| `catalog.get_plant` | Карточка растения: описание, почва, требования, правила ухода |
+| `warehouse.get_stock` | Наличие одного растения |
+| `warehouse.get_stock_many` | Наличие списком, одним запросом на всю выдачу |
+| `orders.get_cart` | Состав корзины и итог |
+| `orders.add_to_cart` | 🔒 Положить в корзину — только после подтверждения кнопкой |
+| `orders.list_slots` | Свободные слоты доставки |
+| `orders.create_order` | 🔒 Оформить заказ — только после подтверждения кнопкой |
+| `orders.get_order` · `orders.list_orders` | Заказ и список заказов |
+| `garden.get_garden` | Растения в саду и ближайшее действие по уходу |
+| `garden.get_care_calendar` | Календарь за период, с просрочками |
+| `garden.mark_care_done` | Отметка выполнения; идемпотентна |
+
+### Агроном
+
+| Инструмент | Что делает |
+|---|---|
+| `consult.get_question` | Вопрос целиком: переписка, растение, фото |
+| `consult.suggest_diagnosis` | Черновик разбора — виден только агроному |
+
+🔒 — необратимое действие: закрыто воротами подтверждения, вызвать текстом запроса
+нельзя.
+
+### Как подключить внешнюю модель
+
+1. Реализовать `plan()` в `src/agent/http-provider.ts` — вернуть `AgentPlan` из ответа
+   модели. Если у модели есть tool-calling, описания инструментов берутся из реестра:
+   `allTools()` отдаёт имя, описание и zod-схему параметров.
+2. Задать переменные окружения: `LLM_PROVIDER=http`, `LLM_BASE_URL`, `LLM_API_KEY`,
+   `LLM_MODEL`.
+3. Больше ничего не трогать. Исполнитель, ворота подтверждения, карточка «что сделал
+   и почему» и экраны о смене провайдера не знают.
+
+Ключ модели живёт только в переменной окружения и в репозиторий не попадает.
+
+---
+
+## Точка расширения
+
+### Новый модуль за четыре экспорта
+
+Пример: модуль `loyalty` со скидками постоянным покупателям.
+
+1. **Схема.** Создать `src/modules/loyalty/schema.ts`, описать таблицы, сгенерировать
+   и применить миграцию:
 
    ```bash
-   ./config-lin-mac.sh
+   npx drizzle-kit generate && npx drizzle-kit migrate
    ```
 
-   ```bat
-   config-win.bat
+2. **Сервис.** `service.ts` — чистые функции, возвращающие `Result<T>`. Инварианты
+   закреплять ограничениями в схеме, а не проверками в коде. Транзакция — там, где
+   меняется больше одной таблицы.
+
+3. **Роуты.** `routes.ts` — только разбор запроса и коды ответов:
+
+   ```ts
+   export const routes: ModuleRoute[] = [
+     { method: "GET", action: "balance", roles: ["customer"],
+       handler: async (_input, ctx) => getBalance(ctx.userId) },
+   ];
    ```
 
-3. Validate the AI template:
+4. **Инструменты.** `tools.ts` — то, что покупатель мог бы попросить словами.
+   Обработчик зовёт функцию из `service.ts`, своей логики не содержит. Имя обязано
+   начинаться с имени модуля.
 
-   ```bash
-   node scripts/validate-ai-template.mjs
+5. **Собрать через `index.ts`** и добавить одну строку в `src/agent/registry.ts`:
+
+   ```ts
+   export const modules: AppModule[] = [catalog, orders, garden, consult, warehouse, loyalty];
    ```
 
-4. Regenerate tool indexes after adding/removing skills, rules, or commands:
+**Проверка расширения:** после пятого шага новый инструмент виден агенту, а роут
+отвечает по `/api/loyalty/balance` — без единой правки вне папки модуля и вне этой
+строки реестра. `ls src/app/api` по-прежнему показывает ровно один каталог `[module]`.
 
-   ```bash
-   node scripts/ai-template-indexing/sync-claude-skill-adapters.mjs
-   node scripts/ai-template-indexing/sync-claude-command-adapters.mjs
-   node scripts/ai-template-indexing/generate-ai-tooling-index.mjs
-   ```
+### Новый инструмент в существующем модуле
 
-5. Read the full generated index:
+Три шага, все внутри папки модуля:
 
-   - `docs/ai-tooling-index.md`
+1. Написать функцию в `service.ts` — с zod-схемой параметров и возвратом `Result<T>`.
+2. Добавить запись в `tools.ts`: имя `<модуль>.<действие>`, описание для модели,
+   `parameters` — та же zod-схема, `audience` — роль.
+3. Если действие необратимое, добавить имя в `IRREVERSIBLE` в `src/agent/runner.ts`
+   и вызывать его только из обработчика кнопки подтверждения.
 
-## Shared Skill Model
+Тест в `src/agent/registry.test.ts` проверяет, что число инструментов в реестре равно
+сумме по модулям: забытый экспорт уронит проверку.
 
-Canonical skills live only in `.agents/skills/<skill-name>/SKILL.md`.
+---
 
-- Codex consumes `.agents/skills` as the repository skill corpus.
-- Claude Code consumes generated lightweight adapters in `.claude/skills`; the
-  adapters route to `.agents/skills` and are regenerated by
-  `scripts/ai-template-indexing/sync-claude-skill-adapters.mjs`.
-- Cursor current builds can discover project skills from `.agents/skills`.
-  `.cursor/skills/README.md` documents this and avoids duplicate copies.
-- Heavy skill material belongs in `references/`, `examples/`, `checklists/`, or
-  phase files; `SKILL.md` should stay as the operational entrypoint.
+## Процесс
 
-VERSION-SENSITIVE: if an enterprise-pinned Cursor build does not discover
-`.agents/skills`, provision a temporary mirror from `.agents/skills` to
-`.cursor/skills`; do not edit the canonical corpus.
+Спека и правила писались до кода и по ходу не переигрывались молча.
 
-## Shared Command Model
+| Фаза | Артефакт | Чем закрыта |
+|---|---|---|
+| Задача | `docs/task.md` | Исходный текст, изменять запрещено |
+| Спека | `docs/spec.md` | Сценарии, edge-кейсы, экраны, 24 критерия приёмки |
+| Контракт агента | `AGENTS.md` | Правила с проверкой у каждого; правило без проверки не пишется |
+| Решения | `memory/decisions/*.md` | ADR: что рассматривали, что выбрали, чем платим |
+| Визуал | `docs/ui-rules.md`, `src/ui/tokens.css` | Токены и компоненты до экранов |
+| Код | `src/` | Модуль = четыре экспорта |
+| Проверка | `./check.sh`, живой браузер | 71 тест; экраны — замерами на 375 и 1024 |
+| Память | `memory/mistakes/*.md` | Разбор ошибки с полем «триггер на будущее» |
+| Журнал | `JOURNAL.md` | Запись после каждой сессии, задним числом не правится |
 
-Canonical slash commands live only in `.cursor/commands/<command>.md`.
+Ошибка агента не заминается: на каждую заведён файл в `memory/mistakes/` с триггером,
+по которому её узнают в следующий раз. Одиннадцать записей — от `opacity` на тексте
+до сборки, проверенной только там, где есть база.
 
-- Cursor uses them directly.
-- Claude Code consumes generated lightweight adapters in `.claude/commands`; the
-  adapters reference `.cursor/commands` and are regenerated by
-  `scripts/ai-template-indexing/sync-claude-command-adapters.mjs`. Mark a
-  genuinely Claude-only command with `claude-specific: true` in its frontmatter
-  to preserve it from regeneration.
+Отдельное правило про тесты: **новый тест прогоняется на намеренно сломанном коде.**
+Тест, который не видели падающим, доказательством не считается. Так поймана ложная
+зелень — проверка, которая не могла провалиться из-за подготовки данных.
 
-## Hook Security Model
+---
 
-AI hooks use `scripts/ai-hooks/run-hook-tool.mjs` and
-`scripts/ai-hooks/tool-manifest.json`.
+## Известные ограничения и заглушки
 
-- `gitleaks-hook` is pinned to `v2.0.1` for Cursor, Claude Code, and Codex.
-- Every platform binary has a pinned SHA256.
-- Cached binaries are verified before every run.
-- Downloaded binaries are verified before they are installed into
-  `scripts/ai-hooks/vendor/`.
-- Root setup scripts install and verify the binary proactively. If the cache is
-  missing later, the runner performs the same verified installation lazily.
-- Default mode is fail-closed: hook setup or integrity failure exits non-zero.
-- CI and `AI_HOOKS_SECURITY_GATE=1` always run strict/fail-closed.
-- Local convenience mode is explicit:
+Заглушки помечены **на экране**, где ими пользуются, а не только здесь: непомеченная
+заглушка на демо читается как несделанная функция.
 
-  ```bash
-  AI_HOOKS_MODE=warn node scripts/ai-hooks/run-hook-tool.mjs gitleaks
-  ```
+| Что | Как работает | Где помечено |
+|---|---|---|
+| Оплата | Кнопка отмечает заказ оплаченным, денег нет | «Тестовый платёж — оплата не списывается» у кнопки подтверждения |
+| Пользователи и роли | Переключатель в шапке, входа по логину нет | «Вход — заглушка: пароля нет» в шите переключателя |
+| Доставка | Три фиксированных слота в день, без геокодинга | «Демо-расписание» у выбора слота |
+| Фото | Сохраняется как есть, без обработки | «Фото сохраняется как есть» на форме вопроса |
+| Уведомления | Запись внутри продукта, наружу ничего не уходит | «Запись остаётся внутри продукта» на странице заказа |
 
-  In `warn` mode, missing registry access warns and skips locally. This mode is
-  ignored in CI/security-gate mode.
+Что осталось упрощённым внутри сделанного — раздел «Вне скоупа» в
+[`docs/spec.md`](docs/spec.md). Коротко: разбор жалобы идёт по тексту, а не по снимку;
+план закупок считает по фиксированной формуле без прогноза; сборка заказа — это
+перевод статуса, а не покомплектный пикинг.
 
-`scripts/ai-hooks/vendor/` is intentionally gitignored.
+Настоящей авторизации нет: разграничение ролей работает в интерфейсе и сервисном слое,
+но не защищает от намеренного обхода. Это записано во «вне скоупа» и является
+осознанной границей демо.
 
-Manual install or repair:
+---
+
+## Как смотреть мокапы
+
+`docs/mockups/catalog.html` и `docs/mockups/plant.html` — статичные макеты на 375px,
+сделанные до экранов. В приложение они не идут и живут как след процесса.
 
 ```bash
-node scripts/ai-hooks/run-hook-tool.mjs gitleaks --install
+npx serve .
 ```
 
-The first installation requires registry access. Once cached and verified, hook
-execution works offline. Detection covers secrets and high-confidence PII; the
-hook reports metadata only and does not echo detected values.
-
-## Tool Configs
-
-- Codex: `.codex/config.toml`, `.codex/hooks.json`
-- Claude Code: `.claude/settings.json`, `.claude/CLAUDE.md`
-- Cursor: `.cursor/rules/*.mdc`, `.cursor/commands/*.md`
-- OpenCode: `.opencode/opencode.json`
-
-Runtime config files stay executable and small. Durable behavior belongs in
-`AGENTS.md`, scoped rules, or skills.
-
-## Setup Safety
-
-The root setup scripts are non-destructive.
-
-- They do not create `.env` files.
-- They do not write fake secret-shaped values.
-- They merge Cursor user settings instead of overwriting unrelated keys.
-- They install the pinned, checksum-verified AI security hook.
-- They install repository git hooks only inside the current repo.
-- They write `.project-metadata.local.json`, which is gitignored.
-
-Create environment files manually from the application's own non-secret template
-when the application actually needs them.
-
-## Readiness Reminder
-
-When an app works locally or the user says the project is ready, remind the
-developer:
-
-1. Sandbox/test deploy: `.agents/skills/skill.devops.en.dokploy-repo-prep/SKILL.md`
-2. Corporate SSO: `.agents/skills/skill.security.en.keycloak-sso-scaffold/SKILL.md`
-3. FastAPI + React auth integration when applicable:
-   `.agents/skills/skill.security.en.fastapi-react-keycloak-auth/SKILL.md`
-4. Roles require Jira Asset registration before IDM onboarding.
-5. Production/k8s requires security review, namespace/resourceQuota preparation,
-   Helm scaffold, and k8s deployment scaffold.
-
-Never put `CLIENT_SECRET`, passwords, tokens, private keys, certificates, or
-real Vault values into code, docs, manifests, examples, logs, or git.
-
-## Validation
-
-Run before committing template changes:
-
-```bash
-node scripts/ai-template-indexing/sync-claude-skill-adapters.mjs
-node scripts/ai-template-indexing/sync-claude-command-adapters.mjs
-node scripts/ai-template-indexing/generate-ai-tooling-index.mjs
-node scripts/validate-ai-template.mjs
-node --test .githooks/integration-passports.validate.test.mjs
-git diff --check
-```
-
-The first 9 lines of `.gitlab-ci.yml` are immutable and validated.
+Дальше `http://localhost:3000/docs/mockups/catalog.html`. Открывать файлом нельзя:
+токены подключены относительной ссылкой на `src/ui/tokens.css` и по `file://`
+не подхватятся — это сделано нарочно, чтобы мокап не мог разойтись с палитрой
+приложения.
