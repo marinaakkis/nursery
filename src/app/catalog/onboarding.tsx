@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { ONBOARDING_COOKIE } from "./onboarding-cookie";
 import { OnboardingDismiss } from "./onboarding-dismiss";
@@ -20,7 +21,10 @@ export async function Onboarding() {
       </h2>
       <ol className={styles.steps}>
         <li>Подберите растения фильтрами — свет, зона, сезон посадки, уход.</li>
-        <li>Или опишите участок помощнику, он соберёт подборку сам.</li>
+        <li>
+          Или опишите участок <Link href="/assistant">AI-помощнику</Link> — он соберёт
+          подборку сам.
+        </li>
         <li>После покупки растения попадут в «Мой сад» с календарём ухода.</li>
       </ol>
       <OnboardingDismiss />

@@ -129,6 +129,24 @@ export default function HomePage() {
       </section>
 
       <section className={styles.section}>
+        {/* Вопрос агроному ушёл из шапки: это не раздел, куда ходят каждый день,
+            а действие по случаю. Здесь оно на своём месте — рядом с рассказом
+            о том, как всё устроено. */}
+        <div className={styles.ask}>
+          <div>
+            <h2>Есть вопрос к агроному?</h2>
+            <p className={styles.askText}>
+              Пришлите фото и опишите, что происходит с растением. Ответит живой агроном —
+              помощник только готовит ему разбор.
+            </p>
+          </div>
+          <Link className={styles.askAction} href="/questions">
+            <Button size="large">Задать вопрос</Button>
+          </Link>
+        </div>
+      </section>
+
+      <section className={styles.section}>
         <h2>Почему мы</h2>
         {/* Фото во всю ширину, три факта строкой под ним: столбиком справа
             они читались как подпись к снимку, а не как самостоятельный довод. */}

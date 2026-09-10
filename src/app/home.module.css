@@ -299,3 +299,27 @@
   color: var(--accent);
   white-space: nowrap;
 }
+
+/* Блок вопроса агроному: приглашение, а не карточка товара — поэтому
+   на подложке и с единственным действием. */
+.ask {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.askText {
+  margin: var(--sp-2) 0 0;
+  max-width: 520px;
+  color: var(--text-muted);
+}
+
+.askAction {
+  flex: 0 0 auto;
+}
