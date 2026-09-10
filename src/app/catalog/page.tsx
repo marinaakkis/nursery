@@ -7,7 +7,7 @@ export const metadata = { title: "Каталог" };
 
 export default function CatalogPage() {
   return (
-    <main className="page pageWide">
+    <main className="page">
       <h1>Каталог</h1>
       <Onboarding />
       {/* useSearchParams требует границы Suspense: до неё показываем ту же форму,

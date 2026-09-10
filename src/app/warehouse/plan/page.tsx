@@ -5,7 +5,7 @@ export const metadata = { title: "Склад — план закупок" };
 
 export default function PlanPage() {
   return (
-    <main className="page" data-ui="service">
+    <main className="page">
       <h1>План закупок</h1>
       <WarehouseNav current="/warehouse/plan" />
       <PlanScreen />

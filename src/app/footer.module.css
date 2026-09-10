@@ -1,6 +1,6 @@
 .footer {
   margin-top: var(--sp-5);
-  padding: var(--sp-5) var(--sp-3) var(--sp-4);
+  padding-block: var(--sp-5) var(--sp-4);
   background: var(--surface);
   border-top: 1px solid var(--border);
 }
@@ -8,8 +8,11 @@
 .inner {
   display: grid;
   gap: var(--sp-4);
-  max-width: 960px;
+  width: 100%;
+  max-width: var(--page-width, 1120px);
   margin: 0 auto;
+  /* Те же боковые поля, что у шапки и контента: подвал стоит на общей левой линии. */
+  padding-inline: var(--sp-4);
 }
 
 @media (width >= 700px) {
@@ -67,8 +70,8 @@
 
 .stub {
   margin: var(--sp-4) auto 0;
-  max-width: 960px;
-  padding: var(--sp-2) var(--sp-3);
+  max-width: var(--page-width, 1120px);
+  padding: var(--sp-2) var(--sp-4);
   background: var(--status-neutral-bg);
   color: var(--status-neutral-ink);
   border-radius: var(--r-sm);

@@ -14,9 +14,9 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sp-2) var(--sp-3);
-  max-width: 960px;
+  max-width: var(--page-width, 1120px);
   margin: 0 auto;
-  padding: var(--sp-2) var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
 }
 
 .brand {

@@ -10,7 +10,7 @@ export default async function AssistantPage() {
   const canAsk = user?.role === "customer";
 
   return (
-    <main className="page pageForm">
+    <main className="page">
       <h1>Агент подбора</h1>
       <AssistantScreen canAsk={canAsk} />
     </main>

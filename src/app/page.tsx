@@ -49,7 +49,7 @@ export default function HomePage() {
   const greenhouse = HOME_PHOTOS.greenhouse;
 
   return (
-    <main className={styles.wide}>
+    <main className="page">
       <section className={styles.hero}>
         <Image
           className={styles.heroPhoto}

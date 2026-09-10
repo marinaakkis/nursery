@@ -4,7 +4,7 @@ export const metadata = { title: "Оформление" };
 
 export default function CheckoutPage() {
   return (
-    <main className="page pageForm">
+    <main className="page">
       <h1>Оформление</h1>
       <CheckoutScreen />
     </main>

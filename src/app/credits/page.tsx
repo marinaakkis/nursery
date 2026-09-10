@@ -25,7 +25,7 @@ export default function CreditsPage() {
   const home = Object.entries(HOME_PHOTOS);
 
   return (
-    <main className="page pageWide">
+    <main className="page">
       <h1>Фотографии: авторы и лицензии</h1>
       <p className={`${styles.lead} prose`}>
         Снимки взяты с Wikimedia Commons и используются на условиях указанных лицензий.

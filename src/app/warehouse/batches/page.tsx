@@ -5,7 +5,7 @@ export const metadata = { title: "Склад — приход и списани�
 
 export default function BatchesPage() {
   return (
-    <main className="page" data-ui="service">
+    <main className="page">
       <h1>Приход и списание</h1>
       <WarehouseNav current="/warehouse/batches" />
       <BatchesScreen />
