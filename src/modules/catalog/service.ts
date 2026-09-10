@@ -96,6 +96,7 @@ export type PlantCard = {
   id: number;
   nameRu: string;
   nameLat: string;
+  photoUrl: string | null;
   description: string;
   light: string;
   minZone: number;
@@ -142,6 +143,7 @@ export async function getPlant(raw: unknown): Promise<Result<PlantCard>> {
     careLevel: plant.careLevel,
     soil: plant.soil,
     priceCents: plant.priceCents,
+    photoUrl: plant.photoUrl,
     // Снятое с продажи растение остаётся читаемым: карточка не ломается,
     // меняется только доступность действия — см. spec §3.1.
     isActive: plant.isActive,
