@@ -1,9 +1,4 @@
 .section {
-  margin: var(--sp-4) 0 0;
-}
-
-.section h2 {
-  margin-bottom: var(--sp-2);
 }
 
 .methods {

@@ -323,3 +323,79 @@
 .askAction {
   flex: 0 0 auto;
 }
+
+/* Полоса 21:9 во всю ширину секции: фото перестало быть колонкой
+   и стало разделителем разделов. */
+.band {
+  position: relative;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.band img {
+  object-fit: cover;
+  object-position: 50% 45%;
+}
+
+/* Карточки под полосой: в ряд на широком экране, столбиком на телефоне.
+   Равная высота — за счёт растяжки строки грида. */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-3);
+  margin: var(--sp-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (width >= 700px) {
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: stretch;
+  }
+}
+
+.numbered {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  height: 100%;
+  padding: var(--sp-4);
+  padding-right: var(--sp-5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+/* Номер кружком в углу карточки, а не строкой над заголовком:
+   так он не отнимает у заголовка первую строку. */
+.badgeNumber {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--accent-weak);
+  border-radius: 50%;
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.cardTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+}
+
+.cardText {
+  margin: 0;
+  color: var(--text-muted);
+}

@@ -136,11 +136,6 @@
 }
 
 .about {
-  margin: var(--sp-4) 0 0;
-}
-
-.about h2 {
-  margin-bottom: var(--sp-2);
 }
 
 .about p {

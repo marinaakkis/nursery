@@ -103,29 +103,28 @@ export default function HomePage() {
 
       <section className={styles.section}>
         <h2>Как это работает</h2>
-        <div className={styles.split}>
-          <div>
-            <div className={styles.splitPhoto}>
-              <Image
-                src={seedling.src}
-                alt="Руки высаживают саженец в землю"
-                fill
-                sizes="(max-width: 700px) 100vw, 40vw"
-              />
-            </div>
-          </div>
-          <ol className={styles.steps}>
+        {/* Фото полосой во всю ширину, шаги карточками под ним: столбиком
+            справа они читались как подпись к снимку, а не как самостоятельный
+            рассказ. */}
+        <div className={styles.band}>
+          <Image
+            src={seedling.src}
+            alt="Руки высаживают саженец в землю"
+            fill
+            sizes="(max-width: 900px) 100vw, 1200px"
+          />
+        </div>
+        <ol className={styles.cards}>
           {STEPS.map((step, index) => (
-            <li className={styles.step} key={step.title}>
-              <span className={styles.stepNumber} aria-hidden="true">
+            <li className={styles.numbered} key={step.title}>
+              <span className={styles.badgeNumber} aria-hidden="true">
                 {index + 1}
               </span>
-              <p className={styles.stepTitle}>{step.title}</p>
-              <p className={styles.stepText}>{step.text}</p>
+              <p className={styles.cardTitle}>{step.title}</p>
+              <p className={styles.cardText}>{step.text}</p>
             </li>
-            ))}
-          </ol>
-        </div>
+          ))}
+        </ol>
       </section>
 
       <section className={styles.section}>
@@ -148,21 +147,22 @@ export default function HomePage() {
 
       <section className={styles.section}>
         <h2>Почему мы</h2>
-        {/* Фото во всю ширину, три факта строкой под ним: столбиком справа
-            они читались как подпись к снимку, а не как самостоятельный довод. */}
-        <div className={styles.splitPhoto}>
+        <div className={styles.band}>
           <Image
             src={greenhouse.src}
             alt="Оранжерея Ботанического института в Петербурге"
             fill
-            sizes="(max-width: 900px) 100vw, 900px"
+            sizes="(max-width: 900px) 100vw, 1200px"
           />
         </div>
-        <ul className={styles.facts}>
-          {FACTS.map((fact) => (
-            <li className={styles.fact} key={fact.number}>
-              <p className={styles.factNumber}>{fact.number}</p>
-              <p className={styles.stepText}>{fact.text}</p>
+        <ul className={styles.cards}>
+          {FACTS.map((fact, index) => (
+            <li className={styles.numbered} key={fact.number}>
+              <span className={styles.badgeNumber} aria-hidden="true">
+                {index + 1}
+              </span>
+              <p className={styles.cardTitle}>{fact.number}</p>
+              <p className={styles.cardText}>{fact.text}</p>
             </li>
           ))}
         </ul>
