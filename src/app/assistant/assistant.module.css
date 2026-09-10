@@ -16,15 +16,20 @@
   border-radius: var(--r-md);
 }
 
+/* Реплика покупателя — справа на бумажной подложке. Акцентом её красить
+   нельзя: акцент в продукте означает действие, а не «чьё сообщение». */
 .mine {
   align-self: flex-end;
-  max-width: 90%;
-  background: var(--accent-weak);
-  color: var(--accent-ink);
-  border: 1px solid var(--accent);
+  max-width: 80%;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
 }
 
+/* Ответ помощника — слева, на белом, со знаком бренда. Подборка и полоса
+   «что сделал» живут внутри этого же пузыря. */
 .theirs {
+  align-self: flex-start;
+  max-width: 100%;
   background: var(--surface);
   border: 1px solid var(--border);
 }
@@ -240,4 +245,41 @@
 
 .summaryTotal {
   font-weight: 600;
+}
+
+/* Поле ввода закреплено внизу: в чате оно всегда под рукой, а не в конце
+   ленты, до которой надо долистать. */
+.form {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+  padding: var(--sp-3) 0;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+.form > *:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Примеры запросов при пустой ленте: показать, на каком языке с ним говорить,
+   дешевле, чем объяснить это словами. */
+.examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.warning {
+  margin-bottom: var(--sp-4);
+  padding: var(--sp-3);
+  background: var(--status-warning-bg);
+  border: 1px solid var(--warning);
+  border-radius: var(--r-md);
+  color: var(--status-warning-ink);
 }

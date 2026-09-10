@@ -40,7 +40,7 @@ const EXAMPLES = [
   "полутень, зона 5, готов ухаживать",
 ];
 
-export function AssistantScreen() {
+export function AssistantScreen({ canAsk }: { canAsk: boolean }) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
@@ -178,6 +178,14 @@ export function AssistantScreen() {
 
   return (
     <>
+      {!canAsk ? (
+        <div className={styles.warning} role="status">
+          <strong>Помощник работает от лица покупателя.</strong> Выберите покупателя
+          в шапке — кружок справа вверху, — и поле ввода разблокируется. Подбор идёт
+          по его саду и его корзине, поэтому без покупателя он бессмыслен.
+        </div>
+      ) : null}
+
       <p className={styles.intro}>
         Опишите участок словами — помощник отберёт растения по каталогу и объяснит выбор.
         Заказ он не оформляет: в корзину кладёт только по вашей кнопке.
@@ -188,9 +196,14 @@ export function AssistantScreen() {
           title="Расскажите про участок"
           description="Сколько света, какая зона или регион, сколько времени на уход. Одной фразой — помощник разберёт её на условия сам."
           action={
-            <div className={styles.actions}>
+            <div className={styles.examples}>
               {EXAMPLES.map((example) => (
-                <Button key={example} variant="secondary" onClick={() => send(example)}>
+                <Button
+                  key={example}
+                  variant="secondary"
+                  disabled={!canAsk}
+                  onClick={() => send(example)}
+                >
                   {example}
                 </Button>
               ))}
@@ -385,13 +398,19 @@ export function AssistantScreen() {
             <Input
               {...control}
               value={draft}
-              placeholder="тень, зона 4, без ухода"
+              disabled={!canAsk}
+              placeholder={canAsk ? "тень, зона 4, без ухода" : "сначала выберите покупателя в шапке"}
               onChange={(event) => setDraft(event.target.value)}
             />
           )}
         </Field>
-        <Button size="large" type="submit" loading={thinking} disabled={draft.trim().length === 0}>
-          Спросить помощника
+        <Button
+          size="large"
+          type="submit"
+          loading={thinking}
+          disabled={!canAsk || draft.trim().length === 0}
+        >
+          Отправить
         </Button>
       </form>
 
