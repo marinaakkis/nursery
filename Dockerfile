@@ -20,6 +20,10 @@ WORKDIR /app
 # standalone уже содержит минимальный набор node_modules
 COPY --from=builder --chown=app:app /app/.next/standalone ./
 COPY --from=builder --chown=app:app /app/.next/static ./.next/static
+# public не входит в standalone-сборку: Next кладёт туда только server.js,
+# package.json и node_modules. Без этой строки фото растений отдают 404,
+# а страницы при этом работают — поэтому /health ничего не замечает.
+COPY --from=builder --chown=app:app /app/public ./public
 COPY --from=builder --chown=app:app /app/dist ./dist
 COPY --from=builder --chown=app:app /app/drizzle ./drizzle
 COPY --chown=app:app docker-entrypoint.sh ./docker-entrypoint.sh

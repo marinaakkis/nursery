@@ -68,7 +68,6 @@ export default function HomePage() {
           src={hero.src}
           alt="Ряды саженцев в питомнике"
           fill
-          quality={80}
           sizes="(max-width: 1120px) 100vw, 1120px"
           priority
         />
@@ -130,7 +129,6 @@ export default function HomePage() {
                 src={seedling.src}
                 alt="Руки высаживают саженец в землю"
                 fill
-                quality={80}
                 sizes="(max-width: 700px) 100vw, 40vw"
               />
             </div>
@@ -159,7 +157,6 @@ export default function HomePage() {
                 src={greenhouse.src}
                 alt="Оранжерея Ботанического института в Петербурге"
                 fill
-                quality={80}
                 sizes="(max-width: 700px) 100vw, 40vw"
               />
             </div>
