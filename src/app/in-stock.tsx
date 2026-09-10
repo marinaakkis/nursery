@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Badge, Button, Card, CardBody, EmptyState, ErrorState, PlantPhoto, Skeleton } from "@/ui";
 import { formatPrice } from "./catalog/filters";
+import { byStockThenName } from "./catalog/sort";
 import styles from "./home.module.css";
 
 type Plant = { id: number; nameRu: string; nameLat: string; photoUrl: string | null; priceCents: number };
@@ -60,9 +61,12 @@ export function InStock() {
     );
   }
 
-  const available = settled.plants
-    .filter((plant) => (settled.stock.get(plant.id)?.available ?? 0) > 0)
-    .slice(0, 6);
+  // Тот же порядок, что в каталоге: сначала то, чего вдоволь, потом остатки.
+  const available = byStockThenName(
+    settled.plants
+      .filter((plant) => (settled.stock.get(plant.id)?.available ?? 0) > 0)
+      .map((plant) => ({ ...plant, available: settled.stock.get(plant.id)?.available })),
+  ).slice(0, 6);
 
   if (available.length === 0) {
     return (

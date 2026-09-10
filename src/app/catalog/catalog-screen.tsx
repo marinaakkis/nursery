@@ -16,6 +16,7 @@ import {
   Skeleton,
 } from "@/ui";
 import styles from "./catalog.module.css";
+import { byStockThenName } from "./sort";
 import {
   FACETS,
   formatPrice,
@@ -121,7 +122,18 @@ export function CatalogScreen() {
           if (answer.ok) for (const row of answer.data as Stock[]) stock.set(row.plantId, row);
         }
 
-        setLoadout({ key: requestKey, data: payload.data, stock });
+        setLoadout({
+          key: requestKey,
+          // Порядок: сначала то, что можно купить, потом остатки, в конце
+          // закончившееся; внутри группы — по алфавиту.
+          data: {
+            ...payload.data,
+            items: byStockThenName(
+              items.map((plant) => ({ ...plant, available: stock.get(plant.id)?.available })),
+            ),
+          },
+          stock,
+        });
       })
       .catch((error: unknown) => {
         if (controller.signal.aborted) return;

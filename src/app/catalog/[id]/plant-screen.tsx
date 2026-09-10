@@ -16,6 +16,7 @@ import {
 } from "@/ui";
 import { photoCreditFor } from "@/lib/photo-credits";
 import { CARE_TYPE_LABEL, daysWord, formatPrice, labelOf } from "../filters";
+import { byStockThenName } from "../sort";
 import { CalendarIcon, DropIcon, SoilIcon, SunIcon, ZoneIcon } from "./icons";
 import styles from "./plant.module.css";
 
@@ -86,8 +87,9 @@ export function PlantScreen({ plantId }: { plantId: string }) {
           .then((r) => r.json())
           .catch(() => ({ ok: false }));
 
+        // Тот же порядок, что в каталоге: закончившееся не лезет в «похожие».
         const similar: Similar[] = near.ok
-          ? (near.data.items as Similar[]).filter((item) => item.id !== plant.id).slice(0, 3)
+          ? byStockThenName((near.data.items as Similar[]).filter((item) => item.id !== plant.id)).slice(0, 3)
           : [];
 
         setLoadout({
