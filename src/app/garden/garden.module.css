@@ -1,0 +1,211 @@
+.intro {
+  margin: var(--sp-1) 0 var(--sp-3);
+  color: var(--text-muted);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.tabCurrent {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-2);
+}
+
+@media (width >= 700px) {
+  .list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Растение в саду: снимок слева, ближайшее действие справа —
+   на телефоне это одна строка списка, а не карточка во всю ширину. */
+.row {
+  display: flex;
+  gap: var(--sp-3);
+  padding: var(--sp-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  color: inherit;
+  text-decoration: none;
+}
+
+.row:hover {
+  border-color: var(--border-control);
+}
+
+.rowBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  line-height: var(--lh-tight);
+}
+
+.latin {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.next {
+  margin-top: auto;
+  padding-top: var(--sp-1);
+}
+
+.nextNone {
+  color: var(--text-muted);
+}
+
+.day {
+  margin: var(--sp-4) 0 var(--sp-2);
+}
+
+.dayName {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+.dayWeekday {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.dayEmpty {
+  padding: var(--sp-2) 0;
+  color: var(--text-muted);
+}
+
+.event {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.event + .event {
+  margin-top: var(--sp-2);
+}
+
+.eventOverdue {
+  border-color: var(--warning);
+}
+
+.eventBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 0;
+}
+
+.eventWhat {
+  font-weight: 600;
+}
+
+.eventPlant {
+  color: var(--text-muted);
+}
+
+.eventDone .eventWhat {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.overdueBlock {
+  padding: var(--sp-3);
+  background: var(--status-warning-bg);
+  border: 1px solid var(--warning);
+  border-radius: var(--r-md);
+}
+
+.overdueTitle {
+  margin: 0 0 var(--sp-2);
+  color: var(--status-warning-ink);
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+.rules {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rules li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+}
+
+.rules li + li {
+  border-top: 1px solid var(--border);
+}
+
+.rulePeriod {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.section {
+  margin-top: var(--sp-4);
+}
+
+.section h2 {
+  margin-bottom: var(--sp-2);
+}
+
+.hero {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+}
+
+.heroBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+/* Самостоятельная ссылка, а не текст в предложении: зона нажатия полная. */
+.heroBody a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+}

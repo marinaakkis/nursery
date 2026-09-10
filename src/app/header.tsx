@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandMark } from "@/ui";
 import styles from "./header.module.css";
+import { countDueCareEvents } from "@/modules/garden";
 import { currentUser, listDemoUsers } from "@/lib/demo-user.server";
 import { UserSwitcher } from "./user-switcher";
 
@@ -11,6 +12,11 @@ export async function Header() {
     listDemoUsers().catch(() => []),
     currentUser().catch(() => null),
   ]);
+
+  // Напоминание — сколько дел по уходу уже пора сделать. Считается тем же
+  // способом, что и на экране: события с датой не позже сегодняшней.
+  const dueCare =
+    user?.role === "customer" ? await countDueCareEvents(user.id).catch(() => 0) : 0;
 
   return (
     <header className={styles.header}>
@@ -26,10 +32,14 @@ export async function Header() {
           <Link className={styles.link} href="/assistant">
             Помощник
           </Link>
-          {/* 🔶 Раздел объявлен, но модуль garden пуст — вести в 404 хуже, чем сказать правду. */}
-          <span className={styles.soon} title="Раздел ещё не собран">
-            Мой сад · скоро
-          </span>
+          <Link className={styles.link} href="/garden">
+            Мой сад
+            {dueCare > 0 ? (
+              <span className={styles.count} aria-label={`дел по уходу: ${dueCare}`}>
+                {dueCare}
+              </span>
+            ) : null}
+          </Link>
           <Link className={styles.link} href="/orders">
             Заказы
           </Link>

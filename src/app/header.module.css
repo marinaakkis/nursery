@@ -6,10 +6,14 @@
   border-bottom: 1px solid var(--border);
 }
 
+/* На узком экране бренд и аватар держат первую строку, разделы уходят на вторую.
+   Иначе «Мой сад» со счётчиком напоминаний уезжает в скрытую прокрутку —
+   а счётчик, которого не видно, не напоминает ни о чём. */
 .inner {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--sp-3);
+  gap: var(--sp-2) var(--sp-3);
   max-width: 960px;
   margin: 0 auto;
   padding: var(--sp-2) var(--sp-3);
@@ -17,6 +21,7 @@
 
 .brand {
   display: inline-flex;
+  flex: 1;
   align-items: center;
   gap: var(--sp-2);
   min-height: var(--tap);
@@ -30,10 +35,18 @@
 
 .nav {
   display: flex;
-  flex: 1;
+  flex: 1 1 100%;
+  order: 3;
   gap: var(--sp-1);
   overflow-x: auto;
   scrollbar-width: none;
+}
+
+@media (width >= 560px) {
+  .nav {
+    flex: 1 1 auto;
+    order: 0;
+  }
 }
 
 .nav::-webkit-scrollbar {
@@ -56,16 +69,21 @@
   color: var(--accent-ink);
 }
 
-/* «Мой сад» ещё не собран: пункт стоит на своём месте, но никуда не ведёт
-   и говорит об этом прямо — заглушка обозначается на экране, а не в документации. */
-.soon {
+/* Счётчик напоминаний рядом с «Мой сад»: число, а не точка — покупателю
+   важно, одно дело его ждёт или семь. */
+.count {
   display: inline-flex;
   align-items: center;
-  min-height: var(--tap);
-  padding: 0 var(--sp-2);
-  color: var(--text-muted);
-  white-space: nowrap;
-  cursor: default;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  margin-left: var(--sp-1);
+  padding: 0 6px;
+  background: var(--status-warning-bg);
+  border-radius: 11px;
+  color: var(--status-warning-ink);
+  font-size: var(--fs-base);
+  font-weight: 600;
 }
 
 .avatar {
