@@ -13,6 +13,9 @@ export async function Header() {
           Питомник
         </Link>
         <nav className={styles.nav}>
+          <Link className={styles.link} href="/assistant">
+            Агент
+          </Link>
           <Link className={styles.link} href="/cart">
             Корзина
           </Link>

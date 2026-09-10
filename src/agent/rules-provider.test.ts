@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { RulesProvider } from "./rules-provider";
 import { HttpProvider } from "./http-provider";
-import { callTool, IRREVERSIBLE } from "./runner";
+import { callTool, IRREVERSIBLE, makeProvider } from "./runner";
 
 const provider = new RulesProvider();
 const ctx = { userId: 1, role: "customer" as const };
@@ -70,6 +70,21 @@ describe("http-провайдер — заглушка с внятной при�
     if (plan.kind !== "refuse") return;
     expect(plan.message).toContain("LLM_PROVIDER");
     expect(plan.hint).toContain("rules");
+  });
+});
+
+describe("выбор провайдера по переменной окружения", () => {
+  it("по умолчанию и при rules берётся детерминированный", () => {
+    delete process.env.LLM_PROVIDER;
+    expect(makeProvider().name).toBe("rules");
+    process.env.LLM_PROVIDER = "rules";
+    expect(makeProvider().name).toBe("rules");
+  });
+
+  it("при http берётся http и молча не подменяется на rules", () => {
+    process.env.LLM_PROVIDER = "http";
+    expect(makeProvider().name).toBe("http");
+    delete process.env.LLM_PROVIDER;
   });
 });
 

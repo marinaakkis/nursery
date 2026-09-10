@@ -1,0 +1,170 @@
+.intro {
+  margin: var(--sp-1) 0 var(--sp-3);
+  color: var(--text-muted);
+}
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.mine,
+.theirs {
+  padding: var(--sp-3);
+  border-radius: var(--r-md);
+}
+
+.mine {
+  align-self: flex-end;
+  max-width: 90%;
+  background: var(--accent-weak);
+  color: var(--accent-ink);
+  border: 1px solid var(--accent);
+}
+
+.theirs {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.who {
+  display: block;
+  margin-bottom: var(--sp-1);
+  color: var(--text-muted);
+}
+
+.text {
+  margin: 0;
+}
+
+.hint {
+  margin: var(--sp-2) 0 0;
+  color: var(--text-muted);
+}
+
+/* Карточка «что сделал»: инструмент, аргументы и результат человеческим языком.
+   Требование задания — агент показывает в интерфейсе, что сделал и почему. */
+.trace {
+  margin: var(--sp-3) 0 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+
+.traceHead {
+  min-height: var(--tap);
+  padding: var(--sp-2) var(--sp-3);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.traceList {
+  margin: 0;
+  padding: 0 var(--sp-3) var(--sp-2);
+  list-style: none;
+}
+
+.traceList li {
+  padding: var(--sp-2) 0;
+}
+
+.traceList li + li {
+  border-top: 1px solid var(--border);
+}
+
+.tool {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  color: var(--text-muted);
+}
+
+.picks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: var(--sp-3) 0 0;
+}
+
+.pick {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  min-height: var(--tap);
+  padding: var(--sp-3);
+  background: var(--bg);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+
+.pick:has(input:checked) {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+}
+
+.pick input {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin-top: var(--sp-1);
+  accent-color: var(--accent);
+}
+
+.pickBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.pickName {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+/* Ссылка на карточку — самостоятельная цель, а не текст в предложении.
+   Тот же промах, что нашёлся в корзине: замер давал 18px при норме 44. */
+.pickName a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  color: inherit;
+  text-decoration: none;
+}
+
+.pickName a:hover {
+  text-decoration: underline;
+}
+
+.pickLatin {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.pickWhy {
+  color: var(--text-muted);
+}
+
+.pickPrice {
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: var(--sp-3) 0 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.stub {
+  margin: var(--sp-3) 0 0;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--status-neutral-bg);
+  color: var(--status-neutral-ink);
+  border-radius: var(--r-sm);
+}
