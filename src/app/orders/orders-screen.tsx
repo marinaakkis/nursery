@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Badge, Button, EmptyState, ErrorState, Skeleton } from "@/ui";
+import { Badge, Button, EmptyState, ErrorState, Skeleton ,
+  PlantPhoto,
+} from "@/ui";
 import { formatPrice } from "../catalog/filters";
 import styles from "./orders.module.css";
 import { formatWhen, STATUS_TONE } from "./status";
@@ -15,6 +17,7 @@ type OrderSummary = {
   totalCents: number;
   createdAt: string;
   itemCount: number;
+  items: { plantId: number; nameRu: string; photoUrl: string | null; quantity: number }[];
 };
 
 type Loadout = { key: string; orders: OrderSummary[] | null; forbidden: string | null };
@@ -107,6 +110,26 @@ export function OrdersScreen() {
               {formatWhen(order.createdAt)} ·{" "}
               {order.fulfillment === "pickup" ? "самовывоз" : "доставка"}
             </span>
+            {/* Состав и миниатюры: без них шесть карточек подряд визуально
+                неразличимы и заказ ищется только по номеру. */}
+            <span className={styles.thumbs}>
+              {order.items.slice(0, 4).map((item) => (
+                <PlantPhoto
+                  key={item.plantId}
+                  name={item.nameRu}
+                  photoUrl={item.photoUrl}
+                  variant="thumb"
+                />
+              ))}
+            </span>
+            <span className={styles.composition}>
+              {order.items
+                .slice(0, 3)
+                .map((item) => `${item.nameRu} · ${item.quantity} шт.`)
+                .join(", ")}
+              {order.items.length > 3 ? ` и ещё ${order.items.length - 3}` : ""}
+            </span>
+
             <span className={styles.rowFoot}>
               <span className="muted">{order.itemCount} шт.</span>
               <span className={styles.sum}>{formatPrice(order.totalCents)}</span>

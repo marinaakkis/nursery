@@ -216,3 +216,24 @@
   flex-direction: column;
   gap: var(--sp-3);
 }
+
+.thumbs {
+  display: flex;
+  gap: var(--sp-1);
+  flex-wrap: wrap;
+  margin: var(--sp-1) 0;
+}
+
+.composition {
+  color: var(--text-muted);
+}
+
+/* Список заказов на широком экране — две колонки: одна колонка карточек
+   по 960px превращает список в ленту. */
+@media (width >= 900px) {
+  .list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-2);
+  }
+}

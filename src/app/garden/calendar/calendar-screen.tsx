@@ -169,6 +169,7 @@ export function CalendarScreen() {
         </section>
       ) : null}
 
+      <div className={styles.week}>
       {week.map((day) => {
         const ofDay = inWeek.filter((event) => event.plannedOn === day);
         return (
@@ -198,6 +199,7 @@ export function CalendarScreen() {
           </section>
         );
       })}
+      </div>
     </>
   );
 }
@@ -212,17 +214,21 @@ function WeekNav({
   onMove: (iso: string) => void;
 }) {
   return (
-    <div className={styles.tabs}>
+    <div className={styles.weekHead}>
       <Button variant="secondary" onClick={() => onMove(shiftIso(weekStart, -7))}>
-        ← Неделя назад
+        ← Прошлая неделя
       </Button>
+      {/* Период между стрелками: без него после нажатия непонятно, где ты. */}
+      <span className={styles.weekTitle}>
+        {humanDate(weekStart)} — {humanDate(shiftIso(weekStart, 6))}
+      </span>
       {weekStart === today ? null : (
         <Button variant="ghost" onClick={() => onMove(today)}>
           Сегодня
         </Button>
       )}
       <Button variant="secondary" onClick={() => onMove(shiftIso(weekStart, 7))}>
-        Вперёд →
+        Следующая неделя →
       </Button>
     </div>
   );

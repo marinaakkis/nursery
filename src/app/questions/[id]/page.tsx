@@ -15,7 +15,7 @@ export default async function ThreadPage({ params }: { params: Promise<{ id: str
   if (user?.role === "agronomist") redirect(`/agronomist?q=${id}`);
 
   return (
-    <main className="page">
+    <main className="page pageForm">
       <ThreadScreen questionId={id} />
     </main>
   );

@@ -4,7 +4,7 @@ export const metadata = { title: "Вопросы агроному" };
 
 export default function QuestionsPage() {
   return (
-    <main className="page">
+    <main className="page pageForm">
       <h1>Вопросы агроному</h1>
       <QuestionsScreen />
     </main>

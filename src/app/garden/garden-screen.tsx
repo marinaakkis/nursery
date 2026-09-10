@@ -112,7 +112,9 @@ export function GardenScreen() {
             <span className={styles.rowBody}>
               <span className={styles.name}>{plant.nameRu}</span>
               <span className={styles.latin}>{plant.nameLat}</span>
-              {plant.quantity > 1 ? <span className="muted">{plant.quantity} шт.</span> : null}
+              {/* Количество показываем всегда: соседние карточки в ряду
+                  должны быть устроены одинаково, иначе ряд читается как сбой. */}
+              <span className="muted">{plant.quantity} шт.</span>
               <span className={styles.next}>
                 {plant.next ? (
                   plant.next.overdue ? (

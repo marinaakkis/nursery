@@ -52,6 +52,38 @@ function stockBadge(stock: Stock | undefined) {
   return null;
 }
 
+/** Группы чипов. Один и тот же список рисуется и в боковой панели на широком
+ *  экране, и в шите на телефоне — отличается только тем, куда уходит нажатие. */
+function FacetGroups({
+  value,
+  onToggle,
+}: {
+  value: Selection;
+  onToggle: (key: FacetKey, option: string) => void;
+}) {
+  return (
+    <>
+      {FACETS.map((facet) => (
+        <div className={styles.facet} key={facet.key}>
+          <p className={styles.facetName}>{facet.title}</p>
+          <div className={styles.chips}>
+            {facet.options.map((option) => (
+              <Chip
+                key={option.value}
+                pressed={value[facet.key] === option.value}
+                onToggle={() => onToggle(facet.key, option.value)}
+              >
+                {option.label}
+              </Chip>
+            ))}
+          </div>
+        </div>
+      ))}
+    </>
+  );
+}
+
+
 export function CatalogScreen() {
   const router = useRouter();
   const pathname = usePathname();
@@ -139,6 +171,22 @@ export function CatalogScreen() {
     <>
       <p className={styles.intro}>Проверенный ассортимент для зоны 3–4. Отберите то, что приживётся именно у вас.</p>
 
+      <div className={styles.layout}>
+        <aside className={styles.panel} aria-label="Фильтры">
+          <FacetGroups
+            value={selection}
+            onToggle={(key, option) => {
+              // В панели фильтр применяется сразу: черновик и кнопка «Показать»
+              // нужны шиту, который перекрывает выдачу, а панель её не прячет.
+              const next: Selection = { ...selection };
+              if (next[key] === option) delete next[key];
+              else next[key] = option;
+              apply(next);
+            }}
+          />
+        </aside>
+
+        <div className={styles.results}>
       <div className={styles.bar}>
         <Button variant="secondary" onClick={openSheet}>
           {appliedCount > 0 ? `Фильтры · ${appliedCount}` : "Фильтры"}
@@ -226,6 +274,9 @@ export function CatalogScreen() {
         </>
       ) : null}
 
+        </div>
+      </div>
+
       <Sheet
         open={sheetOpen}
         onClose={() => setSheetOpen(false)}
@@ -244,22 +295,7 @@ export function CatalogScreen() {
           </ActionBar>
         }
       >
-        {FACETS.map((facet) => (
-          <div className={styles.facet} key={facet.key}>
-            <p className={styles.facetName}>{facet.title}</p>
-            <div className={styles.chips}>
-              {facet.options.map((option) => (
-                <Chip
-                  key={option.value}
-                  pressed={draft[facet.key] === option.value}
-                  onToggle={() => toggleDraft(facet.key, option.value)}
-                >
-                  {option.label}
-                </Chip>
-              ))}
-            </div>
-          </div>
-        ))}
+        <FacetGroups value={draft} onToggle={toggleDraft} />
       </Sheet>
     </>
   );

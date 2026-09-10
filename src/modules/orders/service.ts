@@ -384,11 +384,32 @@ export async function listOrders(customerId: number): Promise<Result<OrderSummar
     .groupBy(orders.id)
     .orderBy(desc(orders.createdAt), desc(orders.id));
 
+  if (rows.length === 0) return ok([]);
+
+  // Состав вторым запросом, а не агрегатом в первом: карточки без названий
+  // растений в списке заказов неразличимы.
+  const ids = rows.map((r) => r.id);
+  const items = await getDb()
+    .select({
+      orderId: orderItems.orderId,
+      plantId: orderItems.plantId,
+      nameRu: plants.nameRu,
+      photoUrl: plants.photoUrl,
+      quantity: orderItems.quantity,
+    })
+    .from(orderItems)
+    .innerJoin(plants, eq(plants.id, orderItems.plantId))
+    .where(inArray(orderItems.orderId, ids))
+    .orderBy(asc(plants.nameRu));
+
   return ok(
     rows.map((r) => ({
       ...r,
       statusLabel: STATUS_LABEL[r.status],
       createdAt: r.createdAt.toISOString(),
+      items: items
+        .filter((item) => item.orderId === r.id)
+        .map(({ plantId, nameRu, photoUrl, quantity }) => ({ plantId, nameRu, photoUrl, quantity })),
     })),
   );
 }

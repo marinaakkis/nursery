@@ -6,7 +6,7 @@ export const metadata = { title: "Мой сад" };
 
 export default function GardenPage() {
   return (
-    <main className="page">
+    <main className="page pageWide">
       <h1>Мой сад</h1>
       <nav className={styles.tabs} aria-label="Разделы сада">
         <span className={`${styles.tab} ${styles.tabCurrent}`} aria-current="page">

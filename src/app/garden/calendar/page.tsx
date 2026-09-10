@@ -6,7 +6,7 @@ export const metadata = { title: "Календарь ухода" };
 
 export default function CalendarPage() {
   return (
-    <main className="page">
+    <main className="page pageWide">
       <h1>Календарь ухода</h1>
       <nav className={styles.tabs} aria-label="Разделы сада">
         <Link className={styles.tab} href="/garden">

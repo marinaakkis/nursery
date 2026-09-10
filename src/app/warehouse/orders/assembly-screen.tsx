@@ -30,11 +30,11 @@ function nextSteps(order: AssemblyOrder): { next: string; label: string }[] {
   if (order.status === "new") return [{ next: "assembling", label: "Взять в сборку" }];
   if (order.status === "assembling") {
     return order.fulfillment === "pickup"
-      ? [{ next: "ready_for_pickup", label: "Собран, готов к выдаче" }]
-      : [{ next: "handed_to_delivery", label: "Передан в доставку" }];
+      ? [{ next: "ready_for_pickup", label: "Отметить собранным" }]
+      : [{ next: "handed_to_delivery", label: "Передать в доставку" }];
   }
-  if (order.status === "ready_for_pickup") return [{ next: "done", label: "Выдан покупателю" }];
-  if (order.status === "handed_to_delivery") return [{ next: "done", label: "Доставлен" }];
+  if (order.status === "ready_for_pickup") return [{ next: "done", label: "Выдать покупателю" }];
+  if (order.status === "handed_to_delivery") return [{ next: "done", label: "Отметить доставленным" }];
   return [];
 }
 
@@ -145,7 +145,7 @@ export function AssemblyScreen() {
       {notice ? <InlineSuccess message={notice} /> : null}
       {error ? <ErrorState message={error} /> : null}
 
-      {orders.map((order) => (
+      {orders.map((order, index) => (
         <div className={styles.card} key={order.id}>
           <div className={styles.orderHead}>
             <strong>
@@ -171,6 +171,9 @@ export function AssemblyScreen() {
             {nextSteps(order).map((step) => (
               <Button
                 key={step.next}
+                // Заливкой выделен только первый в очереди: пять primary-кнопок
+                // на экране не показывают, с чего начинать.
+                variant={index === 0 ? "primary" : "secondary"}
                 loading={busy === order.id}
                 onClick={() => move(order.id, step.next, step.label)}
               >

@@ -91,3 +91,43 @@
   flex-wrap: wrap;
   gap: var(--sp-2);
 }
+
+/* Панель фильтров слева от 1024px: шит на всю ширину монитора отдавал
+   три четверти площади пустой белизне и перекрывал выдачу, ради которой
+   фильтр и ставят. На телефоне остаётся шит — там места нет. */
+.panel {
+  display: none;
+}
+
+.layout {
+  display: block;
+}
+
+.results {
+  min-width: 0;
+}
+
+@media (width >= 1024px) {
+  .layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: var(--sp-4);
+    align-items: start;
+  }
+
+  .panel {
+    position: sticky;
+    top: var(--sp-3);
+    display: block;
+    padding: var(--sp-3);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+  }
+
+  /* Кнопка «Фильтры» и строка применённых чипов — мобильный механизм,
+     на широком экране их роль играет сама панель. */
+  .bar {
+    display: none;
+  }
+}

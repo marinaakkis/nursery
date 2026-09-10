@@ -209,3 +209,55 @@
   align-items: center;
   min-height: var(--tap);
 }
+
+/* Неделя семью колонками от 768px: вертикальный список, где пять дней
+   из семи заняты словом «Свободно», занимает экран и ничего не показывает. */
+@media (width >= 768px) {
+  .week {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--sp-2);
+    align-items: start;
+  }
+
+  .day {
+    margin: 0;
+    padding: var(--sp-2);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    min-height: 140px;
+  }
+
+  .day .event {
+    padding: var(--sp-2);
+  }
+
+  .day .event + .event {
+    margin-top: var(--sp-1);
+  }
+}
+
+.weekHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-3);
+}
+
+.weekTitle {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+/* Бейдж — по содержимому, а не во всю карточку: растянутый на 1150px
+   он читается как заливка, а не как метка. */
+.next > span,
+.eventBody > span {
+  align-self: flex-start;
+  width: max-content;
+  max-width: 100%;
+}
