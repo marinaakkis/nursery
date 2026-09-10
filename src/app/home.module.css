@@ -45,7 +45,15 @@
 
 .heroTitle {
   margin: 0;
+  /* 32 на телефоне, 40 на десктопе: герой — единственное место,
+     где заголовок крупнее страничного. */
   font-size: var(--fs-xl);
+}
+
+@media (width >= 900px) {
+  .heroTitle {
+    font-size: var(--fs-hero);
+  }
 }
 
 .heroLead {
@@ -75,22 +83,25 @@
   color: var(--accent);
 }
 
+/* Один ритм на весь продукт: между секциями --sp-6, от заголовка секции
+   до её содержимого --sp-4, между карточками внутри сетки --sp-3. */
 .section {
-  margin-top: var(--sp-5);
+  margin-top: var(--sp-6);
 }
 
 .sectionHead {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--sp-3);
-  margin-bottom: var(--sp-3);
+  margin-bottom: var(--sp-4);
 }
 
 .tiles {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
 }
 
 @media (width >= 700px) {
@@ -144,7 +155,7 @@
 
 .splitPhoto {
   position: relative;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 21 / 9;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--r-md);
@@ -178,10 +189,21 @@
    Поэтому внутри .split они идут одной колонкой. Замер на 1024. */
 @media (width >= 700px) {
   .split .steps,
-  .split .facts {
-    grid-template-columns: 1fr;
-    gap: var(--sp-2);
+  .split /* Три факта в ряд под фотографией. */
+.facts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-3);
+  margin: var(--sp-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (width >= 700px) {
+  .facts {
+    grid-template-columns: repeat(3, 1fr);
   }
+}
 }
 
 .step {
@@ -242,7 +264,7 @@
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
 }
 
 @media (width >= 700px) {

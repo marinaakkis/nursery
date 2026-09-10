@@ -150,27 +150,24 @@ export default function HomePage() {
 
       <section className={styles.section}>
         <h2>Почему мы</h2>
-        <div className={styles.split}>
-          <div>
-            <div className={styles.splitPhoto}>
-              <Image
-                src={greenhouse.src}
-                alt="Оранжерея Ботанического института в Петербурге"
-                fill
-                sizes="(max-width: 700px) 100vw, 40vw"
-              />
-            </div>
-            <PhotoCredit photo={greenhouse} />
-          </div>
+        {/* Фото во всю ширину, три факта строкой под ним: столбиком справа
+            они читались как подпись к снимку, а не как самостоятельный довод. */}
+        <div className={styles.splitPhoto}>
+          <Image
+            src={greenhouse.src}
+            alt="Оранжерея Ботанического института в Петербурге"
+            fill
+            sizes="(max-width: 900px) 100vw, 900px"
+          />
+        </div>
         <ul className={styles.facts}>
           {FACTS.map((fact) => (
             <li className={styles.fact} key={fact.number}>
               <p className={styles.factNumber}>{fact.number}</p>
               <p className={styles.stepText}>{fact.text}</p>
             </li>
-            ))}
-          </ul>
-        </div>
+          ))}
+        </ul>
       </section>
     </main>
   );

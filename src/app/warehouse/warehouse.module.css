@@ -56,10 +56,23 @@
   white-space: nowrap;
 }
 
+/* Строка 44–48px: рабочая таблица должна показывать много строк сразу,
+   а не дышать как витрина. Кегль остаётся 16 — читаемость не жертвуем. */
 .table th,
 .table td {
-  padding: var(--sp-2) var(--sp-3);
+  /* Вертикального поля нет: высоту строки задаёт сама ячейка, иначе
+     зона нажатия 44px и компактная строка не уживаются. */
+  padding: 0 var(--sp-3);
+  line-height: var(--lh);
   text-align: left;
+}
+
+.table tbody td {
+  height: 46px;
+}
+
+.table thead th {
+  height: 40px;
 }
 
 .table th {
@@ -73,10 +86,12 @@
 
 /* Ссылка в ячейке — самостоятельная цель, а не текст в предложении:
    зона нажатия обязана быть полной даже в плотном режиме. */
+/* Ссылка в ячейке занимает всю высоту строки: зона нажатия набирается
+   высотой самой строки, а не дополнительным полем внутри неё. */
 .table td a {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  min-height: var(--tap);
+  min-height: 46px;
 }
 
 .num {
@@ -90,7 +105,7 @@
 }
 
 .card {
-  padding: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
@@ -132,13 +147,14 @@
   font-size: var(--fs-base);
 }
 
+/* Номер и статус в одной строке, действия справа: карточка очереди —
+   строка работы, а не витринный блок. */
 .orderHead {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
   gap: var(--sp-2);
-  margin-bottom: var(--sp-2);
+  margin-bottom: var(--sp-1);
 }
 
 .orderItems {
