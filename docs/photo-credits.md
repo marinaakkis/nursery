@@ -47,7 +47,7 @@
 
 | Файл | Что на снимке | Автор | Лицензия | Источник |
 |---|---|---|---|---|
-| `hero-garden.jpg` | Питомник: горшки с саженцами | C. G. P. Grey | CC BY 3.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Cutchogue_-_Oregon_Road_-_Plant_Nursery.jpg) |
+| `hero-garden.jpg` | Травянистый бордюр, сады Дифрин, Уэльс | M J Roscoe | CC BY-SA 2.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Herbaceous_border,_Dyffryn_Gardens_-_geograph.org.uk_-_5057029.jpg) |
 | `hero-seedling.jpg` | Руки с саженцем | USFS Region 5 | Public domain | [файл на Commons](https://commons.wikimedia.org/wiki/File:Seedling_planting.jpg) |
 | `hero-greenhouse.jpg` | Оранжерея Ботанического института, Петербург | User:Владимир Иванов | Public domain | [файл на Commons](https://commons.wikimedia.org/wiki/File:Botanical_Garden_V.L._Komarov_Botanical_Institute.jpg) |
 

@@ -92,7 +92,7 @@ export function photoFocusFor(photoUrl: string | null | undefined): string {
 
 /** Снимки главной. Ключ смысловой, к таблице растений отношения не имеет. */
 export const HOME_PHOTOS = {
-  garden: { src: "/home/hero-garden.jpg", author: "C. G. P. Grey", license: "CC BY 3.0", url: "https://commons.wikimedia.org/wiki/File:Cutchogue_-_Oregon_Road_-_Plant_Nursery.jpg" },
+  garden: { src: "/home/hero-garden.jpg", author: "M J Roscoe", license: "CC BY-SA 2.0", url: "https://commons.wikimedia.org/wiki/File:Herbaceous_border,_Dyffryn_Gardens_-_geograph.org.uk_-_5057029.jpg" },
   seedling: { src: "/home/hero-seedling.jpg", author: "USFS Region 5", license: "Public domain", url: "https://commons.wikimedia.org/wiki/File:Seedling_planting.jpg" },
   greenhouse: { src: "/home/hero-greenhouse.jpg", author: "User:Владимир Иванов", license: "Public domain", url: "https://commons.wikimedia.org/wiki/File:Botanical_Garden_V.L._Komarov_Botanical_Institute.jpg" },
 } as const;

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/ui";
+import { Button, SparkMark } from "@/ui";
 import { HOME_PHOTOS } from "@/lib/photo-credits";
 import styles from "./home.module.css";
 import { InStock } from "./in-stock";
@@ -51,31 +51,47 @@ export default function HomePage() {
   return (
     <main className="page">
       <section className={styles.hero}>
-        <Image
-          className={styles.heroPhoto}
-          src={hero.src}
-          alt="Ряды саженцев в питомнике"
-          fill
-          sizes="(max-width: 1120px) 100vw, 1120px"
-          priority
-        />
-        {/* Текст лежит на плотной подложке: контраст поверх снимка иначе не гарантирован. */}
         <div className={styles.heroText}>
+          <p className={styles.eyebrow}>Питомник · Ленобласть · зона&nbsp;3–4</p>
           <h1 className={styles.heroTitle}>Растения, которые переживут нашу зиму</h1>
           <p className={styles.heroLead}>
-            Питомник в Ленинградской области. Саженцы и рассада для зоны 3–4 — с календарём
-            ухода и помощником, который подберёт набор под ваш участок.
+            Саженцы и рассада для холодной зоны — с календарём ухода и помощником, который
+            подберёт набор под ваш участок.
           </p>
+
+          {/* Бейдж про ИИ стоит над кнопками, а не внутри них: сначала человек
+              понимает, что помощник — машина, потом решает, идти ли к нему. */}
+          <p className={styles.aiBadge}>
+            <SparkMark size={14} />
+            <span className={styles.aiBadgeTitle}>AI-помощник</span>
+            <span className={styles.aiBadgeText}>опишите участок словами — подборка за секунду</span>
+          </p>
+
           <div className={styles.heroActions}>
             <Link href="/assistant">
-              <Button size="large">Подобрать растения с помощником</Button>
+              <Button size="large">
+                <SparkMark size={16} />
+                Подобрать с AI-помощником
+              </Button>
             </Link>
             <Link href="/catalog">
               <Button size="large" variant="secondary">
-                В каталог
+                Смотреть каталог
               </Button>
             </Link>
           </div>
+
+          <p className={styles.heroFacts}>31 растение · календарь ухода · AI-подбор под участок</p>
+        </div>
+
+        <div className={styles.heroPhoto}>
+          <Image
+            src={hero.src}
+            alt="Травянистый бордюр вдоль дорожки в утреннем свете"
+            fill
+            sizes="(max-width: 900px) 100vw, 480px"
+            priority
+          />
         </div>
       </section>
 

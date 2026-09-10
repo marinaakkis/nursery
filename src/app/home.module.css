@@ -1,86 +1,170 @@
-/* Главная — единственный экран, который на десктопе не должен быть узкой
-   колонкой: hero и плитки идут во всю ширину, поэтому .page здесь не годится. */
 
-
+/*
+ * Hero: текст слева с воздухом, фото справа в скруглённом прямоугольнике.
+ * Не фото на всю ширину с карточкой поверх: подложка спорила со снимком,
+ * а сам снимок работал фоном, а не картинкой.
+ */
 .hero {
-  position: relative;
-  isolation: isolate;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  min-height: 420px;
-  margin: 0 calc(-1 * var(--sp-4));
-  border-radius: 0;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-4);
+  align-items: center;
+  /* Под hero — обычный ритм секций, без дополнительной дыры. */
+  margin-bottom: 0;
 }
 
-@media (width >= 700px) {
+@media (width >= 900px) {
   .hero {
+    grid-template-columns: 3fr 2fr;
+    gap: var(--sp-6);
     min-height: 520px;
-    margin: var(--sp-3) 0 0;
-    border: 1px solid var(--border);
-    border-radius: var(--r-md);
   }
 }
 
-.heroPhoto {
-  object-fit: cover;
+.heroText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  order: 2;
 }
 
-/* Подложка под текстом обязательна: контраст поверх снимка иначе не гарантирован.
-   Плотная заливка, а не полупрозрачность — прозрачность считается заново. */
-.heroText {
-  position: relative;
-  z-index: 1;
-  /* Текст героя стоит на общей левой линии: поле карточки внутри героя
-     ровно такое же, как боковое поле контейнера. */
-  margin: var(--sp-4) 0 var(--sp-4) 0;
-  padding: var(--sp-4);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  max-width: 560px;
+@media (width >= 900px) {
+  .heroText {
+    order: 1;
+    padding-block: var(--sp-5);
+  }
+}
+
+/* Строка над заголовком капителью: место и зона — до того, как человек
+   прочитал обещание. */
+.eyebrow {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .heroTitle {
   margin: 0;
-  /* 32 на телефоне, 40 на десктопе: герой — единственное место,
-     где заголовок крупнее страничного. */
   font-size: var(--fs-xl);
+  line-height: 1.1;
 }
 
 @media (width >= 900px) {
   .heroTitle {
-    font-size: var(--fs-hero);
+    /* Две строки задаёт сама колонка 60%: при 1120 это около 640px,
+       обе строки в него ложатся; ограничивать шире незачем. */
+    font-size: 52px;
   }
 }
 
 .heroLead {
-  margin: var(--sp-2) 0 var(--sp-4);
+  margin: 0;
+  max-width: 480px;
   color: var(--text-muted);
+  font-size: var(--fs-md);
+}
+
+/* «На базе ИИ» должно читаться сразу: бейдж на слабом акценте с искрой. */
+.aiBadge {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  width: fit-content;
+  margin: var(--sp-2) 0 0;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--accent-weak);
+  border-radius: var(--r-md);
+  color: var(--accent-ink);
+}
+
+.aiBadgeTitle {
+  font-weight: 600;
+}
+
+.aiBadgeText {
+  color: var(--accent-ink);
 }
 
 .heroActions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
 }
 
-.heroCredit {
-  position: absolute;
-  right: var(--sp-2);
-  bottom: var(--sp-2);
-  z-index: 1;
-  padding: var(--sp-1) var(--sp-2);
-  background: var(--surface);
-  border-radius: var(--r-sm);
+.heroActions button {
+  min-height: 52px;
+  border-radius: var(--r-md);
+}
+
+/* Тень при ховере у главной кнопки: единственное место, где тень
+   в продукте оправдана — это самое важное действие на самом важном экране. */
+.heroActions a:first-child button:hover {
+  box-shadow: 0 4px 14px rgb(79 107 46 / 25%);
+}
+
+.heroFacts {
+  margin: var(--sp-2) 0 0;
   color: var(--text-muted);
-  font-size: var(--fs-base);
 }
 
-.heroCredit a {
-  color: var(--accent);
+/* Фото справа, скруглённое, не во всю ширину. На телефоне — сверху, 16:9. */
+.heroPhoto {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  order: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
 }
+
+@media (width >= 900px) {
+  .heroPhoto {
+    order: 2;
+    aspect-ratio: auto;
+    height: 520px;
+  }
+}
+
+.heroPhoto img {
+  object-fit: cover;
+  object-position: 50% 55%;
+}
+
+/*
+ * 🔶 Единственный градиент в продукте. Лёгкая тёплая тонировка поверх
+ * hero-фото — 0 → 15% бумажного цвета сверху вниз, — чтобы снимок сел
+ * в палитру, а не спорил с ней. Исключение записано в docs/ui-rules.md.
+ */
+.heroPhoto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgb(247 245 240 / 0%), rgb(247 245 240 / 15%));
+  pointer-events: none;
+}
+
+/* Главная — единственный экран, который на десктопе не должен быть узкой
+   колонкой: hero и плитки идут во всю ширину, поэтому .page здесь не годится. */
+
+
+
+@media (width >= 700px) {
+  }
+
+
+
+
+@media (width >= 900px) {
+  }
+
+
+
+
 
 /* Один ритм на весь продукт: между секциями --sp-6, от заголовка секции
    до её содержимого --sp-4, между карточками внутри сетки --sp-3. */

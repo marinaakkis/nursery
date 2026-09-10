@@ -16,3 +16,4 @@ export { Select } from "./select";
 export { Sheet } from "./sheet";
 export { Textarea } from "./textarea";
 export { Skeleton } from "./skeleton";
+export { SparkMark } from "./spark-mark";

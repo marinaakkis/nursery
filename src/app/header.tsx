@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BrandMark } from "@/ui";
+import { BrandMark, SparkMark } from "@/ui";
 import styles from "./header.module.css";
 import { countDueCareEvents } from "@/modules/garden";
 import { countCartItems, currentUser, listDemoUsers } from "@/lib/demo-user.server";
@@ -60,7 +60,7 @@ export async function Header() {
                   отличается от обычного каталога, и заметить его надо
                   раньше, чем каталог. */}
               <Link className={`${styles.link} ${styles.ai}`} href="/assistant">
-                <BrandMark size={16} />
+                <SparkMark size={14} />
                 <span className={styles.aiText}>AI-помощник</span>
               </Link>
               <Link className={styles.link} href="/catalog">
