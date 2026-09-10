@@ -202,3 +202,34 @@
   color: var(--status-neutral-ink);
   border-radius: var(--r-sm);
 }
+
+/* Сводка заказа перед подтверждением: состав и итог одним списком,
+   чтобы подтверждать было что именно, а не «заказ». */
+.summary {
+  margin: var(--sp-3) 0 0;
+  padding: var(--sp-3);
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.summary li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+}
+
+.summary li + li {
+  border-top: 1px solid var(--border);
+}
+
+.summarySum {
+  white-space: nowrap;
+}
+
+.summaryTotal {
+  font-weight: 600;
+}

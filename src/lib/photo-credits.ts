@@ -35,6 +35,7 @@ const CREDITS: Record<number, PhotoCredit> = {
   28: { author: "автор не указан", license: "CC BY-SA 3.0", url: "https://commons.wikimedia.org/wiki/File:Buxus_sempervirens0.jpg" },
   29: { author: "Isiwal", license: "CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:Vanessa_cardui_on_Lavandula_angustifolia-2459.jpg" },
   30: { author: "James F.", license: "CC BY 1.0", url: "https://commons.wikimedia.org/wiki/File:Magnolia_%C3%97_soulangeana_blossom.jpg" },
+  31: { author: "Chris Light", license: "CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:Bergenia_crassifolia_2066.jpg" },
 };
 
 /** Путь к снимку растения или null, если снимка нет — тогда рисуется заглушка. */

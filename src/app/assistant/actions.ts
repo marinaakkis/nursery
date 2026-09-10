@@ -80,6 +80,43 @@ export async function confirmAddToCart(plantIds: number[]): Promise<AddResult> {
   };
 }
 
+export type OrderResult =
+  | { ok: true; orderId: number; step: { args: string; result: string } }
+  | { ok: false; message: string };
+
+/**
+ * Создание заказа агентскими воротами. Вызывается только обработчиком кнопки
+ * «Подтвердить заказ»: confirmed = true ставится здесь, а фразой в чате
+ * поставлен быть не может — там до этой функции дело не доходит вовсе.
+ *
+ * Ключ идемпотентности приходит с экрана и живёт одну попытку: два нажатия
+ * подряд дают один заказ, как и на обычном оформлении.
+ */
+export async function confirmCreateOrder(idempotencyKey: string): Promise<OrderResult> {
+  const gate = await requireCustomer();
+  if ("error" in gate) return { ok: false, message: gate.error };
+  if (!idempotencyKey) return { ok: false, message: "Повторите попытку — ключ подтверждения потерян." };
+
+  const result = await callTool(
+    "orders.create_order",
+    { method: "pickup", idempotencyKey },
+    gate.ctx,
+    true,
+  );
+
+  if (!result.ok) return { ok: false, message: result.error.message };
+
+  const { orderId } = result.data as { orderId: number };
+  return {
+    ok: true,
+    orderId,
+    step: {
+      args: "самовывоз, по кнопке подтверждения",
+      result: `заказ №${orderId} создан`,
+    },
+  };
+}
+
 /** Заглушка входа: используется экраном, чтобы не гадать про пользователя. */
 export async function selectedUserName(): Promise<string | null> {
   const raw = (await cookies()).get(DEMO_USER_COOKIE)?.value;

@@ -5,6 +5,12 @@ import type { PlantFilters } from "@/modules/catalog";
  *  Благодаря этому модель без tool-calling подключается без правок остального. */
 export type AgentPlan =
   | {
+      /** Прямая команда оформить самовывоз. Агент только показывает сводку:
+       *  заказ создаётся кнопкой, а не этой фразой. */
+      kind: "checkout";
+      method: "pickup";
+    }
+  | {
       kind: "pick";
       filters: PlantFilters;
       /** Как агент прочитал запрос — показывается пользователю дословно. */

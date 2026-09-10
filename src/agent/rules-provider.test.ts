@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
+import { eq, sql } from "drizzle-orm";
+import { getDb } from "@/db/client";
+import { users } from "@/db/shared-schema";
+import { plants } from "@/modules/catalog";
+import { batches } from "@/modules/warehouse";
+import { cartItems, orders } from "@/modules/orders";
 import { RulesProvider } from "./rules-provider";
 import { HttpProvider } from "./http-provider";
-import { callTool, IRREVERSIBLE, makeProvider, relaxationPlan } from "./runner";
+import { ask, callTool, IRREVERSIBLE, makeProvider, relaxationPlan } from "./runner";
 
 const provider = new RulesProvider();
 const ctx = { userId: 1, role: "customer" as const };
@@ -71,6 +77,52 @@ describe("http-провайдер — заглушка с внятной при�
     expect(plan.message).toContain("LLM_PROVIDER");
     expect(plan.hint).toContain("rules");
   });
+});
+
+describe("команда оформить самовывоз", () => {
+  it("узнаётся и не превращается в подбор", async () => {
+    for (const phrase of ["оформляй самовывозом", "оформи самовывоз", "оформить самовывозом, пожалуйста"]) {
+      const plan = await provider.plan(phrase);
+      expect(plan.kind, phrase).toBe("checkout");
+    }
+  });
+
+  it.skipIf(!process.env.DATABASE_URL)(
+    "фраза в чате доводит до сводки, но заказа в базе не появляется",
+    async () => {
+      const db = getDb();
+
+      // Корзина обязана быть непустой, иначе проверка вырождается: заказ
+      // не создался бы и у сломанного агента. Ловушка проверена диверсией.
+      const [customer] = await db
+        .insert(users)
+        .values({ name: `Проверка ворот ${Date.now()}`, role: "customer" })
+        .returning();
+      const [plant] = await db.select({ id: plants.id }).from(plants).limit(1);
+      await db.insert(batches).values({
+        plantId: plant.id,
+        receivedAt: "2026-01-01",
+        quantity: 5,
+        remaining: 5,
+        supplier: "тест ворот",
+      });
+      await db.insert(cartItems).values({ customerId: customer.id, plantId: plant.id, quantity: 1 });
+
+      const ctx = { userId: customer.id, role: "customer" as const };
+      const before = await db.select({ n: sql<number>`count(*)::int` }).from(orders);
+
+      const answer = await ask("оформляй самовывозом", ctx);
+
+      const after = await db.select({ n: sql<number>`count(*)::int` }).from(orders);
+      expect(after[0].n).toBe(before[0].n);
+      expect(answer.kind).toBe("checkout");
+      expect(answer.steps.every((step) => step.tool !== "orders.create_order")).toBe(true);
+
+      await db.delete(cartItems).where(eq(cartItems.customerId, customer.id));
+      await db.execute(sql`delete from batches where supplier = 'тест ворот'`);
+      await db.delete(users).where(eq(users.id, customer.id));
+    },
+  );
 });
 
 describe("ослабление фильтров при недоборе", () => {

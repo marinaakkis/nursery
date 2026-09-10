@@ -5,7 +5,7 @@ import { useState } from "react";
 import { BrandMark, Button, EmptyState, ErrorState, Field, InlineSuccess, Input, Skeleton } from "@/ui";
 import type { AgentAnswer } from "@/agent/runner";
 import { formatPrice } from "../catalog/filters";
-import { askAgent, confirmAddToCart } from "./actions";
+import { askAgent, confirmAddToCart, confirmCreateOrder } from "./actions";
 import styles from "./assistant.module.css";
 
 type Turn = {
@@ -17,6 +17,10 @@ type Turn = {
   chosen: number[];
   added: { count: number; totalCents: number } | null;
   addError: string | null;
+  /** Ключ одной попытки оформления: живёт до успеха, два нажатия дают один заказ. */
+  orderKey: string | null;
+  ordered: number | null;
+  orderError: string | null;
 };
 
 const EXAMPLES = [
@@ -40,7 +44,18 @@ export function AssistantScreen() {
     setThinking(true);
     setTurns((prev) => [
       ...prev,
-      { id, request, answer: null, failure: null, chosen: [], added: null, addError: null },
+      {
+        id,
+        request,
+        answer: null,
+        failure: null,
+        chosen: [],
+        added: null,
+        addError: null,
+        orderKey: null,
+        ordered: null,
+        orderError: null,
+      },
     ]);
 
     const result = await askAgent(request);
@@ -53,6 +68,12 @@ export function AssistantScreen() {
                 ...turn,
                 answer: result.answer,
                 chosen: result.answer.suggestions.map((s) => s.plantId),
+                // Ключ рождается здесь, в обработчике ответа, а не при отрисовке:
+                // при перерисовке он обязан остаться прежним.
+                orderKey:
+                  result.answer.kind === "checkout"
+                    ? `agent-${id}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+                    : null,
               }
             : { ...turn, failure: result.message }
           : turn,
@@ -71,6 +92,41 @@ export function AssistantScreen() {
                 : [...turn.chosen, plantId],
             }
           : turn,
+      ),
+    );
+  }
+
+  /** Необратимое — только отсюда: обработчик кнопки, не текст запроса. */
+  async function placeOrder(turn: Turn) {
+    if (!turn.orderKey) return;
+    setBusyTurn(turn.id);
+    const result = await confirmCreateOrder(turn.orderKey);
+    setBusyTurn(null);
+    setTurns((prev) =>
+      prev.map((t) =>
+        t.id === turn.id
+          ? result.ok
+            ? {
+                ...t,
+                ordered: result.orderId,
+                orderError: null,
+                answer: t.answer
+                  ? {
+                      ...t.answer,
+                      steps: [
+                        ...t.answer.steps,
+                        {
+                          tool: "orders.create_order",
+                          title: "Создал заказ",
+                          args: result.step.args,
+                          result: result.step.result,
+                        },
+                      ],
+                    }
+                  : t.answer,
+              }
+            : { ...t, orderError: result.message }
+          : t,
       ),
     );
   }
@@ -222,6 +278,55 @@ export function AssistantScreen() {
                           </>
                         )}
                         {turn.addError ? <ErrorState message={turn.addError} /> : null}
+                      </div>
+                    </>
+                  ) : null}
+
+                  {turn.answer.kind === "checkout" && turn.answer.checkout ? (
+                    <>
+                      <ul className={styles.summary}>
+                        {turn.answer.checkout.lines.map((line) => (
+                          <li key={line.nameRu}>
+                            <span>
+                              {line.nameRu}
+                              {line.quantity > 1 ? ` · ${line.quantity} шт.` : ""}
+                            </span>
+                            <span className={styles.summarySum}>{formatPrice(line.sumCents)}</span>
+                          </li>
+                        ))}
+                        <li className={styles.summaryTotal}>
+                          <span>Итого, самовывоз</span>
+                          <span>{formatPrice(turn.answer.checkout.totalCents)}</span>
+                        </li>
+                      </ul>
+
+                      <div className={styles.actions}>
+                        {turn.ordered === null ? (
+                          <>
+                            <Button
+                              size="large"
+                              fullWidth
+                              loading={busyTurn === turn.id}
+                              onClick={() => placeOrder(turn)}
+                            >
+                              Подтвердить заказ
+                            </Button>
+                            <p className="muted">
+                              Оплата тестовая, деньги не списываются. Заказ создастся только
+                              по этой кнопке.
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <InlineSuccess message={`Заказ №${turn.ordered} создан`} />
+                            <Link href={`/orders/${turn.ordered}`}>
+                              <Button size="large" variant="secondary">
+                                Открыть заказ
+                              </Button>
+                            </Link>
+                          </>
+                        )}
+                        {turn.orderError ? <ErrorState message={turn.orderError} /> : null}
                       </div>
                     </>
                   ) : null}

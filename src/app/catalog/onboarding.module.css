@@ -1,0 +1,46 @@
+/* Подсказка первого визита. Не модалка: не перекрывает каталог, не ловит фокус,
+   не требует закрытия перед работой — просто стоит сверху и уходит по кнопке. */
+.card {
+  margin: 0 0 var(--sp-3);
+  padding: var(--sp-3);
+  background: var(--accent-weak);
+  border: 1px solid var(--accent);
+  border-radius: var(--r-md);
+}
+
+.title {
+  margin: 0 0 var(--sp-2);
+  color: var(--accent-ink);
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+.steps {
+  margin: 0 0 var(--sp-3);
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.steps li {
+  display: flex;
+  gap: var(--sp-2);
+  padding: var(--sp-1) 0;
+  counter-increment: step;
+}
+
+.steps li::before {
+  content: counter(step);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  background: var(--accent);
+  border-radius: 50%;
+  color: var(--text-on-accent);
+  font-size: var(--fs-base);
+  font-weight: 600;
+}

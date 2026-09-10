@@ -43,6 +43,7 @@ export const demoPlants: DemoPlant[] = [
   { nameRu: "Самшит вечнозелёный", nameLat: "Buxus sempervirens", light: "partial", minZone: 6, plantingSeason: "spring", careLevel: "medium", soil: "плодородная дренированная", priceCents: 115000, description: "Вечнозелёный бордюр под стрижку. Южнее зоны 6 зимует без забот, севернее — нет." },
   { nameRu: "Лаванда узколистная", nameLat: "Lavandula angustifolia", light: "sun", minZone: 5, plantingSeason: "spring", careLevel: "medium", soil: "бедная известковая, сухая", priceCents: 56000, description: "Не выносит сырости и жирной почвы. На зиму нужен сухой воздушный укрывной слой." },
   { nameRu: "Магнолия Суланжа", nameLat: "Magnolia soulangeana", light: "sun", minZone: 6, plantingSeason: "spring", careLevel: "high", soil: "плодородная слабокислая", priceCents: 240000, description: "Крупные цветки до листьев. Место без ветра обязательно, возвратные заморозки губят бутоны." },
+  { nameRu: "Бадан толстолистный", nameLat: "Bergenia crassifolia", light: "partial", minZone: 3, plantingSeason: "spring", careLevel: "low", soil: "рыхлая, выносит бедную и каменистую", priceCents: 49000, description: "Вечнозелёные кожистые листья, розовые соцветия в мае. Держит полутень под кустами, зимует без укрытия и почти не требует внимания." },
 ];
 
 /** Периодичность ухода выводится из уровня ухода: календарь не должен быть пустым. */

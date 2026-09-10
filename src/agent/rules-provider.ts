@@ -64,6 +64,20 @@ const UNSUPPORTED: { keys: string[]; note: string }[] = [
   { keys: ["живая изгородь", "изгород"], note: "про живую изгородь — отдельного признака нет, ориентируйтесь на описание" },
 ];
 
+/**
+ * Прямая команда оформить заказ самовывозом. Проверяется до отказов и до
+ * подбора: это единственная фраза, после которой агент показывает сводку
+ * заказа. Сам заказ она не создаёт — его создаёт кнопка подтверждения.
+ */
+const CHECKOUT_KEYS = [
+  "оформляй самовывоз",
+  "оформи самовывоз",
+  "оформить самовывоз",
+  "оформляй заказ самовывоз",
+  "оформи заказ самовывоз",
+  "самовывозом оформ",
+];
+
 /** Явно не про подбор растений. */
 const OFF_TOPIC: { keys: string[]; message: string; hint: string }[] = [
   {
@@ -100,6 +114,10 @@ export class RulesProvider implements LlmProvider {
   async plan(request: string): Promise<AgentPlan> {
     // «ё» приводим к «е» с обеих сторон: иначе «всё лето» и «все лето» — разные ключи.
     const normalized = normalize(request);
+
+    if (hasAny(normalized, CHECKOUT_KEYS)) {
+      return { kind: "checkout", method: "pickup" };
+    }
 
     for (const off of OFF_TOPIC) {
       if (hasAny(normalized, off.keys)) {

@@ -136,7 +136,7 @@ export function CatalogScreen() {
 
   return (
     <>
-      <p className={styles.intro}>Тридцать проверенных растений. Отберите те, что приживутся именно у вас.</p>
+      <p className={styles.intro}>Проверенный ассортимент для зоны 3–4. Отберите то, что приживётся именно у вас.</p>
 
       <div className={styles.bar}>
         <Button variant="secondary" onClick={openSheet}>

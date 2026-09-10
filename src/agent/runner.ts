@@ -30,12 +30,20 @@ export type Suggestion = {
   relaxedBy?: string;
 };
 
+export type CheckoutSummary = {
+  method: "pickup";
+  lines: { nameRu: string; quantity: number; sumCents: number }[];
+  totalCents: number;
+};
+
 export type AgentAnswer = {
-  kind: "picked" | "refused" | "nothing";
+  kind: "picked" | "refused" | "nothing" | "checkout";
   message: string;
   hint?: string;
   steps: AgentStep[];
   suggestions: Suggestion[];
+  /** Сводка заказа под кнопку подтверждения. Заказа ещё нет. */
+  checkout?: CheckoutSummary;
 };
 
 type PlantListItem = {
@@ -148,6 +156,53 @@ export async function ask(request: string, ctx: ToolContext): Promise<AgentAnswe
 
   if (plan.kind === "refuse") {
     return { kind: "refused", message: plan.message, hint: plan.hint, steps: [], suggestions: [] };
+  }
+
+  // Прямая команда оформить: агент собирает сводку и останавливается.
+  // Заказ создаётся кнопкой в интерфейсе — фраза в чате его не создаёт.
+  if (plan.kind === "checkout") {
+    const cart = await callTool("orders.get_cart", {}, ctx);
+    const steps: AgentStep[] = [
+      {
+        tool: "orders.get_cart",
+        title: "Посмотрел корзину",
+        args: "перед оформлением",
+        result: cart.ok
+          ? `позиций ${(cart.data as { lines: unknown[] }).lines.length}`
+          : `не получилось: ${cart.error.message}`,
+      },
+    ];
+
+    if (!cart.ok) {
+      return {
+        kind: "nothing",
+        message: "Не смог заглянуть в корзину, поэтому сводку не собрал.",
+        hint: "Откройте корзину сами — оттуда оформление всегда доступно.",
+        steps,
+        suggestions: [],
+      };
+    }
+
+    const data = cart.data as CheckoutSummary & { lines: CheckoutSummary["lines"] };
+    if (data.lines.length === 0) {
+      return {
+        kind: "nothing",
+        message: "Корзина пуста — оформлять нечего.",
+        hint: "Опишите участок, я подберу растения, и тогда вернёмся к оформлению.",
+        steps,
+        suggestions: [],
+      };
+    }
+
+    return {
+      kind: "checkout",
+      message:
+        "Готов оформить самовывоз. Вот что уйдёт в заказ — проверьте и подтвердите кнопкой:" +
+        " сам я заказ не создаю.",
+      steps,
+      suggestions: [],
+      checkout: { method: "pickup", lines: data.lines, totalCents: data.totalCents },
+    };
   }
 
   const steps: AgentStep[] = [];

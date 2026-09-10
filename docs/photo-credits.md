@@ -41,6 +41,7 @@
 | 28 | Самшит вечнозелёный | автор не указан | CC BY-SA 3.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Buxus_sempervirens0.jpg) |
 | 29 | Лаванда узколистная | Isiwal | CC BY-SA 4.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Vanessa_cardui_on_Lavandula_angustifolia-2459.jpg) |
 | 30 | Магнолия Суланжа | James F. | CC BY 1.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Magnolia_%C3%97_soulangeana_blossom.jpg) |
+| 31 | Бадан толстолистный | Chris Light | CC BY-SA 4.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Bergenia_crassifolia_2066.jpg) |
 
 ## Главная страница
 
@@ -54,4 +55,4 @@
 
 Растение без снимка показывается с подложкой `--surface-sunken` и названием
 на шрифте заголовков — это заглушка, а не пустой серый квадрат. Сейчас такие
-растения в каталоге отсутствуют: снимки нашлись для всех тридцати.
+растения в каталоге отсутствуют: снимки нашлись для всех тридцати одного.
