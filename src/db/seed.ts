@@ -1,3 +1,6 @@
+import { copyFile, mkdir } from "node:fs/promises";
+import path from "node:path";
+import { UPLOAD_DIR } from "@/modules/consult/photos";
 /** Демо-данные. Идемпотентен: если в базе уже есть пользователи — выходит, ничего не меняя. */
 import { sql } from "drizzle-orm";
 import { getDb, getSql } from "@/db/client";
@@ -26,6 +29,30 @@ const day = (shift: number): string => {
 type OrderStatus = NonNullable<(typeof orders.$inferInsert)["status"]>;
 
 const SLOT_INTERVALS = ["10:00–13:00", "13:00–16:00", "16:00–19:00"];
+
+
+/** Кладёт снимки каталога в том загрузок под именами демо-фото к вопросам.
+ *  Файлы уже лежат в образе (public/plants) и уже атрибутированы в
+ *  docs/photo-credits.md — новых лицензий это не добавляет. */
+async function putDemoPhotos(
+  plan: { from: number; as: string }[],
+): Promise<Record<string, string | null>> {
+  const result: Record<string, string | null> = {};
+  for (const item of plan) {
+    const source = path.join(process.cwd(), "public", "plants", `${item.from}.jpg`);
+    const target = path.join(UPLOAD_DIR, item.as);
+    try {
+      await mkdir(path.dirname(target), { recursive: true });
+      await copyFile(source, target);
+      result[item.as] = item.as;
+    } catch (error) {
+      // Снимок — украшение демо, вопрос важнее: без файла путь остаётся пустым.
+      console.warn(`сид: снимок ${item.as} не скопирован`, error);
+      result[item.as] = null;
+    }
+  }
+  return result;
+}
 
 async function seed() {
   const db = getDb();
@@ -206,13 +233,22 @@ async function seed() {
     );
   }
 
-  // --- вопросы консультанту: с фото, без фото, отвеченный ---
-  const [q1, q2, q3] = await db
+  // --- вопросы консультанту: три у Анны с фото, один с готовым черновиком ---
+  // Снимки кладутся в том загрузок прямо здесь: путь в базе без файла на диске
+  // дал бы битую картинку на стенде, где том стартует пустым.
+  const demoPhotos = await putDemoPhotos([
+    { from: 7, as: "demo/hydrangea-spots.jpg" },
+    { from: 21, as: "demo/astilbe-wilting.jpg" },
+    { from: 16, as: "demo/rosa-aphids.jpg" },
+  ]);
+
+  const [q1, q2, q3, q4] = await db
     .insert(questions)
     .values([
       { customerId: anna.id, plantId: plantIds[6], status: "new" },
+      { customerId: anna.id, plantId: plantIds[20], status: "new" },
+      { customerId: anna.id, plantId: plantIds[15], status: "answered" },
       { customerId: igor.id, plantId: null, status: "in_progress" },
-      { customerId: anna.id, plantId: plantIds[13], status: "answered" },
     ])
     .returning();
 
@@ -222,37 +258,45 @@ async function seed() {
       authorId: anna.id,
       authorRole: "customer",
       body: "На листьях бурые пятна по краю, появились за неделю. Поливаю раз в три дня.",
-      photoPath: "demo/hydrangea-spots.jpg",
+      photoPath: demoPhotos["demo/hydrangea-spots.jpg"],
     },
     {
       questionId: q2.id,
-      authorId: igor.id,
+      authorId: anna.id,
       authorRole: "customer",
-      body: "Можно ли сажать рябину ближе двух метров к забору?",
-      photoPath: null,
+      body: "Астильба вянет к полудню, хотя земля сырая. Посадила этой весной в полутени.",
+      photoPath: demoPhotos["demo/astilbe-wilting.jpg"],
     },
     {
       questionId: q3.id,
       authorId: anna.id,
       authorRole: "customer",
-      body: "Пион не цвёл третий год подряд. Куст крупный, листья здоровые.",
-      photoPath: null,
+      body: "На молодых побегах роз тля, рядом бегают муравьи. Чем обработать?",
+      photoPath: demoPhotos["demo/rosa-aphids.jpg"],
     },
     {
       questionId: q3.id,
       authorId: olga.id,
       authorRole: "agronomist",
-      body: "Почти наверняка глубокая посадка: почки должны быть не глубже 3–5 см. Осенью аккуратно приподнимите куст.",
+      body: "Смойте струёй воды и обработайте инсектицидом вечером. Муравейник рядом уберите — иначе тлю принесут снова.",
+      photoPath: null,
+    },
+    {
+      questionId: q4.id,
+      authorId: igor.id,
+      authorRole: "customer",
+      body: "Можно ли сажать рябину ближе двух метров к забору?",
       photoPath: null,
     },
   ]);
 
-  // черновик агента, ещё не одобренный агрономом — точка human review видна на демо
+  // Черновик агента, ещё не одобренный агрономом: точка human review видна на демо.
   await db.insert(answerDrafts).values({
     questionId: q1.id,
-    body: "Похоже на краевой ожог от избытка влаги при плотной почве. Сократите полив до одного раза в неделю и замульчируйте приствольный круг.",
-    rationale: "Учтено: бурые пятна по краю листа, полив раз в три дня, слабокислая влажная почва из карточки растения.",
-    confidence: 3,
+    body: "Похоже на «пятна на листьях».\nПохоже на грибковое поражение: пятна и налёт появляются при загущении и сырости, особенно в холодное дождливое лето.\nГортензия метельчатая: место — полутень, почва — влажная слабокислая.\nЧто сделать:\n1. Уберите поражённые листья и не оставляйте их под кустом.\n2. Проредите побеги, чтобы внутри куста был воздух.\n3. Обработайте фунгицидом по инструкции, повторно — через положенный срок.",
+    rationale:
+      "Совпали признаки: пятна на листьях. Требования растения взяты из карточки: свет — полутень, зона 3, почва — влажная слабокислая. Признак один, разночтений нет.",
+    confidence: 2,
   });
 
   console.log(

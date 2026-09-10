@@ -1,0 +1,165 @@
+/* Служебная роль: тот же кит, плотнее и без serif в заголовках —
+   агроном работает с очередью, а не читает витрину. */
+.service {
+  --lh: var(--lh-tight);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-3);
+}
+
+@media (width >= 900px) {
+  .layout {
+    grid-template-columns: 320px 1fr;
+    align-items: start;
+  }
+}
+
+.queue {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.itemCurrent {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+}
+
+.itemHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  font-weight: 600;
+}
+
+.itemPreview {
+  color: var(--text-muted);
+}
+
+.card {
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.message {
+  padding: var(--sp-2) 0;
+}
+
+.message + .message {
+  border-top: 1px solid var(--border);
+}
+
+.author {
+  color: var(--text-muted);
+}
+
+.body {
+  margin: var(--sp-1) 0 0;
+  white-space: pre-wrap;
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  margin-top: var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+
+/* Черновик агента отделён рамкой и подписью: агроном обязан видеть,
+   что перед ним предложение машины, а не готовый ответ. */
+.draft {
+  margin-top: var(--sp-3);
+  padding: var(--sp-3);
+  background: var(--accent-weak);
+  border: 1px solid var(--accent);
+  border-radius: var(--r-md);
+}
+
+.draftHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.draftText {
+  width: 100%;
+  min-height: 180px;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-base);
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.why {
+  margin-top: var(--sp-3);
+}
+
+.whyHead {
+  min-height: var(--tap);
+  display: flex;
+  align-items: center;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.whyList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.whyList li {
+  padding: var(--sp-2) 0;
+}
+
+.whyList li + li {
+  border-top: 1px solid var(--border);
+}
+
+.tool {
+  color: var(--text-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.ask {
+  margin: var(--sp-2) 0 0;
+  padding-left: var(--sp-4);
+  color: var(--text-muted);
+}

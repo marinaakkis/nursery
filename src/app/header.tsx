@@ -25,24 +25,54 @@ export async function Header() {
           <BrandMark size={22} />
           Северный сад
         </Link>
+        {/* Разделы зависят от роли: у склада и агронома своё рабочее место,
+            и витринные пункты им только мешают. */}
         <nav className={styles.nav} aria-label="Разделы">
-          <Link className={styles.link} href="/catalog">
-            Каталог
-          </Link>
-          <Link className={styles.link} href="/assistant">
-            Помощник
-          </Link>
-          <Link className={styles.link} href="/garden">
-            Мой сад
-            {dueCare > 0 ? (
-              <span className={styles.count} aria-label={`дел по уходу: ${dueCare}`}>
-                {dueCare}
-              </span>
-            ) : null}
-          </Link>
-          <Link className={styles.link} href="/orders">
-            Заказы
-          </Link>
+          {user?.role === "agronomist" ? (
+            <>
+              <Link className={styles.link} href="/agronomist">
+                Очередь вопросов
+              </Link>
+              <Link className={styles.link} href="/catalog">
+                Каталог
+              </Link>
+            </>
+          ) : user?.role === "warehouse" ? (
+            <>
+              <Link className={styles.link} href="/warehouse">
+                Остатки
+              </Link>
+              <Link className={styles.link} href="/warehouse/orders">
+                Сборка
+              </Link>
+              <Link className={styles.link} href="/warehouse/plan">
+                Закупки
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link className={styles.link} href="/catalog">
+                Каталог
+              </Link>
+              <Link className={styles.link} href="/assistant">
+                Помощник
+              </Link>
+              <Link className={styles.link} href="/garden">
+                Мой сад
+                {dueCare > 0 ? (
+                  <span className={styles.count} aria-label={`дел по уходу: ${dueCare}`}>
+                    {dueCare}
+                  </span>
+                ) : null}
+              </Link>
+              <Link className={styles.link} href="/questions">
+                Вопросы
+              </Link>
+              <Link className={styles.link} href="/orders">
+                Заказы
+              </Link>
+            </>
+          )}
         </nav>
         <UserSwitcher users={users} current={user} />
       </div>

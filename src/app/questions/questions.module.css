@@ -1,0 +1,157 @@
+.intro {
+  margin: var(--sp-1) 0 var(--sp-3);
+  color: var(--text-muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+@media (width >= 700px) {
+  .list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  color: inherit;
+  text-decoration: none;
+}
+
+.row:hover {
+  border-color: var(--border-control);
+}
+
+.rowHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.plant {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.preview {
+  color: var(--text-muted);
+}
+
+.meta {
+  display: flex;
+  gap: var(--sp-3);
+  color: var(--text-muted);
+}
+
+/* Переписка: сообщения покупателя и агронома различаются не только цветом,
+   но и подписью автора — цвет смысла в одиночку не несёт. */
+.thread {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin: var(--sp-3) 0 0;
+}
+
+.message {
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.mine {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+}
+
+.author {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+  font-weight: 600;
+}
+
+.when {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.body {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  margin-top: var(--sp-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  margin: var(--sp-4) 0 0;
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-base);
+  resize: vertical;
+}
+
+.select {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 var(--sp-2);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-base);
+}
+
+.file {
+  min-height: var(--tap);
+  font: inherit;
+  font-size: var(--fs-base);
+}
+
+.stub {
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--status-neutral-bg);
+  color: var(--status-neutral-ink);
+  border-radius: var(--r-sm);
+}
+
+.preview img {
+  max-width: 160px;
+}
