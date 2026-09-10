@@ -12,7 +12,7 @@ export async function Header() {
       <div className={styles.inner}>
         <Link className={styles.brand} href="/catalog">
           <BrandMark size={22} />
-          Питомник
+          Северный сад
         </Link>
         <nav className={styles.nav} aria-label="Разделы">
           <Link className={styles.link} href="/catalog">

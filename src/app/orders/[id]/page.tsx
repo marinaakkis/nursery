@@ -1,6 +1,6 @@
 import { OrderScreen } from "./order-screen";
 
-export const metadata = { title: "Заказ — Питомник растений" };
+export const metadata = { title: "Заказ" };
 
 export default async function OrderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

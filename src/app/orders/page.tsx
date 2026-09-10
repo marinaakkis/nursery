@@ -1,6 +1,6 @@
 import { OrdersScreen } from "./orders-screen";
 
-export const metadata = { title: "Мои заказы — Питомник растений" };
+export const metadata = { title: "Мои заказы" };
 
 export default function OrdersPage() {
   return (

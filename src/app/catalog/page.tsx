@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/ui";
 import { CatalogScreen } from "./catalog-screen";
 
-export const metadata = { title: "Каталог — Питомник растений" };
+export const metadata = { title: "Каталог" };
 
 export default function CatalogPage() {
   return (

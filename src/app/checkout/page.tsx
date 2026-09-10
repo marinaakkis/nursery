@@ -1,6 +1,6 @@
 import { CheckoutScreen } from "./checkout-screen";
 
-export const metadata = { title: "Оформление — Питомник растений" };
+export const metadata = { title: "Оформление" };
 
 export default function CheckoutPage() {
   return (

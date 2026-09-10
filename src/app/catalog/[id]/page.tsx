@@ -1,6 +1,6 @@
 import { PlantScreen } from "./plant-screen";
 
-export const metadata = { title: "Растение — Питомник растений" };
+export const metadata = { title: "Растение" };
 
 /** Идентификатор растения идёт сегментом пути: колонки slug в схеме нет. */
 export default async function PlantPage({ params }: { params: Promise<{ id: string }> }) {

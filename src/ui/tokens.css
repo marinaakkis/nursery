@@ -49,13 +49,15 @@
   --status-danger-bg: #f6e7e4;
   --status-danger-ink: #7a2e24;
 
-  /* Шрифты. Гротеск — системный, он же покрывает кириллицу на всех платформах.
-     Serif — в заголовках каталога и карточки растения; тоже системный,
-     чтобы сборка контейнера не зависела от сети. */
-  --font-text: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-  --font-display: Georgia, "Iowan Old Style", "Times New Roman", "Noto Serif",
-    "Liberation Serif", serif;
+  /* Шрифты лежат в репозитории, а не тянутся из сети: сборка контейнера
+     не должна зависеть от доступности Google Fonts. Manrope в тексте,
+     Lora в заголовках. Кириллица и латиница — разные файлы с unicode-range,
+     поэтому в стеке по два семейства: браузер берёт нужное на каждый символ.
+     Системные шрифты в конце — на случай, если файл не доехал. */
+  --font-text: var(--font-manrope-cyr), var(--font-manrope-lat), system-ui,
+    -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-lora-cyr), var(--font-lora-lat), Georgia,
+    "Noto Serif", serif;
 
   /* Размеры. Ниже 16px текста не бывает — включая латинские названия
      и подписи: «мельче» делается цветом и начертанием, а не кеглем. */

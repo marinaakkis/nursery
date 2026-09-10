@@ -1,6 +1,6 @@
 import { CartScreen } from "./cart-screen";
 
-export const metadata = { title: "Корзина — Питомник растений" };
+export const metadata = { title: "Корзина" };
 
 export default function CartPage() {
   return (
