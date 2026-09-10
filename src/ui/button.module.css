@@ -3,6 +3,10 @@
   align-items: center;
   justify-content: center;
   gap: var(--sp-2);
+  /* min-width наравне с min-height: кнопка с одним знаком («−», «+») иначе
+     выходит 43px и не дотягивает до нормы зоны нажатия. Тот же промах уже
+     ловили на чипе — здесь он закрыт в самом компоненте, а не на экране. */
+  min-width: var(--tap);
   min-height: var(--tap);
   padding: 0 var(--sp-3);
   border: 1px solid transparent;

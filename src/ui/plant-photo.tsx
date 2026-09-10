@@ -41,6 +41,7 @@ export function PlantPhoto({
           src={src}
           alt={name}
           fill
+          quality={80}
           sizes={SIZES[variant]}
           priority={priority}
         />

@@ -47,7 +47,7 @@ export function plantPhotoCredit(plantId: number): PhotoCredit | null {
 }
 
 export const HOME_PHOTOS = {
-  garden: { src: "/home/hero-garden.jpg", author: "Currie Brothers Company.; Henry G. Gilbert Nursery and Seed Trade Catalog Collection.", license: "Public domain", url: "https://commons.wikimedia.org/wiki/File:Bulbs_and_plants_(16387437412).jpg" },
-  seedling: { src: "/home/hero-seedling.jpg", author: "Robbieross123", license: "CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:Plant_a_Sapling_for_Better_Future.jpg" },
-  greenhouse: { src: "/home/hero-greenhouse.jpg", author: "Joshua Tree National Park", license: "Public domain", url: "https://commons.wikimedia.org/wiki/File:Native_Plant_Nursery_(53728476572).jpg" },
+  garden: { src: "/home/hero-garden.jpg", author: "C. G. P. Grey", license: "CC BY 3.0", url: "https://commons.wikimedia.org/wiki/File:Cutchogue_-_Oregon_Road_-_Plant_Nursery.jpg" },
+  seedling: { src: "/home/hero-seedling.jpg", author: "USFS Region 5", license: "Public domain", url: "https://commons.wikimedia.org/wiki/File:Seedling_planting.jpg" },
+  greenhouse: { src: "/home/hero-greenhouse.jpg", author: "User:Владимир Иванов", license: "Public domain", url: "https://commons.wikimedia.org/wiki/File:Botanical_Garden_V.L._Komarov_Botanical_Institute.jpg" },
 } as const;

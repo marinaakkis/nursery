@@ -46,9 +46,9 @@
 
 | Файл | Что на снимке | Автор | Лицензия | Источник |
 |---|---|---|---|---|
-| `hero-garden.jpg` | Сад питомника | Currie Brothers Company.; Henry G. Gilbert Nursery and Seed Trade Catalog Collection. | Public domain | [файл на Commons](https://commons.wikimedia.org/wiki/File:Bulbs_and_plants_(16387437412).jpg) |
-| `hero-seedling.jpg` | Руки с саженцем | Robbieross123 | CC BY-SA 4.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Plant_a_Sapling_for_Better_Future.jpg) |
-| `hero-greenhouse.jpg` | Теплица | Joshua Tree National Park | Public domain | [файл на Commons](https://commons.wikimedia.org/wiki/File:Native_Plant_Nursery_(53728476572).jpg) |
+| `hero-garden.jpg` | Питомник: горшки с саженцами | C. G. P. Grey | CC BY 3.0 | [файл на Commons](https://commons.wikimedia.org/wiki/File:Cutchogue_-_Oregon_Road_-_Plant_Nursery.jpg) |
+| `hero-seedling.jpg` | Руки с саженцем | USFS Region 5 | Public domain | [файл на Commons](https://commons.wikimedia.org/wiki/File:Seedling_planting.jpg) |
+| `hero-greenhouse.jpg` | Оранжерея Ботанического института, Петербург | User:Владимир Иванов | Public domain | [файл на Commons](https://commons.wikimedia.org/wiki/File:Botanical_Garden_V.L._Komarov_Botanical_Institute.jpg) |
 
 ## Если фото нет
 
