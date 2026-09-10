@@ -29,6 +29,27 @@
   border: 1px solid var(--border);
 }
 
+/* Знак бренда у ответов помощника: видно, где говорит продукт, а где человек. */
+.avatarRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  background: var(--accent-weak);
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent-ink);
+}
+
 .who {
   display: block;
   margin-bottom: var(--sp-1);
@@ -48,14 +69,18 @@
    Требование задания — агент показывает в интерфейсе, что сделал и почему. */
 .trace {
   margin: var(--sp-3) 0 0;
-  border: 1px solid var(--border);
+  background: var(--accent-weak);
+  border: 1px solid var(--accent);
   border-radius: var(--r-sm);
+  color: var(--accent-ink);
 }
 
 .traceHead {
+  display: flex;
+  align-items: center;
   min-height: var(--tap);
   padding: var(--sp-2) var(--sp-3);
-  color: var(--text-muted);
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -75,7 +100,10 @@
 
 .tool {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  color: var(--text-muted);
+}
+
+.traceList .muted {
+  color: var(--accent-ink);
 }
 
 .picks {

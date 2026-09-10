@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Button, EmptyState, ErrorState, Field, InlineSuccess, Input, Skeleton } from "@/ui";
+import { BrandMark, Button, EmptyState, ErrorState, Field, InlineSuccess, Input, Skeleton } from "@/ui";
 import type { AgentAnswer } from "@/agent/runner";
 import { formatPrice } from "../catalog/filters";
 import { askAgent, confirmAddToCart } from "./actions";
@@ -112,14 +112,14 @@ export function AssistantScreen() {
   return (
     <>
       <p className={styles.intro}>
-        Опишите участок словами — агент подберёт растения по каталогу и объяснит, почему эти.
+        Опишите участок словами — помощник отберёт растения по каталогу и объяснит выбор.
         Заказ он не оформляет: в корзину кладёт только по вашей кнопке.
       </p>
 
       {turns.length === 0 && !thinking ? (
         <EmptyState
           title="Расскажите про участок"
-          description="Сколько света, какая зона или регион, сколько времени на уход. Можно одной фразой — агент разберёт её на условия."
+          description="Сколько света, какая зона или регион, сколько времени на уход. Одной фразой — помощник разберёт её на условия сам."
           action={
             <div className={styles.actions}>
               {EXAMPLES.map((example) => (
@@ -141,7 +141,12 @@ export function AssistantScreen() {
             </p>
 
             <div className={styles.theirs}>
-              <span className={styles.who}>агент подбора</span>
+              <span className={styles.avatarRow}>
+                <span className={styles.avatar}>
+                  <BrandMark size={18} />
+                </span>
+                <span className={styles.who}>помощник по подбору</span>
+              </span>
 
               {turn.answer === null && turn.failure === null ? (
                 <Skeleton variant="text" count={2} label="Агент подбирает растения" />
@@ -196,6 +201,8 @@ export function AssistantScreen() {
                       <div className={styles.actions}>
                         {turn.added === null ? (
                           <Button
+                            size="large"
+                            fullWidth
                             loading={busyTurn === turn.id}
                             disabled={turn.chosen.length === 0}
                             onClick={() => addChosen(turn)}
@@ -208,7 +215,9 @@ export function AssistantScreen() {
                               message={`В корзине ${turn.added.count} шт. на ${formatPrice(turn.added.totalCents)}`}
                             />
                             <Link href="/checkout">
-                              <Button variant="secondary">Перейти к оформлению</Button>
+                              <Button size="large" variant="secondary">
+                                Перейти к оформлению
+                              </Button>
                             </Link>
                           </>
                         )}
@@ -259,8 +268,8 @@ export function AssistantScreen() {
             />
           )}
         </Field>
-        <Button type="submit" loading={thinking} disabled={draft.trim().length === 0}>
-          Спросить агента
+        <Button size="large" type="submit" loading={thinking} disabled={draft.trim().length === 0}>
+          Спросить помощника
         </Button>
       </form>
 

@@ -39,6 +39,14 @@
   list-style: none;
 }
 
+/* На широком экране четыре условия встают в строку: сетка 2x2 из плиток
+   по 460px читается хуже, чем один ряд. */
+@media (width >= 700px) {
+  .tiles {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 .tile {
   display: flex;
   flex-direction: column;
