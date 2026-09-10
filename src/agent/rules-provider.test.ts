@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { eq, sql } from "drizzle-orm";
 import { getDb } from "@/db/client";
+import { testName } from "@/db/test-cleanup";
 import { users } from "@/db/shared-schema";
 import { plants } from "@/modules/catalog";
 import { batches } from "@/modules/warehouse";
@@ -127,7 +128,7 @@ describe("команда оформить самовывоз", () => {
       // не создался бы и у сломанного агента. Ловушка проверена диверсией.
       const [customer] = await db
         .insert(users)
-        .values({ name: `Проверка ворот ${Date.now()}`, role: "customer" })
+        .values({ name: testName("проверка ворот"), role: "customer" })
         .returning();
       const [plant] = await db.select({ id: plants.id }).from(plants).limit(1);
       await db.insert(batches).values({

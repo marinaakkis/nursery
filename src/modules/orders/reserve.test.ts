@@ -1,10 +1,11 @@
 import { and, eq, sql } from "drizzle-orm";
 import { afterAll, describe, expect, it } from "vitest";
 import { getDb } from "@/db/client";
+import { cleanupTestRows, testName } from "@/db/test-cleanup";
 import { users } from "@/db/shared-schema";
 import { plants } from "@/modules/catalog";
 import { batches, demandFacts } from "@/modules/warehouse";
-import { cartItems, orderItems, orders, orderStatusHistory } from "./schema";
+import { cartItems, orders } from "./schema";
 import { createOrder } from "./service";
 
 /** Тесты работают против настоящего Postgres: инварианты живут в схеме,
@@ -22,7 +23,7 @@ async function makeCustomer() {
   if (customerId) return customerId;
   const [created] = await getDb()
     .insert(users)
-    .values({ name: `Тестовый покупатель ${Date.now()}`, role: "customer" })
+    .values({ name: testName("покупатель"), role: "customer" })
     .returning();
   customerId = created.id;
   return customerId;
@@ -35,7 +36,7 @@ async function makePlant(batchSpecs: { receivedAt: string; quantity: number }[])
   const [plant] = await db
     .insert(plants)
     .values({
-      nameRu: `Тестовое растение ${suffix}`,
+      nameRu: testName("растение"),
       nameLat: `Testus ${suffix}`,
       description: "Служебная запись теста",
       light: "sun",
@@ -65,23 +66,15 @@ async function makePlant(batchSpecs: { receivedAt: string; quantity: number }[])
 }
 
 afterAll(async () => {
-  if (!hasDb || createdPlants.length === 0) return;
-  const db = getDb();
-  const plantList = sql.join(createdPlants.map((id) => sql`${id}`), sql`, `);
-
-  for (const orderId of createdOrders) {
-    await db.execute(sql`delete from order_reservations where order_id = ${orderId}`);
-    await db.delete(orderStatusHistory).where(eq(orderStatusHistory.orderId, orderId));
-    await db.delete(orderItems).where(eq(orderItems.orderId, orderId));
-    await db.delete(orders).where(eq(orders.id, orderId));
-  }
-  await db.execute(sql`delete from demand_facts where plant_id in (${plantList})`);
-  await db.execute(sql`delete from cart_items where plant_id in (${plantList})`);
-  await db.execute(sql`delete from batches where plant_id in (${plantList})`);
-  await db.execute(sql`delete from plants where id in (${plantList})`);
-  if (customerId) {
-    await db.execute(sql`delete from cart_items where customer_id = ${customerId}`);
-    await db.delete(users).where(eq(users.id, customerId));
+  if (!hasDb) return;
+  // Уборка в finally и по признаку в данных, а не по массиву идентификаторов:
+  // прерванный прогон терял массив вместе с процессом, и записи оставались
+  // в каталоге — memory/mistakes/2026-09-10-sluzhebnye-zapisi-v-katologe.md
+  try {
+    const failed = await cleanupTestRows();
+    if (failed.length > 0) throw new Error(`уборка не полная: ${failed.join(", ")}`);
+  } finally {
+    // Ничего не глотаем молча: незакрытая уборка обязана быть видна в выводе.
   }
 });
 

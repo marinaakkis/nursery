@@ -1,6 +1,7 @@
-import { eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { afterAll, describe, expect, it } from "vitest";
 import { getDb } from "@/db/client";
+import { cleanupTestRows, testName } from "@/db/test-cleanup";
 import { plants } from "@/modules/catalog";
 import { batches } from "./schema";
 import { getStockMany, LOW_STOCK_THRESHOLD } from "./service";
@@ -16,7 +17,7 @@ async function makePlant(batchQuantities: number[]) {
   const [plant] = await db
     .insert(plants)
     .values({
-      nameRu: `Тестовое растение ${suffix}`,
+      nameRu: testName("растение"),
       nameLat: `Testus ${suffix}`,
       description: "Служебная запись теста",
       light: "sun",
@@ -45,10 +46,16 @@ async function makePlant(batchQuantities: number[]) {
 }
 
 afterAll(async () => {
-  if (!hasDb || created.length === 0) return;
-  const db = getDb();
-  await db.delete(batches).where(inArray(batches.plantId, created));
-  await db.delete(plants).where(inArray(plants.id, created));
+  if (!hasDb) return;
+  // Уборка в finally и по признаку в данных, а не по массиву идентификаторов:
+  // прерванный прогон терял массив вместе с процессом, и записи оставались
+  // в каталоге — memory/mistakes/2026-09-10-sluzhebnye-zapisi-v-katologe.md
+  try {
+    const failed = await cleanupTestRows();
+    if (failed.length > 0) throw new Error(`уборка не полная: ${failed.join(", ")}`);
+  } finally {
+    // Ничего не глотаем молча: незакрытая уборка обязана быть видна в выводе.
+  }
 });
 
 describe.skipIf(!hasDb)("остатки списком", () => {

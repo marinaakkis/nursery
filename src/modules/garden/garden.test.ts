@@ -1,12 +1,12 @@
-import { eq, inArray, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { afterAll, describe, expect, it } from "vitest";
 import { getDb } from "@/db/client";
+import { cleanupTestRows, testName } from "@/db/test-cleanup";
 import { users } from "@/db/shared-schema";
 import { careRules, plants } from "@/modules/catalog";
 import { batches } from "@/modules/warehouse";
-import { cartItems, orderItems, orders, orderStatusHistory } from "@/modules/orders";
 import { addToCart, createOrder, transition } from "@/modules/orders";
-import { careEvents, gardenPlants } from "./schema";
+import { careEvents } from "./schema";
 import {
   CARE_HORIZON_DAYS,
   getGardenPlant,
@@ -27,7 +27,7 @@ const createdUsers: number[] = [];
 async function makeCustomer() {
   const [created] = await getDb()
     .insert(users)
-    .values({ name: `Садовод ${Date.now()}-${Math.random().toString(36).slice(2, 6)}`, role: "customer" })
+    .values({ name: testName("садовод"), role: "customer" })
     .returning();
   createdUsers.push(created.id);
   return created.id;
@@ -40,7 +40,7 @@ async function makePlant(rules: { type: "watering" | "feeding" | "pruning"; peri
   const [plant] = await db
     .insert(plants)
     .values({
-      nameRu: `Садовое растение ${suffix}`,
+      nameRu: testName("садовое растение"),
       nameLat: `Hortus ${suffix}`,
       description: "Служебная запись теста",
       light: "sun",
@@ -84,28 +84,15 @@ async function buyAndComplete(customerId: number, plantId: number, quantity = 1)
 
 afterAll(async () => {
   if (!hasDb) return;
-  const db = getDb();
-  if (createdOrders.length > 0) {
-    await db.execute(sql`delete from order_reservations where order_id in ${createdOrders}`);
-    await db.delete(orderStatusHistory).where(inArray(orderStatusHistory.orderId, createdOrders));
-    await db.delete(orderItems).where(inArray(orderItems.orderId, createdOrders));
+  // Уборка в finally и по признаку в данных, а не по массиву идентификаторов:
+  // прерванный прогон терял массив вместе с процессом, и записи оставались
+  // в каталоге — memory/mistakes/2026-09-10-sluzhebnye-zapisi-v-katologe.md
+  try {
+    const failed = await cleanupTestRows();
+    if (failed.length > 0) throw new Error(`уборка не полная: ${failed.join(", ")}`);
+  } finally {
+    // Ничего не глотаем молча: незакрытая уборка обязана быть видна в выводе.
   }
-  if (createdUsers.length > 0) {
-    await db.execute(
-      sql`delete from care_events where garden_plant_id in (select id from garden_plants where customer_id in ${createdUsers})`,
-    );
-    await db.delete(gardenPlants).where(inArray(gardenPlants.customerId, createdUsers));
-    await db.delete(orders).where(inArray(orders.customerId, createdUsers));
-    await db.delete(cartItems).where(inArray(cartItems.customerId, createdUsers));
-    await db.execute(sql`delete from notifications where user_id in ${createdUsers}`);
-  }
-  if (createdPlants.length > 0) {
-    await db.execute(sql`delete from demand_facts where plant_id in ${createdPlants}`);
-    await db.delete(careRules).where(inArray(careRules.plantId, createdPlants));
-    await db.delete(batches).where(inArray(batches.plantId, createdPlants));
-    await db.delete(plants).where(inArray(plants.id, createdPlants));
-  }
-  if (createdUsers.length > 0) await db.delete(users).where(inArray(users.id, createdUsers));
 });
 
 describe("расписание ухода — чистые функции", () => {

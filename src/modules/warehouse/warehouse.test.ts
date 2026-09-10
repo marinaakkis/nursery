@@ -1,9 +1,10 @@
-import { eq, inArray, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { afterAll, describe, expect, it } from "vitest";
 import { getDb } from "@/db/client";
+import { cleanupTestRows, testName } from "@/db/test-cleanup";
 import { users } from "@/db/shared-schema";
 import { plants } from "@/modules/catalog";
-import { batches, writeOffs } from "./schema";
+import { writeOffs } from "./schema";
 import { getStock, receiveBatch, writeOff } from "./service";
 
 const hasDb = Boolean(process.env.DATABASE_URL);
@@ -14,7 +15,7 @@ const createdUsers: number[] = [];
 async function makeKeeper() {
   const [user] = await getDb()
     .insert(users)
-    .values({ name: `Кладовщик ${Date.now()}${Math.random().toString(36).slice(2, 5)}`, role: "warehouse" })
+    .values({ name: testName("кладовщик"), role: "warehouse" })
     .returning();
   createdUsers.push(user.id);
   return user.id;
@@ -25,7 +26,7 @@ async function makePlant() {
   const [plant] = await getDb()
     .insert(plants)
     .values({
-      nameRu: `Складское растение ${suffix}`,
+      nameRu: testName("складское растение"),
       nameLat: `Depositum ${suffix}`,
       description: "Служебная запись теста",
       light: "sun",
@@ -42,15 +43,15 @@ async function makePlant() {
 
 afterAll(async () => {
   if (!hasDb) return;
-  const db = getDb();
-  if (createdPlants.length > 0) {
-    await db.execute(
-      sql`delete from write_offs where batch_id in (select id from batches where plant_id in ${createdPlants})`,
-    );
-    await db.delete(batches).where(inArray(batches.plantId, createdPlants));
-    await db.delete(plants).where(inArray(plants.id, createdPlants));
+  // Уборка в finally и по признаку в данных, а не по массиву идентификаторов:
+  // прерванный прогон терял массив вместе с процессом, и записи оставались
+  // в каталоге — memory/mistakes/2026-09-10-sluzhebnye-zapisi-v-katologe.md
+  try {
+    const failed = await cleanupTestRows();
+    if (failed.length > 0) throw new Error(`уборка не полная: ${failed.join(", ")}`);
+  } finally {
+    // Ничего не глотаем молча: незакрытая уборка обязана быть видна в выводе.
   }
-  if (createdUsers.length > 0) await db.delete(users).where(inArray(users.id, createdUsers));
 });
 
 describe.skipIf(!hasDb)("приход и списание", () => {

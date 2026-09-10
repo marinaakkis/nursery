@@ -1,10 +1,11 @@
-import { eq, inArray, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { afterAll, describe, expect, it } from "vitest";
 import { getDb } from "@/db/client";
+import { cleanupTestRows, testName } from "@/db/test-cleanup";
 import { users } from "@/db/shared-schema";
 import { plants } from "@/modules/catalog";
 import { diagnose } from "./diagnosis";
-import { answerDrafts, messages, questions } from "./schema";
+import { messages } from "./schema";
 import {
   approveDraft,
   createQuestion,
@@ -22,7 +23,7 @@ const createdQuestions: number[] = [];
 async function makeUser(role: "customer" | "agronomist") {
   const [user] = await getDb()
     .insert(users)
-    .values({ name: `Тест ${role} ${Date.now()}${Math.random().toString(36).slice(2, 5)}`, role })
+    .values({ name: testName(role), role })
     .returning();
   createdUsers.push(user.id);
   return { userId: user.id, role } as const;
@@ -37,13 +38,15 @@ async function makeQuestion(customerId: number, text: string, plantId?: number) 
 
 afterAll(async () => {
   if (!hasDb) return;
-  const db = getDb();
-  if (createdQuestions.length > 0) {
-    await db.delete(answerDrafts).where(inArray(answerDrafts.questionId, createdQuestions));
-    await db.delete(messages).where(inArray(messages.questionId, createdQuestions));
-    await db.delete(questions).where(inArray(questions.id, createdQuestions));
+  // Уборка в finally и по признаку в данных, а не по массиву идентификаторов:
+  // прерванный прогон терял массив вместе с процессом, и записи оставались
+  // в каталоге — memory/mistakes/2026-09-10-sluzhebnye-zapisi-v-katologe.md
+  try {
+    const failed = await cleanupTestRows();
+    if (failed.length > 0) throw new Error(`уборка не полная: ${failed.join(", ")}`);
+  } finally {
+    // Ничего не глотаем молча: незакрытая уборка обязана быть видна в выводе.
   }
-  if (createdUsers.length > 0) await db.delete(users).where(inArray(users.id, createdUsers));
 });
 
 describe("разбор жалобы — чистая функция", () => {
