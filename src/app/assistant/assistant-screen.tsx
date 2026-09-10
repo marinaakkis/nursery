@@ -5,10 +5,9 @@ import { useState } from "react";
 import {
   BrandMark,
   Button,
+  Chip,
   Checkbox,
-  EmptyState,
   ErrorState,
-  Field,
   InlineSuccess,
   Input,
   PlantPhoto,
@@ -34,11 +33,9 @@ type Turn = {
   orderError: string | null;
 };
 
-const EXAMPLES = [
-  "тень, глина, север, цветение всё лето, без ухода по будням",
-  "солнечный участок в Подмосковье, сажать весной",
-  "полутень, зона 5, готов ухаживать",
-];
+/* Короткие: это подсказки ввода, а не готовые запросы. Длинная фраза
+   в чипе не помещается на телефоне и читается как чужой текст. */
+const EXAMPLES = ["тень и глина", "солнце, без ухода", "полутень, зона 4"];
 
 export function AssistantScreen({ canAsk }: { canAsk: boolean }) {
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -177,7 +174,7 @@ export function AssistantScreen({ canAsk }: { canAsk: boolean }) {
   }
 
   return (
-    <>
+    <div className={styles.chat}>
       {!canAsk ? (
         <div className={styles.warning} role="status">
           <strong>Помощник работает от лица покупателя.</strong> Выберите покупателя
@@ -186,33 +183,33 @@ export function AssistantScreen({ canAsk }: { canAsk: boolean }) {
         </div>
       ) : null}
 
-      <p className={styles.intro}>
-        Опишите участок словами — помощник отберёт растения по каталогу и объяснит выбор.
-        Заказ он не оформляет: в корзину кладёт только по вашей кнопке.
-      </p>
-
-      {turns.length === 0 && !thinking ? (
-        <EmptyState
-          title="Расскажите про участок"
-          description="Сколько света, какая зона или регион, сколько времени на уход. Одной фразой — помощник разберёт её на условия сам."
-          action={
-            <div className={styles.examples}>
-              {EXAMPLES.map((example) => (
-                <Button
-                  key={example}
-                  variant="secondary"
-                  disabled={!canAsk}
-                  onClick={() => send(example)}
-                >
-                  {example}
-                </Button>
-              ))}
-            </div>
-          }
-        />
-      ) : null}
+      <div className={styles.chatHead}>
+        <span className={styles.chatTitle}>
+          <BrandMark size={18} />
+          AI-помощник
+        </span>
+        <span className={styles.chatNote}>
+          Подбирает по каталогу. Заказ не оформляет — только по вашей кнопке.
+        </span>
+      </div>
 
       <div className={styles.feed}>
+        {turns.length === 0 && !thinking ? (
+          <div className={styles.theirs}>
+            <span className={styles.avatarRow}>
+              <span className={styles.avatar}>
+                <BrandMark size={18} />
+              </span>
+              <span className={styles.who}>AI-помощник</span>
+            </span>
+            <p className={styles.hello}>
+              Расскажите про участок: сколько света, какая зона или регион, сколько
+              времени на уход. Можно одной фразой — я разберу её на условия и покажу,
+              как понял.
+            </p>
+          </div>
+        ) : null}
+
         {turns.map((turn) => (
           <div key={turn.id}>
             <p className={styles.mine}>
@@ -386,38 +383,43 @@ export function AssistantScreen({ canAsk }: { canAsk: boolean }) {
         ))}
       </div>
 
-      <form
-        className={styles.form}
-        onSubmit={(event) => {
-          event.preventDefault();
-          send(draft);
-        }}
-      >
-        <Field id="agent-request" label="Что подобрать" required>
-          {(control) => (
-            <Input
-              {...control}
-              value={draft}
-              disabled={!canAsk}
-              placeholder={canAsk ? "тень, зона 4, без ухода" : "сначала выберите покупателя в шапке"}
-              onChange={(event) => setDraft(event.target.value)}
-            />
-          )}
-        </Field>
-        <Button
-          size="large"
-          type="submit"
-          loading={thinking}
-          disabled={!canAsk || draft.trim().length === 0}
-        >
-          Отправить
-        </Button>
-      </form>
+      <div className={styles.composer}>
+        {/* Примеры — чипами над полем: показать, на каком языке с ним говорить,
+            дешевле, чем объяснить это словами. Внутри пузыря им не место:
+            это не реплика, а подсказка ввода. */}
+        {turns.length === 0 ? (
+          <div className={styles.examples}>
+            {EXAMPLES.map((example) => (
+              <Chip key={example} pressed={false} onToggle={() => send(example)}>
+                {example}
+              </Chip>
+            ))}
+          </div>
+        ) : null}
 
-      <p className={styles.stub}>
-        Подбор считается правилами на сервере, без обращения к внешней модели —
-        так демо работает одинаково и без сети.
-      </p>
-    </>
+        <form
+          className={styles.form}
+          onSubmit={(event) => {
+            event.preventDefault();
+            send(draft);
+          }}
+        >
+          <label className="sr-only" htmlFor="agent-request">
+            Что подобрать
+          </label>
+          <Input
+            id="agent-request"
+            value={draft}
+            disabled={!canAsk}
+            placeholder={canAsk ? "тень, зона 4, без ухода" : "сначала выберите покупателя в шапке"}
+            onChange={(event) => setDraft(event.target.value)}
+          />
+          <Button type="submit" loading={thinking} disabled={!canAsk || draft.trim().length === 0}>
+            Отправить
+          </Button>
+        </form>
+      </div>
+
+    </div>
   );
 }

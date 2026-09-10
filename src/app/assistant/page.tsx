@@ -1,7 +1,7 @@
 import { currentUser } from "@/lib/demo-user.server";
 import { AssistantScreen } from "./assistant-screen";
 
-export const metadata = { title: "Помощник по подбору" };
+export const metadata = { title: "AI-помощник" };
 
 export default async function AssistantPage() {
   // Роль читается на сервере: предупреждение о невыбранном покупателе
@@ -9,9 +9,11 @@ export default async function AssistantPage() {
   const user = await currentUser();
   const canAsk = user?.role === "customer";
 
+  // Большого заголовка страницы здесь нет намеренно: чат занимает экран
+  // целиком, и заголовок над ним съедал бы высоту ленты. Название стоит
+  // мелко в шапке самого контейнера — как в любом мессенджере.
   return (
     <main className="page">
-      <h1>Агент подбора</h1>
       <AssistantScreen canAsk={canAsk} />
     </main>
   );

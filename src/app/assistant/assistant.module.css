@@ -3,11 +3,16 @@
   color: var(--text-muted);
 }
 
+/* Лента прокручивается целиком, а пузырь внутри — никогда: пузырь растёт
+   по содержимому. Прокрутка внутри реплики означала бы, что часть ответа
+   спрятана в коробке, о которой никто не догадается. */
 .feed {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: var(--sp-3);
-  margin-bottom: var(--sp-4);
+  overflow-y: auto;
+  padding: var(--sp-3) 0;
 }
 
 .mine,
@@ -203,11 +208,6 @@
   margin: var(--sp-3) 0 0;
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
-}
 
 .stub {
   margin: var(--sp-3) 0 0;
@@ -250,24 +250,21 @@
   white-space: nowrap;
 }
 
-/* Поле ввода закреплено внизу: в чате оно всегда под рукой, а не в конце
-   ленты, до которой надо долистать. */
+/* Поле ввода — панель внизу контейнера, а не элемент в конце ленты:
+   в чате оно всегда под рукой. */
 .form {
-  position: sticky;
-  bottom: 0;
-  z-index: 2;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: var(--sp-2);
-  margin-top: var(--sp-4);
-  padding: var(--sp-3) 0;
-  background: var(--bg);
-  border-top: 1px solid var(--border);
 }
 
-.form > *:first-child {
+.form input {
   flex: 1;
   min-width: 0;
+}
+
+.form button {
+  flex: 0 0 auto;
 }
 
 /* Примеры запросов при пустой ленте: показать, на каком языке с ним говорить,
@@ -278,6 +275,13 @@
   gap: var(--sp-2);
 }
 
+/* Страховка: чип не имеет права вытолкнуть страницу за край экрана. */
+.examples button {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}
+
 .warning {
   margin-bottom: var(--sp-4);
   padding: var(--sp-3);
@@ -285,4 +289,51 @@
   border: 1px solid var(--warning);
   border-radius: var(--r-md);
   color: var(--status-warning-ink);
+}
+
+/*
+ * Чат занимает экран до низа: 100dvh минус шапка и поля страницы.
+ * dvh, а не vh: на телефоне адресная строка съезжает, и vh даёт
+ * контейнер выше экрана.
+ */
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - var(--header-height, 112px) - var(--sp-6));
+  min-height: 420px;
+}
+
+.chatHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2) var(--sp-3);
+  padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.chatTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+.chatNote {
+  color: var(--text-muted);
+}
+
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--border);
+}
+
+.hello {
+  margin: 0;
 }
