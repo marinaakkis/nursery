@@ -16,6 +16,13 @@
   width: 100%;
 }
 
+/* Крупная кнопка — для подтверждений, где промах стоит дорого. */
+.large {
+  min-height: 52px;
+  padding: 0 var(--sp-4);
+  font-size: var(--fs-md);
+}
+
 .primary {
   background: var(--accent);
   border-color: var(--accent);

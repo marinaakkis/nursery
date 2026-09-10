@@ -6,15 +6,10 @@
   border-bottom: 1px solid var(--border);
 }
 
-/* На 375px бренд, навигация и переключатель в одну строку не влезают —
-   переключатель уходит на свою строку. Проверено замером: без этого
-   страница получает горизонтальную прокрутку 502px. */
 .inner {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
   max-width: 960px;
   margin: 0 auto;
   padding: var(--sp-2) var(--sp-3);
@@ -23,16 +18,26 @@
 .brand {
   display: inline-flex;
   align-items: center;
+  gap: var(--sp-2);
   min-height: var(--tap);
+  color: var(--accent);
   font-family: var(--font-display);
+  font-size: var(--fs-md);
   font-weight: 600;
-  color: var(--text);
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .nav {
   display: flex;
-  gap: var(--sp-2);
+  flex: 1;
+  gap: var(--sp-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav::-webkit-scrollbar {
+  display: none;
 }
 
 .link {
@@ -41,45 +46,94 @@
   min-height: var(--tap);
   padding: 0 var(--sp-2);
   border-radius: var(--r-sm);
-  color: var(--accent);
+  color: var(--text);
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .link:hover {
   background: var(--accent-weak);
+  color: var(--accent-ink);
 }
 
-.switcher {
-  display: flex;
-  flex: 1 1 100%;
+/* «Мой сад» ещё не собран: пункт стоит на своём месте, но никуда не ведёт
+   и говорит об этом прямо — заглушка обозначается на экране, а не в документации. */
+.soon {
+  display: inline-flex;
   align-items: center;
-  gap: var(--sp-2);
-  min-width: 0;
-}
-
-@media (width >= 560px) {
-  .switcher {
-    flex: 0 1 auto;
-  }
-}
-
-.select {
-  width: 100%;
-  max-width: 100%;
   min-height: var(--tap);
   padding: 0 var(--sp-2);
+  color: var(--text-muted);
+  white-space: nowrap;
+  cursor: default;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap);
+  height: var(--tap);
+  flex: 0 0 auto;
+  background: var(--accent-weak);
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent-ink);
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.avatarEmpty {
+  background: var(--surface);
+  border-color: var(--border-control);
+  color: var(--text-muted);
+}
+
+.users {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: var(--tap);
+  padding: var(--sp-2) var(--sp-3);
   background: var(--surface);
   border: 1px solid var(--border-control);
   border-radius: var(--r-sm);
-  color: var(--text);
+  color: inherit;
   font: inherit;
-  font-size: var(--fs-base);
+  text-align: left;
+  cursor: pointer;
 }
 
-/* Заглушка обозначена на самом экране, а не только в документации — spec §8. */
-.stub {
-  padding: var(--sp-1) var(--sp-3);
-  background: var(--status-neutral-bg);
-  color: var(--status-neutral-ink);
-  text-align: center;
+.userCurrent {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.userName {
+  display: flex;
+  flex-direction: column;
+}
+
+.userRole {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.userCurrent .userRole {
+  color: var(--accent-ink);
+}
+
+.sheetNote {
+  margin: 0 0 var(--sp-3);
+  color: var(--text-muted);
 }

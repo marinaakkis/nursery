@@ -1,0 +1,46 @@
+/* Фотографий в демо нет ни одной: место под них занимает буква названия
+   на бумажной подложке. Это заглушка, а не иллюстрация — градиентов
+   и картинок правила визуала не допускают. */
+.photo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  line-height: 1;
+  user-select: none;
+}
+
+.card {
+  aspect-ratio: 4 / 3;
+  font-size: 44px;
+}
+
+.hero {
+  aspect-ratio: 4 / 3;
+  font-size: 88px;
+  border-block: 1px solid var(--border);
+}
+
+.thumb {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 24px;
+}
+
+.dimmed {
+  opacity: 0.5;
+}
+
+/* Бейдж лежит поверх подложки, а не поверх снимка: контраст пары
+   «текст бейджа / его фон» посчитан и от картинки не зависит. */
+.overlay {
+  position: absolute;
+  top: var(--sp-2);
+  left: var(--sp-2);
+}

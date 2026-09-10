@@ -5,6 +5,7 @@ import styles from "./button.module.css";
 
 type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> & {
   variant?: "primary" | "secondary" | "ghost";
+  size?: "regular" | "large";
   loading?: boolean;
   fullWidth?: boolean;
   children: ReactNode;
@@ -14,6 +15,7 @@ type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> & 
  *  какое действие сейчас выполняется, а не пустой прямоугольник. */
 export function Button({
   variant = "primary",
+  size = "regular",
   loading = false,
   fullWidth = false,
   disabled = false,
@@ -25,7 +27,14 @@ export function Button({
     <button
       {...rest}
       type={type}
-      className={[styles.button, styles[variant], fullWidth ? styles.fullWidth : ""].join(" ").trim()}
+      className={[
+        styles.button,
+        styles[variant],
+        size === "large" ? styles.large : "",
+        fullWidth ? styles.fullWidth : "",
+      ]
+        .join(" ")
+        .trim()}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
     >

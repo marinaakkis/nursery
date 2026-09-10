@@ -1,5 +1,6 @@
 export { ActionBar } from "./action-bar";
 export { Badge } from "./badge";
+export { BrandMark } from "./brand-mark";
 export { Button } from "./button";
 export { Card, CardBody, CardPhoto } from "./card";
 export { Chip } from "./chip";
@@ -8,5 +9,6 @@ export { ErrorState } from "./error-state";
 export { Field, type FieldControlProps } from "./field";
 export { InlineSuccess } from "./inline-success";
 export { Input } from "./input";
+export { PlantPhoto } from "./plant-photo";
 export { Sheet } from "./sheet";
 export { Skeleton } from "./skeleton";
