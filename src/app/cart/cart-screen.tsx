@@ -135,7 +135,7 @@ export function CartScreen() {
         {cart.lines.map((line) => (
           <div className={styles.line} key={line.plantId}>
             <span className={styles.thumb}>
-              <PlantPhoto name={line.nameRu} variant="thumb" />
+              <PlantPhoto plantId={line.plantId} name={line.nameRu} variant="thumb" />
             </span>
             <span className={styles.name}>
               <Link href={`/catalog/${line.plantId}`}>{line.nameRu}</Link>

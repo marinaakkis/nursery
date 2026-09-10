@@ -3,6 +3,7 @@
    и картинок правила визуала не допускают. */
 .photo {
   position: relative;
+  isolation: isolate;
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -35,18 +36,27 @@
 .thumb {
   width: 56px;
   height: 56px;
+  min-width: 56px;
   flex: 0 0 auto;
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
   font-size: 24px;
 }
 
-/* Приглушается ТОЛЬКО буква. Раньше opacity стояла на всём блоке — и гасила
+/* Приглушается ТОЛЬКО изображение или буква — не блок целиком. Раньше opacity стояла на всём блоке — и гасила
    бейдж внутри вместе с подложкой: «Нет в наличии» падало примерно до 2.6:1.
    Прозрачность на предке действует на всё поддерево, включая то, что
    добавили позже. Разбор — memory/mistakes/2026-09-10-opacity-i-kontrast.md */
 .dimmedLetter {
   opacity: 0.45;
+}
+
+.dimmedPhoto {
+  opacity: 0.45;
+}
+
+.photo img {
+  object-fit: cover;
 }
 
 /* Бейдж лежит поверх подложки, а не поверх снимка: контраст пары

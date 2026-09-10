@@ -209,6 +209,7 @@ export function CatalogScreen() {
                 dimmed={stock.get(plant.id)?.available === 0}
               >
                 <PlantPhoto
+                  plantId={plant.id}
                   name={plant.nameRu}
                   dimmed={stock.get(plant.id)?.available === 0}
                   overlay={stockBadge(stock.get(plant.id))}

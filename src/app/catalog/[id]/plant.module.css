@@ -12,6 +12,16 @@
   margin: 0 calc(-1 * var(--sp-3));
 }
 
+/* Атрибуция стоит под снимком: этого требуют лицензии CC BY и CC BY-SA. */
+.credit {
+  margin: var(--sp-2) 0 0;
+  color: var(--text-muted);
+}
+
+.credit a {
+  color: var(--accent);
+}
+
 .latin {
   margin: var(--sp-1) 0 0;
   color: var(--text-muted);

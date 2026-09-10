@@ -14,6 +14,7 @@ import {
   PlantPhoto,
   Skeleton,
 } from "@/ui";
+import { plantPhotoCredit } from "@/lib/photo-credits";
 import { CARE_TYPE_LABEL, daysWord, formatPrice, labelOf } from "../filters";
 import { CalendarIcon, DropIcon, SoilIcon, SunIcon, ZoneIcon } from "./icons";
 import styles from "./plant.module.css";
@@ -143,6 +144,8 @@ export function PlantScreen({ plantId }: { plantId: string }) {
   const canBuy = !soldOut && !withdrawn;
 
   const watering = plant.careRules.find((r) => r.type === "watering");
+  // CC BY и CC BY-SA требуют указания автора — подпись едет вместе со снимком.
+  const credit = plantPhotoCredit(plant.id);
 
   async function addToCart() {
     setAdd("sending");
@@ -179,8 +182,10 @@ export function PlantScreen({ plantId }: { plantId: string }) {
 
       <div className={styles.hero}>
         <PlantPhoto
+          plantId={plant.id}
           name={plant.nameRu}
           variant="hero"
+          priority
           dimmed={!canBuy}
           overlay={
             withdrawn ? (
@@ -195,6 +200,16 @@ export function PlantScreen({ plantId }: { plantId: string }) {
           }
         />
       </div>
+
+      {credit ? (
+        <p className={styles.credit}>
+          Фото:{" "}
+          <a href={credit.url} target="_blank" rel="noreferrer noopener">
+            {credit.author}
+          </a>
+          , {credit.license}, Wikimedia Commons
+        </p>
+      ) : null}
 
       <h1>{plant.nameRu}</h1>
       <p className={styles.latin}>{plant.nameLat}</p>
@@ -236,9 +251,6 @@ export function PlantScreen({ plantId }: { plantId: string }) {
       <section className={styles.about}>
         <h2>Описание</h2>
         <p>{plant.description}</p>
-        <p className={styles.stub}>
-          Фото — заглушка: загрузка изображений в демо не подключена.
-        </p>
       </section>
 
       {plant.careRules.length > 0 ? (
@@ -268,7 +280,7 @@ export function PlantScreen({ plantId }: { plantId: string }) {
           <div className={styles.similar}>
             {settled.similar.map((item) => (
               <Card key={item.id} href={`/catalog/${item.id}`}>
-                <PlantPhoto name={item.nameRu} />
+                <PlantPhoto plantId={item.id} name={item.nameRu} />
                 <CardBody>
                   <span className={styles.similarName}>{item.nameRu}</span>
                   <span className={styles.similarPrice}>{formatPrice(item.priceCents)}</span>

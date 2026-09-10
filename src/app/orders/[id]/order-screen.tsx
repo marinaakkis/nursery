@@ -178,7 +178,7 @@ export function OrderScreen({ orderId }: { orderId: string }) {
           {order.items.map((item) => (
             <span className={styles.item} key={item.plantId}>
               <span className={styles.itemWhat}>
-                <PlantPhoto name={item.nameRu} variant="thumb" />
+                <PlantPhoto plantId={item.plantId} name={item.nameRu} variant="thumb" />
                 <span>
                   {item.nameRu} · {item.quantity} шт.
                 </span>

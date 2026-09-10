@@ -264,7 +264,7 @@ export function CheckoutScreen() {
           {cart.lines.map((line) => (
             <span className={styles.summaryLine} key={line.plantId}>
               <span className={styles.summaryWhat}>
-                <PlantPhoto name={line.nameRu} variant="thumb" />
+                <PlantPhoto plantId={line.plantId} name={line.nameRu} variant="thumb" />
                 <span>
                   {line.nameRu} · {line.quantity} шт.
                 </span>
