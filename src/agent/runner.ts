@@ -4,6 +4,7 @@ import { RulesProvider } from "./rules-provider";
 import { providerKind, type LlmProvider } from "./provider";
 import type { ToolContext } from "./types";
 import type { Result } from "@/lib/result";
+import type { PlantFilters } from "@/modules/catalog";
 
 /**
  * Исполнитель агента. Провайдер только читает запрос; инструменты вызывает
@@ -24,6 +25,9 @@ export type Suggestion = {
   priceCents: number;
   available: number;
   why: string;
+  /** Чем пришлось поступиться, чтобы это растение попало в подборку.
+   *  У точных совпадений пусто — иначе покупатель не отличит одно от другого. */
+  relaxedBy?: string;
 };
 
 export type AgentAnswer = {
@@ -52,6 +56,51 @@ const SEASON_WORD: Record<string, string> = {
   spring_autumn: "посадка весной или осенью",
 };
 const CARE_WORD: Record<string, string> = { low: "уход низкий", medium: "уход средний", high: "уход высокий" };
+
+/** Ниже какого числа предложений начинаем ослаблять условия. */
+export const MIN_SUGGESTIONS = 3;
+/** Больше пяти в одной подборке не показываем: это не выдача каталога. */
+export const MAX_SUGGESTIONS = 5;
+
+/** Соседние значения по шкале «солнце — полутень — тень». */
+const LIGHT_NEIGHBOURS: Record<string, string[]> = {
+  sun: ["partial"],
+  shade: ["partial"],
+  partial: ["shade", "sun"],
+};
+
+export type Relaxation = { label: string; filters: PlantFilters };
+
+/**
+ * Порядок уступок при недоборе: сначала уход, потом свет на соседнее значение,
+ * потом зона на единицу теплее. Каждая следующая ступень строится поверх
+ * предыдущей — иначе шаги отменяли бы друг друга.
+ *
+ * Почему такой порядок: уровень ухода — предпочтение, его нарушение ничем
+ * не грозит; свет на соседнее значение растение обычно переносит; зона
+ * теплее на единицу — уже риск вымерзания, поэтому она последняя.
+ */
+export function relaxationPlan(filters: PlantFilters): Relaxation[] {
+  const steps: Relaxation[] = [];
+  let current: PlantFilters = { ...filters };
+
+  if (current.care) {
+    current = { ...current, care: undefined };
+    steps.push({ label: "любой уровень ухода", filters: current });
+  }
+
+  for (const neighbour of LIGHT_NEIGHBOURS[current.light ?? ""] ?? []) {
+    current = { ...current, light: neighbour as PlantFilters["light"] };
+    steps.push({ label: LIGHT_WORD[neighbour], filters: current });
+  }
+
+  if (current.zone !== undefined && current.zone < 6) {
+    current = { ...current, zone: current.zone + 1 };
+    steps.push({ label: `зона ${current.zone}`, filters: current });
+  }
+
+  return steps;
+}
 
 export function makeProvider(): LlmProvider {
   return providerKind() === "http" ? new HttpProvider() : new RulesProvider();
@@ -123,31 +172,69 @@ export async function ask(request: string, ctx: ToolContext): Promise<AgentAnswe
     };
   }
 
-  const items = (found.data as { items: PlantListItem[] }).items;
   const suggestions: Suggestion[] = [];
+  const seen = new Set<number>();
 
-  // Наличие проверяется по каждому кандидату: предлагать то, чего нет, — вранье.
-  for (const plant of items) {
-    if (suggestions.length >= 5) break;
+  /** Проверяет наличие по каждому кандидату и берёт то, что реально есть.
+   *  Закончившееся не предлагаем: это враньё, а не подбор. */
+  async function take(items: PlantListItem[], relaxedBy?: string): Promise<number> {
+    let taken = 0;
+    for (const plant of items) {
+      if (suggestions.length >= MAX_SUGGESTIONS) break;
+      if (seen.has(plant.id)) continue;
+      seen.add(plant.id);
 
-    const stock = await callTool("warehouse.get_stock", { plantId: plant.id }, ctx);
-    const available = stock.ok ? (stock.data as { available: number }).available : 0;
-    steps.push({
-      tool: "warehouse.get_stock",
-      title: `Проверил наличие: ${plant.nameRu}`,
-      args: `растение №${plant.id}`,
-      result: available > 0 ? `в наличии ${available}` : "нет в наличии",
-    });
-
-    if (available > 0) {
-      suggestions.push({
-        plantId: plant.id,
-        nameRu: plant.nameRu,
-        nameLat: plant.nameLat,
-        priceCents: plant.priceCents,
-        available,
-        why: whyThis(plant),
+      const stock = await callTool("warehouse.get_stock", { plantId: plant.id }, ctx);
+      const available = stock.ok ? (stock.data as { available: number }).available : 0;
+      steps.push({
+        tool: "warehouse.get_stock",
+        title: `Проверил наличие: ${plant.nameRu}`,
+        args: `растение №${plant.id}`,
+        result: available > 0 ? `в наличии ${available}` : "нет в наличии",
       });
+
+      if (available > 0) {
+        suggestions.push({
+          plantId: plant.id,
+          nameRu: plant.nameRu,
+          nameLat: plant.nameLat,
+          priceCents: plant.priceCents,
+          available,
+          why: whyThis(plant),
+          relaxedBy,
+        });
+        taken += 1;
+      }
+    }
+    return taken;
+  }
+
+  const exactItems = (found.data as { items: PlantListItem[] }).items;
+  await take(exactItems);
+  const exactCount = suggestions.length;
+  const givenUp: string[] = [];
+
+  // Недобор: уступаем по одному условию за шаг, пока не наберём минимум.
+  if (suggestions.length < MIN_SUGGESTIONS) {
+    for (const relaxation of relaxationPlan(plan.filters)) {
+      if (suggestions.length >= MIN_SUGGESTIONS) break;
+
+      const wider = await callTool("catalog.search_plants", relaxation.filters, ctx);
+      if (!wider.ok) break;
+
+      // Шаг встаёт в карточку до проверок наличия, которые он вызвал: иначе
+      // читается так, будто растения появились сами по себе.
+      const step: AgentStep = {
+        tool: "catalog.search_plants",
+        title: `Ослабил условие: ${relaxation.label}`,
+        args: `под точные условия нашлось ${exactCount}`,
+        result: "",
+      };
+      steps.push(step);
+
+      const added = await take((wider.data as { items: PlantListItem[] }).items, relaxation.label);
+      givenUp.push(relaxation.label);
+      step.result = added > 0 ? `допустил ${relaxation.label} — ещё ${added}` : "ничего нового";
     }
   }
 
@@ -155,9 +242,9 @@ export async function ask(request: string, ctx: ToolContext): Promise<AgentAnswe
     return {
       kind: "nothing",
       message:
-        items.length === 0
+        exactItems.length === 0
           ? "Под такие условия в каталоге сейчас ничего нет."
-          : "Всё, что подошло по условиям, закончилось на складе.",
+          : "Всё, что подошло по условиям, закончилось на складе — даже после уступок.",
       hint: "Снимите одно из условий — например, зону или уход — и попробуйте ещё раз.",
       steps,
       suggestions: [],
@@ -168,6 +255,14 @@ export async function ask(request: string, ctx: ToolContext): Promise<AgentAnswe
   if (plan.unsupported.length > 0) {
     parts.push(`Не могу отфильтровать ${plan.unsupported.join("; ")}.`);
   }
+
+  if (givenUp.length > 0) {
+    parts.push(
+      `Под точные условия нашлось ${exactCount}, поэтому уступил: ${givenUp.join(", ")}.` +
+        " Уступки помечены у каждого растения.",
+    );
+  }
+
   parts.push(
     suggestions.length === 1
       ? "Подошло одно растение."

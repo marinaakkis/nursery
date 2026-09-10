@@ -180,6 +180,11 @@ export function AssistantScreen() {
                               </span>
                               <span className={styles.pickLatin}>{pick.nameLat}</span>
                               <span className={styles.pickWhy}>{pick.why}</span>
+                              {pick.relaxedBy ? (
+                                <span className={styles.relaxed}>
+                                  не точное совпадение: допущено «{pick.relaxedBy}»
+                                </span>
+                              ) : null}
                               <span className={styles.pickPrice}>
                                 {formatPrice(pick.priceCents)} · в наличии {pick.available}
                               </span>

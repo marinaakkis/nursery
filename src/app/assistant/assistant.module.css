@@ -144,6 +144,12 @@
   color: var(--text-muted);
 }
 
+/* Уступка помечается у растения, а не только в общем тексте: иначе точное
+   совпадение и «сойдёт» выглядят одинаково. */
+.relaxed {
+  color: var(--status-warning-ink);
+}
+
 .pickPrice {
   font-weight: 600;
 }

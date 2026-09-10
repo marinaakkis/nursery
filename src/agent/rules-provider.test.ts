@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { RulesProvider } from "./rules-provider";
 import { HttpProvider } from "./http-provider";
-import { callTool, IRREVERSIBLE, makeProvider } from "./runner";
+import { callTool, IRREVERSIBLE, makeProvider, relaxationPlan } from "./runner";
 
 const provider = new RulesProvider();
 const ctx = { userId: 1, role: "customer" as const };
@@ -70,6 +70,45 @@ describe("http-провайдер — заглушка с внятной при�
     if (plan.kind !== "refuse") return;
     expect(plan.message).toContain("LLM_PROVIDER");
     expect(plan.hint).toContain("rules");
+  });
+});
+
+describe("ослабление фильтров при недоборе", () => {
+  it("первая уступка — уход: это предпочтение, а не свойство участка", () => {
+    const steps = relaxationPlan({ light: "shade", care: "low", zone: 3 });
+    expect(steps[0].label).toBe("любой уровень ухода");
+    expect(steps[0].filters.care).toBeUndefined();
+    // Остальное на первом шаге не трогается.
+    expect(steps[0].filters.light).toBe("shade");
+    expect(steps[0].filters.zone).toBe(3);
+  });
+
+  it("вторая уступка — свет на соседнее значение, поверх первой", () => {
+    const steps = relaxationPlan({ light: "shade", care: "low", zone: 3 });
+    expect(steps[1].label).toBe("полутень");
+    expect(steps[1].filters.light).toBe("partial");
+    // Уступки накапливаются: уход уже отпущен и обратно не возвращается.
+    expect(steps[1].filters.care).toBeUndefined();
+  });
+
+  it("зона идёт последней и только на единицу теплее", () => {
+    const steps = relaxationPlan({ light: "shade", care: "low", zone: 3 });
+    const last = steps[steps.length - 1];
+    expect(last.label).toBe("зона 4");
+    expect(last.filters.zone).toBe(4);
+  });
+
+  it("у полутени два соседних значения, у крайних — одно", () => {
+    expect(relaxationPlan({ light: "partial" }).map((s) => s.label)).toEqual(["тень", "солнце"]);
+    expect(relaxationPlan({ light: "sun" }).map((s) => s.label)).toEqual(["полутень"]);
+  });
+
+  it("уступать нечего, если условий не было", () => {
+    expect(relaxationPlan({})).toEqual([]);
+  });
+
+  it("зона 6 не растёт дальше — теплее в каталоге ничего нет", () => {
+    expect(relaxationPlan({ zone: 6 })).toEqual([]);
   });
 });
 
