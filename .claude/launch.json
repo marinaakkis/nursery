@@ -1,4 +1,0 @@
-{ "version": "0.0.1", "configurations": [
-  { "name": "nursery", "runtimeExecutable": "sh",
-    "runtimeArgs": ["-c", "DATABASE_URL=postgres://localhost:5432/nursery LLM_PROVIDER=rules npm run dev"],
-    "port": 3000, "autoPort": true } ] }
