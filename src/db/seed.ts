@@ -55,6 +55,13 @@ async function putDemoPhotos(
   return result;
 }
 
+/** Дата в прошлом: факты спроса должны попадать в окно плана закупок. */
+function daysAgo(days: number): Date {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  return date;
+}
+
 async function seed() {
   const db = getDb();
 
@@ -195,10 +202,17 @@ async function seed() {
     }
   }
 
-  // спрос, который не удалось удовлетворить — из него растёт план закупок
+  // Спрос, который не удалось удовлетворить, — из него растёт план закупок.
+  // Числа держим в единицах и десятках: это питомник, а не оптовая база,
+  // и трёхзначная строка в плане читается как сбой, а не как потребность.
   await db.insert(demandFacts).values([
-    { plantId: plantIds[4], quantity: 2, kind: "rejected_no_stock" },
-    { plantId: plantIds[11], quantity: 1, kind: "rejected_no_stock" },
+    { plantId: plantIds[4], quantity: 3, kind: "rejected_no_stock", occurredAt: daysAgo(12) },
+    { plantId: plantIds[4], quantity: 2, kind: "rejected_no_stock", occurredAt: daysAgo(4) },
+    { plantId: plantIds[11], quantity: 4, kind: "rejected_no_stock", occurredAt: daysAgo(21) },
+    { plantId: plantIds[11], quantity: 2, kind: "rejected_no_stock", occurredAt: daysAgo(6) },
+    { plantId: plantIds[20], quantity: 5, kind: "rejected_no_stock", occurredAt: daysAgo(30) },
+    { plantId: plantIds[6], quantity: 2, kind: "rejected_no_stock", occurredAt: daysAgo(9) },
+    { plantId: plantIds[8], quantity: 1, kind: "rejected_no_stock", occurredAt: daysAgo(2) },
   ]);
 
   // --- корзина: у Игоря непустая, чтобы экран не был пустым на демо ---

@@ -233,7 +233,21 @@ export function PlantScreen({ plantId }: { plantId: string }) {
           <span className={styles.reqValue}>
             {watering
               ? `раз в ${watering.periodDays} ${daysWord(watering.periodDays)}`
-              : `уход ${labelOf("care", plant.careLevel).toLowerCase()}`}
+              : "по погоде"}
+          </span>
+        </li>
+        <li className={styles.tile}>
+          <DropIcon className={styles.reqIcon} />
+          <span className={styles.reqName}>Уход</span>
+          {/* Шкала расшифровывается прямо здесь: «средне» само по себе
+              ничего не сообщает, а список дел — сообщает. */}
+          <span className={styles.reqValue}>
+            {labelOf("care", plant.careLevel)}
+            {plant.careRules.length > 0
+              ? ` — ${plant.careRules
+                  .map((r) => (CARE_TYPE_LABEL[r.type] ?? r.type).toLowerCase())
+                  .join(", ")}`
+              : ""}
           </span>
         </li>
         <li className={styles.tile}>

@@ -65,7 +65,7 @@ const SEASON_WORD: Record<string, string> = {
   autumn: "посадка осенью",
   spring_autumn: "посадка весной или осенью",
 };
-const CARE_WORD: Record<string, string> = { low: "уход низкий", medium: "уход средний", high: "уход высокий" };
+const CARE_WORD: Record<string, string> = { low: "уход — легко", medium: "уход — средне", high: "уход — сложно" };
 
 /** Ниже какого числа предложений начинаем ослаблять условия. */
 export const MIN_SUGGESTIONS = 3;
@@ -96,7 +96,7 @@ export function relaxationPlan(filters: PlantFilters): Relaxation[] {
 
   if (current.care) {
     current = { ...current, care: undefined };
-    steps.push({ label: "любой уровень ухода", filters: current });
+    steps.push({ label: "любые трудозатраты", filters: current });
   }
 
   for (const neighbour of LIGHT_NEIGHBOURS[current.light ?? ""] ?? []) {

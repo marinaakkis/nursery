@@ -45,10 +45,13 @@ export const FACETS: Facet[] = [
     key: "care",
     title: "Уход",
     subject: "уход",
+    // Шкала называется трудозатратами, а не абстрактным уровнем: «низкий уход»
+    // покупатель читает как оценку качества, «легко» — как обещание про себя.
+    // Значения в базе прежние: low / medium / high.
     options: [
-      { value: "low", label: "Низкий" },
-      { value: "medium", label: "Средний" },
-      { value: "high", label: "Высокий" },
+      { value: "low", label: "Легко" },
+      { value: "medium", label: "Средне" },
+      { value: "high", label: "Сложно" },
     ],
   },
 ];

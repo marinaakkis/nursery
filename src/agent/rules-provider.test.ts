@@ -47,6 +47,37 @@ describe("rules-провайдер: разбор запроса в фильтр�
   });
 });
 
+describe("синонимы трудозатрат", () => {
+  const cases: [string, "low" | "medium" | "high"][] = [
+    ["хочу что-то простое", "low"],
+    ["лёгкий в уходе куст", "low"],
+    ["неприхотливое растение", "low"],
+    ["без ухода, некогда возиться", "low"],
+    ["чтобы рос сам", "low"],
+    ["средний уход, готова поливать", "medium"],
+    ["умеренный уход", "medium"],
+    ["готов ухаживать, хоть капризное", "high"],
+    ["требовательное растение не пугает", "high"],
+  ];
+
+  for (const [phrase, expected] of cases) {
+    it(`«${phrase}» → ${expected}`, async () => {
+      const plan = await provider.plan(phrase);
+      expect(plan.kind).toBe("pick");
+      if (plan.kind !== "pick") return;
+      expect(plan.filters.care).toBe(expected);
+    });
+  }
+
+  it("порядок групп не путает простое со сложным", async () => {
+    // «Несложный» содержит «сложн» — если проверять группы не по порядку,
+    // фраза уедет в high. Ловушка настоящая, поймана на этой же строке.
+    const plan = await provider.plan("несложное растение для полутени");
+    if (plan.kind !== "pick") throw new Error("ожидался подбор");
+    expect(plan.filters.care).toBe("low");
+  });
+});
+
 describe("rules-провайдер: отказ вне зоны", () => {
   it("вопрос про болезнь уводит к агроному, а не пытается лечить", async () => {
     const plan = await provider.plan("у гортензии желтеют листья и пятна, что с ней?");
@@ -128,7 +159,7 @@ describe("команда оформить самовывоз", () => {
 describe("ослабление фильтров при недоборе", () => {
   it("первая уступка — уход: это предпочтение, а не свойство участка", () => {
     const steps = relaxationPlan({ light: "shade", care: "low", zone: 3 });
-    expect(steps[0].label).toBe("любой уровень ухода");
+    expect(steps[0].label).toBe("любые трудозатраты");
     expect(steps[0].filters.care).toBeUndefined();
     // Остальное на первом шаге не трогается.
     expect(steps[0].filters.light).toBe("shade");
