@@ -1,0 +1,148 @@
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.tabCurrent {
+  background: var(--accent-weak);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.intro {
+  margin: 0 0 var(--sp-3);
+  color: var(--text-muted);
+}
+
+/* Таблицы склада шире экрана телефона — прокручиваются в своей рамке,
+   страница целиком по горизонтали не едет. */
+.scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+.table th,
+.table td {
+  padding: var(--sp-2) var(--sp-3);
+  text-align: left;
+}
+
+.table th {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.table tbody tr {
+  border-top: 1px solid var(--border);
+}
+
+/* Ссылка в ячейке — самостоятельная цель, а не текст в предложении:
+   зона нажатия обязана быть полной даже в плотном режиме. */
+.table td a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+}
+
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.rowAction {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.card {
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.card + .card {
+  margin-top: var(--sp-2);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+@media (width >= 700px) {
+  .formRow {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--sp-3);
+  }
+}
+
+.select,
+.input {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 var(--sp-2);
+  background: var(--surface);
+  border: 1px solid var(--border-control);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-base);
+}
+
+.orderHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+
+.orderItems {
+  margin: 0 0 var(--sp-2);
+  padding-left: var(--sp-4);
+  color: var(--text-muted);
+}
+
+.formula {
+  margin: 0 0 var(--sp-3);
+  padding: var(--sp-3);
+  background: var(--status-neutral-bg);
+  color: var(--status-neutral-ink);
+  border-radius: var(--r-sm);
+}
+
+.need {
+  font-weight: 600;
+}

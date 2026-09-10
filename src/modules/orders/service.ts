@@ -1,7 +1,7 @@
-import { and, asc, desc, eq, gte, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "@/db/client";
-import { notifications } from "@/db/shared-schema";
+import { notifications, users } from "@/db/shared-schema";
 import { fail, ok, type Result } from "@/lib/result";
 import { plants } from "@/modules/catalog";
 import { fillGardenFromOrder, todayIso } from "@/modules/garden";
@@ -466,5 +466,73 @@ export async function transition(
 
   return ok({ orderId, status: next, statusLabel: STATUS_LABEL[next] });
 }
+
+export type AssemblyOrder = {
+  id: number;
+  status: string;
+  statusLabel: string;
+  fulfillment: string;
+  createdAt: string;
+  customerName: string;
+  totalCents: number;
+  slotDate: string | null;
+  slotInterval: string | null;
+  items: { plantName: string; quantity: number }[];
+};
+
+/** Очередь сборки для склада. Живёт здесь, а не в warehouse: это выборка
+ *  заказов, и тянуть её из соседнего модуля значило бы замкнуть их в цикл —
+ *  orders уже зовёт warehouse за резервом. */
+export async function listOrdersForAssembly(): Promise<Result<AssemblyOrder[]>> {
+  const db = getDb();
+  const rows = await db
+    .select({
+      id: orders.id,
+      status: orders.status,
+      fulfillment: orders.fulfillment,
+      createdAt: orders.createdAt,
+      totalCents: orders.totalCents,
+      customerName: users.name,
+      slotDate: deliverySlots.slotDate,
+      slotInterval: deliverySlots.interval,
+    })
+    .from(orders)
+    .innerJoin(users, eq(users.id, orders.customerId))
+    .leftJoin(deliverySlots, eq(deliverySlots.id, orders.slotId))
+    .where(inArray(orders.status, ["new", "assembling", "ready_for_pickup", "handed_to_delivery"]))
+    .orderBy(asc(orders.createdAt));
+
+  if (rows.length === 0) return ok([]);
+
+  const ids = rows.map((row) => row.id);
+  const items = await db
+    .select({
+      orderId: orderItems.orderId,
+      plantName: plants.nameRu,
+      quantity: orderItems.quantity,
+    })
+    .from(orderItems)
+    .innerJoin(plants, eq(plants.id, orderItems.plantId))
+    .where(inArray(orderItems.orderId, ids))
+    .orderBy(asc(plants.nameRu));
+
+  return ok(
+    rows.map((row) => ({
+      id: row.id,
+      status: row.status,
+      statusLabel: STATUS_LABEL[row.status] ?? row.status,
+      fulfillment: row.fulfillment,
+      createdAt: row.createdAt.toISOString(),
+      customerName: row.customerName,
+      totalCents: row.totalCents,
+      slotDate: row.slotDate,
+      slotInterval: row.slotInterval,
+      items: items
+        .filter((item) => item.orderId === row.id)
+        .map((item) => ({ plantName: item.plantName, quantity: item.quantity })),
+    })),
+  );
+}
+
 
 export * from "./transitions";

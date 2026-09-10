@@ -8,6 +8,7 @@ import {
   listSlots,
   removeFromCart,
   setQty,
+  listOrdersForAssembly,
   transition,
 } from "./service";
 
@@ -67,5 +68,12 @@ export const routes: ModuleRoute[] = [
     action: "transition",
     roles: ["customer", "warehouse"],
     handler: async ({ body }, ctx) => transition(body, ctx),
+  },
+  {
+    method: "GET",
+    action: "assembly",
+    // Очередь сборки: список заказов для склада, поэтому живёт в orders.
+    roles: ["warehouse"],
+    handler: async () => listOrdersForAssembly(),
   },
 ];

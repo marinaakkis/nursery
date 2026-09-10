@@ -1,8 +1,9 @@
-import { eq, inArray, sql } from "drizzle-orm";
+import { and, asc, eq, gte, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "@/db/client";
 import { fail, ok, type Result } from "@/lib/result";
-import { batches, demandFacts } from "./schema";
+import { plants } from "@/modules/catalog";
+import { batches, demandFacts, writeOffs } from "./schema";
 
 /** Транзакция drizzle. Резерв и возврат обязаны идти внутри чужой транзакции —
  *  той же, в которой создаётся или отменяется заказ. */
@@ -181,4 +182,204 @@ export async function recordSoldDemand(tx: Tx, items: ReserveItem[]): Promise<vo
   await tx
     .insert(demandFacts)
     .values(items.map((i) => ({ plantId: i.plantId, quantity: i.quantity, kind: "sold" as const })));
+}
+
+// ─────────────────────────── кабинет склада ───────────────────────────
+
+/** 🔶 Период, за который считается спрос для плана закупок. В спеке срок
+ *  не назван; квартал — минимальный отрезок, на котором видно сезонность. */
+export const DEMAND_PERIOD_DAYS = 90;
+
+export const batchListSchema = z.object({
+  plantId: z.coerce.number().int().positive().optional(),
+});
+
+export const receiveSchema = z.object({
+  plantId: z.coerce.number().int().positive(),
+  quantity: z.coerce.number().int().positive().max(10_000),
+  receivedAt: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Дата в формате ГГГГ-ММ-ДД")
+    .optional(),
+  supplier: z.string().trim().min(2).max(120),
+});
+
+export const writeOffSchema = z.object({
+  batchId: z.coerce.number().int().positive(),
+  quantity: z.coerce.number().int().positive(),
+  reason: z.string().trim().min(3, "Причина списания обязательна").max(200),
+});
+
+export type BatchRow = {
+  id: number;
+  plantId: number;
+  plantName: string;
+  receivedAt: string;
+  quantity: number;
+  remaining: number;
+  supplier: string;
+  writtenOff: number;
+};
+
+export async function listBatches(raw: unknown): Promise<Result<BatchRow[]>> {
+  const parsed = batchListSchema.safeParse(raw);
+  if (!parsed.success) return fail("validation_failed", "Неверное растение", parsed.error.issues);
+
+  const rows = await getDb()
+    .select({
+      id: batches.id,
+      plantId: batches.plantId,
+      plantName: plants.nameRu,
+      receivedAt: batches.receivedAt,
+      quantity: batches.quantity,
+      remaining: batches.remaining,
+      supplier: batches.supplier,
+      writtenOff: sql<number>`coalesce((
+        select sum(${writeOffs.quantity})::int from ${writeOffs}
+        where ${writeOffs.batchId} = ${batches.id}
+      ), 0)`,
+    })
+    .from(batches)
+    .innerJoin(plants, eq(plants.id, batches.plantId))
+    .where(parsed.data.plantId ? eq(batches.plantId, parsed.data.plantId) : sql`true`)
+    // Тот же порядок, что у резерва: старое сверху, чтобы глаз сверял одинаково.
+    .orderBy(asc(plants.nameRu), asc(batches.receivedAt), asc(batches.id));
+
+  return ok(rows);
+}
+
+/** Приход партии. Новая партия всегда полная: remaining равен quantity. */
+export async function receiveBatch(
+  raw: unknown,
+): Promise<Result<{ batchId: number; plantId: number; remaining: number }>> {
+  const parsed = receiveSchema.safeParse(raw);
+  if (!parsed.success) {
+    return fail("validation_failed", parsed.error.issues[0]?.message ?? "Проверьте приход", parsed.error.issues);
+  }
+  const { plantId, quantity, receivedAt, supplier } = parsed.data;
+
+  const db = getDb();
+  const [plant] = await db.select({ id: plants.id }).from(plants).where(eq(plants.id, plantId)).limit(1);
+  if (!plant) return fail("not_found", "Такого растения нет");
+
+  const [created] = await db
+    .insert(batches)
+    .values({
+      plantId,
+      receivedAt: receivedAt ?? new Date().toISOString().slice(0, 10),
+      quantity,
+      remaining: quantity,
+      supplier,
+    })
+    .returning();
+
+  return ok({ batchId: created.id, plantId, remaining: created.remaining });
+}
+
+/**
+ * Списание из партии. Больше остатка списать нельзя — AC18.
+ *
+ * Проверка и уменьшение идут в одной транзакции с блокировкой строки:
+ * без неё два одновременных списания прошли бы каждое по своей проверке
+ * и вместе увели остаток в минус. Ниже нуля не пустит и ограничение схемы,
+ * но отказ пользователю обязан быть внятным, а не падением запроса.
+ */
+export async function writeOff(
+  raw: unknown,
+  actorId: number,
+): Promise<Result<{ batchId: number; remaining: number; writtenOff: number }>> {
+  const parsed = writeOffSchema.safeParse(raw);
+  if (!parsed.success) {
+    return fail("validation_failed", parsed.error.issues[0]?.message ?? "Проверьте списание", parsed.error.issues);
+  }
+  const { batchId, quantity, reason } = parsed.data;
+
+  const db = getDb();
+  const outcome = await db.transaction(async (tx) => {
+    const [locked] = await tx
+      .select({ id: batches.id, remaining: batches.remaining })
+      .from(batches)
+      .where(eq(batches.id, batchId))
+      .for("update");
+
+    if (!locked) return { kind: "missing" as const };
+    if (quantity > locked.remaining) {
+      return { kind: "short" as const, remaining: locked.remaining };
+    }
+
+    await tx
+      .update(batches)
+      .set({ remaining: locked.remaining - quantity })
+      .where(eq(batches.id, batchId));
+
+    await tx.insert(writeOffs).values({ batchId, quantity, reason, actorId });
+
+    return { kind: "done" as const, remaining: locked.remaining - quantity };
+  });
+
+  if (outcome.kind === "missing") return fail("not_found", "Такой партии нет");
+  if (outcome.kind === "short") {
+    return fail(
+      "write_off_exceeds_stock",
+      `В партии осталось ${outcome.remaining} — списать больше нельзя`,
+    );
+  }
+
+  return ok({ batchId, remaining: outcome.remaining, writtenOff: quantity });
+}
+
+export type PurchasePlanRow = {
+  plantId: number;
+  plantName: string;
+  plantingSeason: string;
+  sold: number;
+  rejected: number;
+  inStock: number;
+  recommended: number;
+};
+
+/**
+ * План закупок по фиксированной формуле из спеки:
+ *   продано за период + отказы из-за нехватки остатка − текущий остаток.
+ *
+ * Никакой прогнозной алгоритмики здесь нет и не предполагается — это прямо
+ * записано во «вне скоупа». Формула печатается на экране рядом с таблицей,
+ * чтобы закупщик видел, откуда взялось число, и мог не поверить ему.
+ */
+export async function purchasePlan(): Promise<
+  Result<{ periodDays: number; since: string; rows: PurchasePlanRow[] }>
+> {
+  const since = new Date();
+  since.setDate(since.getDate() - DEMAND_PERIOD_DAYS);
+  const sinceIso = since.toISOString().slice(0, 10);
+
+  const rows = await getDb()
+    .select({
+      plantId: plants.id,
+      plantName: plants.nameRu,
+      plantingSeason: plants.plantingSeason,
+      sold: sql<number>`coalesce(sum(case when ${demandFacts.kind} = 'sold' then ${demandFacts.quantity} end), 0)::int`,
+      rejected: sql<number>`coalesce(sum(case when ${demandFacts.kind} = 'rejected_no_stock' then ${demandFacts.quantity} end), 0)::int`,
+      inStock: sql<number>`coalesce((
+        select sum(${batches.remaining})::int from ${batches} where ${batches.plantId} = ${plants.id}
+      ), 0)`,
+    })
+    .from(plants)
+    .leftJoin(
+      demandFacts,
+      and(eq(demandFacts.plantId, plants.id), gte(demandFacts.occurredAt, since)),
+    )
+    .where(eq(plants.isActive, true))
+    .groupBy(plants.id, plants.nameRu, plants.plantingSeason)
+    .orderBy(asc(plants.nameRu));
+
+  return ok({
+    periodDays: DEMAND_PERIOD_DAYS,
+    since: sinceIso,
+    rows: rows.map((row) => ({
+      ...row,
+      // Отрицательная потребность — это излишек, закупать нечего.
+      recommended: Math.max(0, row.sold + row.rejected - row.inStock),
+    })),
+  });
 }
