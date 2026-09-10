@@ -15,11 +15,14 @@ export function PlantPhoto({ name, variant = "card", dimmed = false, overlay }: 
 
   return (
     <div
-      className={[styles.photo, styles[variant], dimmed ? styles.dimmed : ""].join(" ").trim()}
+      className={[styles.photo, styles[variant]].join(" ")}
       // Буква — оформление, а не содержание: название стоит рядом текстом.
       aria-hidden={overlay ? undefined : true}
     >
-      <span aria-hidden="true">{letter}</span>
+      {/* Гасим букву, а не блок целиком: иначе прозрачность накрывает и бейдж. */}
+      <span className={dimmed ? styles.dimmedLetter : undefined} aria-hidden="true">
+        {letter}
+      </span>
       {overlay ? <span className={styles.overlay}>{overlay}</span> : null}
     </div>
   );

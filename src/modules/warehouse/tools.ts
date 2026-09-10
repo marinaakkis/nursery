@@ -1,5 +1,5 @@
 import type { Tool } from "@/agent/types";
-import { getStock, plantStockSchema } from "./service";
+import { getStock, getStockMany, plantsStockSchema, plantStockSchema } from "./service";
 
 export const tools: Tool[] = [
   {
@@ -8,5 +8,13 @@ export const tools: Tool[] = [
     parameters: plantStockSchema,
     audience: "buyer",
     handler: async (args) => getStock(args),
+  },
+  {
+    name: "warehouse.get_stock_many",
+    description:
+      "Узнать наличие сразу нескольких растений одним запросом: для списка идентификаторов вернёт доступное количество по каждому.",
+    parameters: plantsStockSchema,
+    audience: "buyer",
+    handler: async (args) => getStockMany(args),
   },
 ];

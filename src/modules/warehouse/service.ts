@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "@/db/client";
 import { fail, ok, type Result } from "@/lib/result";
@@ -30,6 +30,52 @@ export async function getStock(raw: unknown): Promise<Result<Stock>> {
 
   const available = row?.available ?? 0;
   return ok({ plantId, available, low: available > 0 && available <= LOW_STOCK_THRESHOLD });
+}
+
+export const plantsStockSchema = z.object({
+  /** Список идентификаторов. Из HTTP приходит строкой «1,2,3», от инструмента — массивом. */
+  plantIds: z.preprocess(
+    (value) =>
+      typeof value === "string"
+        ? value
+            .split(",")
+            .map((part) => part.trim())
+            .filter(Boolean)
+        : value,
+    z.array(z.coerce.number().int().positive()).min(1).max(200),
+  ),
+});
+
+/**
+ * Остатки списком — одной выборкой вместо запроса на каждое растение.
+ * Растение без единой партии в выборку не попадает, поэтому результат
+ * достраивается нулями: сетка каталога обязана знать про «нет в наличии»
+ * так же уверенно, как про «мало осталось».
+ */
+export async function getStockMany(raw: unknown): Promise<Result<Stock[]>> {
+  const parsed = plantsStockSchema.safeParse(raw);
+  if (!parsed.success) {
+    return fail("validation_failed", "Неверный список растений", parsed.error.issues);
+  }
+  const ids = [...new Set(parsed.data.plantIds)];
+
+  const rows = await getDb()
+    .select({
+      plantId: batches.plantId,
+      available: sql<number>`coalesce(sum(${batches.remaining}), 0)::int`,
+    })
+    .from(batches)
+    .where(inArray(batches.plantId, ids))
+    .groupBy(batches.plantId);
+
+  const byPlant = new Map(rows.map((row) => [row.plantId, row.available]));
+
+  return ok(
+    ids.map((plantId) => {
+      const available = byPlant.get(plantId) ?? 0;
+      return { plantId, available, low: available > 0 && available <= LOW_STOCK_THRESHOLD };
+    }),
+  );
 }
 
 export type ReserveItem = { plantId: number; quantity: number };

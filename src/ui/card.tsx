@@ -23,11 +23,6 @@ export function Card({ href, dimmed = false, children }: CardProps) {
   return <article className={className}>{children}</article>;
 }
 
-/** Место под изображение. Загрузка фото в демо не подключена — подпись честная. */
-export function CardPhoto({ children = "фото" }: { children?: ReactNode }) {
-  return <div className={styles.photo}>{children}</div>;
-}
-
 export function CardBody({ children }: { children: ReactNode }) {
   return <div className={styles.body}>{children}</div>;
 }

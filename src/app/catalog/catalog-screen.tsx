@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActionBar,
+  Badge,
   Button,
   Card,
   CardBody,
@@ -33,11 +34,22 @@ type PlantListItem = {
   priceCents: number;
 };
 
+type Stock = { plantId: number; available: number; low: boolean };
+
 type Loaded = { total: number; items: PlantListItem[] };
 /** Что уже загружено и для какого запроса. Фаза экрана не хранится отдельным
  *  состоянием: она вычисляется сравнением ключа — «загружаем» это производное,
  *  а не эффект. Разбор — memory/mistakes/2026-09-10-setstate-v-effekte.md. */
-type Loadout = { key: string; data: Loaded | null };
+type Loadout = { key: string; data: Loaded | null; stock: Map<number, Stock> };
+
+/** Бейдж наличия поверх подложки. У растения, которого хватает, бейджа нет:
+ *  «есть в наличии» на каждой карточке — шум, а не информация. */
+function stockBadge(stock: Stock | undefined) {
+  if (!stock) return null;
+  if (stock.available === 0) return <Badge tone="danger">Нет в наличии</Badge>;
+  if (stock.low) return <Badge tone="warning">Осталось {stock.available}</Badge>;
+  return null;
+}
 
 export function CatalogScreen() {
   const router = useRouter();
@@ -59,14 +71,29 @@ export function CatalogScreen() {
 
     fetch(`/api/catalog/plants?${query}`, { signal: controller.signal })
       .then((response) => response.json())
-      .then((payload: { ok: boolean; data?: Loaded }) => {
+      .then(async (payload: { ok: boolean; data?: Loaded }) => {
         if (!payload.ok || !payload.data) throw new Error("catalog request failed");
-        setLoadout({ key: requestKey, data: payload.data });
+        const items = payload.data.items;
+
+        // Остатки на всю выдачу одним запросом, а не по растению на карточку.
+        const stock = new Map<number, Stock>();
+        if (items.length > 0) {
+          const ids = items.map((plant) => plant.id).join(",");
+          const answer = await fetch(`/api/warehouse/stocks?plantIds=${ids}`, {
+            signal: controller.signal,
+          })
+            .then((response) => response.json())
+            .catch(() => ({ ok: false }));
+
+          if (answer.ok) for (const row of answer.data as Stock[]) stock.set(row.plantId, row);
+        }
+
+        setLoadout({ key: requestKey, data: payload.data, stock });
       })
       .catch((error: unknown) => {
         if (controller.signal.aborted) return;
         console.error("catalog: не удалось загрузить выдачу", error);
-        setLoadout({ key: requestKey, data: null });
+        setLoadout({ key: requestKey, data: null, stock: new Map() });
       });
 
     return () => controller.abort();
@@ -76,6 +103,7 @@ export function CatalogScreen() {
   const loading = settled === null;
   const failed = settled !== null && settled.data === null;
   const result = settled?.data ?? null;
+  const stock = settled?.stock ?? new Map<number, Stock>();
 
   const apply = useCallback(
     (next: Selection) => {
@@ -175,11 +203,16 @@ export function CatalogScreen() {
           </p>
           <div className={styles.grid}>
             {result.items.map((plant) => (
-              // Бейджа наличия здесь нет: остаток отдаётся по одному растению,
-              // а функции «остатки списком» в warehouse не существует. Тянуть
-              // тридцать запросов из компонента — писать логику в интерфейсе.
-              <Card key={plant.id} href={`/catalog/${plant.id}`}>
-                <PlantPhoto name={plant.nameRu} />
+              <Card
+                key={plant.id}
+                href={`/catalog/${plant.id}`}
+                dimmed={stock.get(plant.id)?.available === 0}
+              >
+                <PlantPhoto
+                  name={plant.nameRu}
+                  dimmed={stock.get(plant.id)?.available === 0}
+                  overlay={stockBadge(stock.get(plant.id))}
+                />
                 <CardBody>
                   <span className={styles.name}>{plant.nameRu}</span>
                   <span className={styles.latin}>{plant.nameLat}</span>
