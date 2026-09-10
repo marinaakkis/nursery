@@ -139,6 +139,7 @@ export type GardenPlantView = {
   plantId: number;
   nameRu: string;
   nameLat: string;
+  photoUrl: string | null;
   quantity: number;
   acquiredAt: string;
   /** Ближайшее невыполненное действие: что и через сколько дней. */
@@ -158,6 +159,7 @@ export async function listGarden(customerId: number): Promise<Result<GardenPlant
       acquiredAt: gardenPlants.acquiredAt,
       nameRu: plants.nameRu,
       nameLat: plants.nameLat,
+      photoUrl: plants.photoUrl,
     })
     .from(gardenPlants)
     .innerJoin(plants, eq(plants.id, gardenPlants.plantId))
@@ -412,6 +414,7 @@ export type GardenPlantDetail = {
   plantId: number;
   nameRu: string;
   nameLat: string;
+  photoUrl: string | null;
   quantity: number;
   acquiredAt: string;
   rules: { type: string; label: string; periodDays: number; seasonOnly: boolean }[];
@@ -436,6 +439,7 @@ export async function getGardenPlant(
       acquiredAt: gardenPlants.acquiredAt,
       nameRu: plants.nameRu,
       nameLat: plants.nameLat,
+      photoUrl: plants.photoUrl,
     })
     .from(gardenPlants)
     .innerJoin(plants, eq(plants.id, gardenPlants.plantId))
@@ -487,6 +491,7 @@ export async function getGardenPlant(
     plantId: row.plantId,
     nameRu: row.nameRu,
     nameLat: row.nameLat,
+    photoUrl: row.photoUrl,
     quantity: row.quantity,
     acquiredAt: row.acquiredAt,
     rules: rules.map((rule) => ({ ...rule, label: CARE_TYPE_LABEL[rule.type] ?? rule.type })),

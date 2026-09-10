@@ -39,6 +39,7 @@ export type CartLine = {
   plantId: number;
   nameRu: string;
   nameLat: string;
+  photoUrl: string | null;
   quantity: number;
   priceCents: number;
   sumCents: number;
@@ -52,6 +53,7 @@ export async function getCart(customerId: number): Promise<Result<Cart>> {
       plantId: cartItems.plantId,
       nameRu: plants.nameRu,
       nameLat: plants.nameLat,
+      photoUrl: plants.photoUrl,
       quantity: cartItems.quantity,
       priceCents: plants.priceCents,
     })

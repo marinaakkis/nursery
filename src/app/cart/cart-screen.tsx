@@ -10,6 +10,7 @@ type CartLine = {
   plantId: number;
   nameRu: string;
   nameLat: string;
+  photoUrl: string | null;
   quantity: number;
   priceCents: number;
   sumCents: number;
@@ -135,7 +136,7 @@ export function CartScreen() {
         {cart.lines.map((line) => (
           <div className={styles.line} key={line.plantId}>
             <span className={styles.thumb}>
-              <PlantPhoto plantId={line.plantId} name={line.nameRu} variant="thumb" />
+              <PlantPhoto photoUrl={line.photoUrl} name={line.nameRu} variant="thumb" />
             </span>
             <span className={styles.name}>
               <Link href={`/catalog/${line.plantId}`}>{line.nameRu}</Link>

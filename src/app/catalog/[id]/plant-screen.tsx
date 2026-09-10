@@ -14,7 +14,7 @@ import {
   PlantPhoto,
   Skeleton,
 } from "@/ui";
-import { plantPhotoCredit } from "@/lib/photo-credits";
+import { photoCreditFor } from "@/lib/photo-credits";
 import { CARE_TYPE_LABEL, daysWord, formatPrice, labelOf } from "../filters";
 import { CalendarIcon, DropIcon, SoilIcon, SunIcon, ZoneIcon } from "./icons";
 import styles from "./plant.module.css";
@@ -25,6 +25,7 @@ type PlantCard = {
   id: number;
   nameRu: string;
   nameLat: string;
+  photoUrl: string | null;
   description: string;
   light: string;
   minZone: number;
@@ -38,7 +39,7 @@ type PlantCard = {
 
 type Stock = { available: number; low: boolean };
 
-type Similar = { id: number; nameRu: string; nameLat: string; priceCents: number };
+type Similar = { id: number; nameRu: string; nameLat: string; photoUrl: string | null; priceCents: number };
 
 /** Что загрузилось и для какой попытки. Фаза считается при рендере:
  *  «загружаем» — производное, а не эффект. */
@@ -145,7 +146,7 @@ export function PlantScreen({ plantId }: { plantId: string }) {
 
   const watering = plant.careRules.find((r) => r.type === "watering");
   // CC BY и CC BY-SA требуют указания автора — подпись едет вместе со снимком.
-  const credit = plantPhotoCredit(plant.id);
+  const credit = photoCreditFor(plant.nameLat);
 
   async function addToCart() {
     setAdd("sending");
@@ -182,7 +183,7 @@ export function PlantScreen({ plantId }: { plantId: string }) {
 
       <div className={styles.hero}>
         <PlantPhoto
-          plantId={plant.id}
+          photoUrl={plant.photoUrl}
           name={plant.nameRu}
           variant="hero"
           priority
@@ -280,7 +281,7 @@ export function PlantScreen({ plantId }: { plantId: string }) {
           <div className={styles.similar}>
             {settled.similar.map((item) => (
               <Card key={item.id} href={`/catalog/${item.id}`}>
-                <PlantPhoto plantId={item.id} name={item.nameRu} />
+                <PlantPhoto photoUrl={item.photoUrl} name={item.nameRu} />
                 <CardBody>
                   <span className={styles.similarName}>{item.nameRu}</span>
                   <span className={styles.similarPrice}>{formatPrice(item.priceCents)}</span>

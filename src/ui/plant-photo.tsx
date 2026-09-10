@@ -1,11 +1,10 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { plantPhoto } from "@/lib/photo-credits";
 import styles from "./plant-photo.module.css";
 
 type PlantPhotoProps = {
-  /** Идентификатор растения: по нему находится снимок. */
-  plantId?: number;
+  /** Путь к снимку. Приходит из базы (photo_url), а не считается по номеру строки. */
+  photoUrl?: string | null;
   /** Название: подпись для скринридера и буква в заглушке, если снимка нет. */
   name: string;
   variant?: "card" | "hero" | "thumb";
@@ -23,14 +22,14 @@ const SIZES: Record<string, string> = {
 };
 
 export function PlantPhoto({
-  plantId,
+  photoUrl,
   name,
   variant = "card",
   dimmed = false,
   overlay,
   priority = false,
 }: PlantPhotoProps) {
-  const src = plantId === undefined ? null : plantPhoto(plantId);
+  const src = photoUrl ?? null;
   const letter = name.trim().charAt(0).toUpperCase();
 
   return (

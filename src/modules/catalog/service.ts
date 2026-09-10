@@ -33,6 +33,7 @@ export type PlantListItem = {
   id: number;
   nameRu: string;
   nameLat: string;
+  photoUrl: string | null;
   light: string;
   minZone: number;
   plantingSeason: string;
@@ -65,6 +66,7 @@ export async function searchPlants(
       id: plants.id,
       nameRu: plants.nameRu,
       nameLat: plants.nameLat,
+      photoUrl: plants.photoUrl,
       light: plants.light,
       minZone: plants.minZone,
       plantingSeason: plants.plantingSeason,

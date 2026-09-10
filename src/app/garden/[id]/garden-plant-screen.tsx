@@ -22,6 +22,7 @@ type Detail = {
   plantId: number;
   nameRu: string;
   nameLat: string;
+  photoUrl: string | null;
   quantity: number;
   acquiredAt: string;
   rules: { type: string; label: string; periodDays: number; seasonOnly: boolean }[];
@@ -131,7 +132,7 @@ export function GardenPlantScreen({ gardenPlantId }: { gardenPlantId: string }) 
       </Link>
 
       <div className={`${styles.hero} ${styles.section}`}>
-        <PlantPhoto name={plant.nameRu} plantId={plant.plantId} variant="thumb" />
+        <PlantPhoto name={plant.nameRu} photoUrl={plant.photoUrl} variant="thumb" />
         <span className={styles.heroBody}>
           <h1>{plant.nameRu}</h1>
           <span className={styles.latin}>{plant.nameLat}</span>

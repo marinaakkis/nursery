@@ -7,7 +7,7 @@ import { ActionBar, Button, EmptyState, ErrorState, Field, PlantPhoto, Skeleton 
 import { formatPrice } from "../catalog/filters";
 import styles from "./checkout.module.css";
 
-type CartLine = { plantId: number; nameRu: string; quantity: number; sumCents: number };
+type CartLine = { plantId: number; nameRu: string; photoUrl: string | null; quantity: number; sumCents: number };
 type Cart = { lines: CartLine[]; totalCents: number };
 type Slot = {
   id: number;
@@ -264,7 +264,7 @@ export function CheckoutScreen() {
           {cart.lines.map((line) => (
             <span className={styles.summaryLine} key={line.plantId}>
               <span className={styles.summaryWhat}>
-                <PlantPhoto plantId={line.plantId} name={line.nameRu} variant="thumb" />
+                <PlantPhoto photoUrl={line.photoUrl} name={line.nameRu} variant="thumb" />
                 <span>
                   {line.nameRu} · {line.quantity} шт.
                 </span>

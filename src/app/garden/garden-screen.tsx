@@ -11,6 +11,7 @@ type GardenPlant = {
   plantId: number;
   nameRu: string;
   nameLat: string;
+  photoUrl: string | null;
   quantity: number;
   next: { label: string; plannedOn: string; overdue: boolean } | null;
   overdueCount: number;
@@ -107,7 +108,7 @@ export function GardenScreen() {
             key={plant.gardenPlantId}
             href={`/garden/${plant.gardenPlantId}`}
           >
-            <PlantPhoto name={plant.nameRu} plantId={plant.plantId} variant="thumb" />
+            <PlantPhoto name={plant.nameRu} photoUrl={plant.photoUrl} variant="thumb" />
             <span className={styles.rowBody}>
               <span className={styles.name}>{plant.nameRu}</span>
               <span className={styles.latin}>{plant.nameLat}</span>

@@ -1,6 +1,7 @@
 import { copyFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { UPLOAD_DIR } from "@/modules/consult/photos";
+import { photoPathFor } from "@/lib/photo-credits";
 /** Демо-данные. Идемпотентен: если в базе уже есть пользователи — выходит, ничего не меняя. */
 import { sql } from "drizzle-orm";
 import { getDb, getSql } from "@/db/client";
@@ -75,7 +76,12 @@ async function seed() {
     .returning();
 
   // --- каталог ---
-  const inserted = await db.insert(plants).values(demoPlants).returning({ id: plants.id });
+  // Снимок привязывается по латинскому названию, а не по номеру строки:
+  // идентификатор зависит от порядка вставки и однажды уже разъехался.
+  const inserted = await db
+    .insert(plants)
+    .values(demoPlants.map((p) => ({ ...p, photoUrl: photoPathFor(p.nameLat) })))
+    .returning({ id: plants.id });
   const plantIds = inserted.map((p) => p.id);
 
   await db.insert(careRules).values(

@@ -15,7 +15,7 @@ type OrderView = {
   slot: { slotDate: string; interval: string } | null;
   totalCents: number;
   createdAt: string;
-  items: { plantId: number; nameRu: string; quantity: number; priceCents: number }[];
+  items: { plantId: number; nameRu: string; photoUrl: string | null; quantity: number; priceCents: number }[];
   history: { toStatus: string; label: string; actorRole: string; at: string }[];
   nextStatuses: string[];
 };
@@ -178,7 +178,7 @@ export function OrderScreen({ orderId }: { orderId: string }) {
           {order.items.map((item) => (
             <span className={styles.item} key={item.plantId}>
               <span className={styles.itemWhat}>
-                <PlantPhoto plantId={item.plantId} name={item.nameRu} variant="thumb" />
+                <PlantPhoto photoUrl={item.photoUrl} name={item.nameRu} variant="thumb" />
                 <span>
                   {item.nameRu} · {item.quantity} шт.
                 </span>

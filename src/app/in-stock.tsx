@@ -6,7 +6,7 @@ import { Badge, Button, Card, CardBody, EmptyState, ErrorState, PlantPhoto, Skel
 import { formatPrice } from "./catalog/filters";
 import styles from "./home.module.css";
 
-type Plant = { id: number; nameRu: string; nameLat: string; priceCents: number };
+type Plant = { id: number; nameRu: string; nameLat: string; photoUrl: string | null; priceCents: number };
 type Stock = { plantId: number; available: number; low: boolean };
 type Loadout = { key: string; plants: Plant[] | null; stock: Map<number, Stock> };
 
@@ -85,7 +85,7 @@ export function InStock() {
         return (
           <Card key={plant.id} href={`/catalog/${plant.id}`}>
             <PlantPhoto
-              plantId={plant.id}
+              photoUrl={plant.photoUrl}
               name={plant.nameRu}
               overlay={stock?.low ? <Badge tone="warning">Осталось {stock.available}</Badge> : null}
             />

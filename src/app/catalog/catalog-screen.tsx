@@ -31,6 +31,7 @@ type PlantListItem = {
   id: number;
   nameRu: string;
   nameLat: string;
+  photoUrl: string | null;
   priceCents: number;
 };
 
@@ -209,7 +210,7 @@ export function CatalogScreen() {
                 dimmed={stock.get(plant.id)?.available === 0}
               >
                 <PlantPhoto
-                  plantId={plant.id}
+                  photoUrl={plant.photoUrl}
                   name={plant.nameRu}
                   dimmed={stock.get(plant.id)?.available === 0}
                   overlay={stockBadge(stock.get(plant.id))}
