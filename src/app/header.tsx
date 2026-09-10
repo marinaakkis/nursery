@@ -26,7 +26,7 @@ export async function Header() {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <Link className={styles.brand} href="/catalog">
+        <Link className={styles.brand} href="/">
           <BrandMark size={22} />
           Северный сад
         </Link>
@@ -56,12 +56,15 @@ export async function Header() {
             </>
           ) : (
             <>
+              {/* Первым пунктом и выделенный: это то, ради чего продукт
+                  отличается от обычного каталога, и заметить его надо
+                  раньше, чем каталог. */}
+              <Link className={`${styles.link} ${styles.ai}`} href="/assistant">
+                <BrandMark size={16} />
+                <span className={styles.aiText}>AI-помощник</span>
+              </Link>
               <Link className={styles.link} href="/catalog">
                 Каталог
-              </Link>
-              <Link className={styles.link} href="/assistant">
-                <BrandMark size={16} />
-                AI-помощник
               </Link>
               <Link className={styles.link} href="/garden">
                 Мой сад

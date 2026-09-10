@@ -191,3 +191,39 @@
   font-weight: 600;
   line-height: 1;
 }
+
+/* AI-помощник выделен цветом и лёгким переливом: пункт, ради которого
+   продукт отличается от обычного каталога, должен быть заметен раньше
+   каталога. Перелив медленный и по прозрачности — это подсветка,
+   а не мигание, которое тянет взгляд на себя постоянно. */
+.ai {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.ai:hover {
+  background: var(--accent-weak);
+  color: var(--accent-ink);
+}
+
+.aiText {
+  animation: aiGlow 3.5s ease-in-out infinite;
+}
+
+@keyframes aiGlow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.62;
+  }
+}
+
+/* Движение выключается там, где его просили выключить. */
+@media (prefers-reduced-motion: reduce) {
+  .aiText {
+    animation: none;
+  }
+}
