@@ -4,6 +4,7 @@ import { getDb } from "@/db/client";
 import { notifications } from "@/db/shared-schema";
 import { fail, ok, type Result } from "@/lib/result";
 import { plants } from "@/modules/catalog";
+import { fillGardenFromOrder, todayIso } from "@/modules/garden";
 import { recordRejectedDemand, recordSoldDemand, release, reserve } from "@/modules/warehouse";
 import {
   cartItems,
@@ -431,6 +432,18 @@ export async function transition(
       toStatus: next,
       actorRole: actor.role,
     });
+
+    if (next === "done") {
+      // Сад наполняется ровно тогда, когда заказ стал выполненным, — в той же
+      // транзакции. Повторный перевод не задваивает: upsert по составу и
+      // unique по событию. Модуль зовётся через свой index.ts, не напрямую.
+      const bought = await tx
+        .select({ plantId: orderItems.plantId, quantity: orderItems.quantity })
+        .from(orderItems)
+        .where(eq(orderItems.orderId, orderId));
+
+      await fillGardenFromOrder(tx, order.customerId, bought, todayIso());
+    }
 
     if (next === "cancelled") {
       // Резерв возвращается ровно в те партии, из которых был взят.
