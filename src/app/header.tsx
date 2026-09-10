@@ -5,7 +5,12 @@ import { currentUser, listDemoUsers } from "@/lib/demo-user.server";
 import { UserSwitcher } from "./user-switcher";
 
 export async function Header() {
-  const [users, user] = await Promise.all([listDemoUsers(), currentUser()]);
+  // База может быть недоступна — на сборке образа её нет вовсе. Шапка не имеет
+  // права уронить страницу из-за заглушки входа: без списка она просто пустая.
+  const [users, user] = await Promise.all([
+    listDemoUsers().catch(() => []),
+    currentUser().catch(() => null),
+  ]);
 
   return (
     <header className={styles.header}>
