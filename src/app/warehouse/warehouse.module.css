@@ -30,12 +30,24 @@
 }
 
 /* Таблицы склада шире экрана телефона — прокручиваются в своей рамке,
-   страница целиком по горизонтали не едет. */
+   страница целиком по горизонтали не едет. Полоса прокрутки показана
+   намеренно: спрятанная не сообщает, что таблицу можно тащить вбок. */
 .scroll {
   overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   background: var(--surface);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-control) transparent;
+}
+
+.scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.scroll::-webkit-scrollbar-thumb {
+  background: var(--border-control);
+  border-radius: 5px;
 }
 
 .table {

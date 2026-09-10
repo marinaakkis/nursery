@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Badge, Button, EmptyState, ErrorState, InlineSuccess, Skeleton } from "@/ui";
 import styles from "./agronomist.module.css";
 
@@ -45,12 +45,15 @@ const TONE: Record<string, "neutral" | "progress" | "success"> = {
   answered: "success",
 };
 
-export function AgronomistScreen() {
+export function AgronomistScreen({ initialQuestionId }: { initialQuestionId: number | null }) {
   const [queue, setQueue] = useState<QueueItem[] | null>(null);
   const [denied, setDenied] = useState(false);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [current, setCurrent] = useState<number | null>(null);
+  // Вопрос из адреса открывается один раз; флаг в ref, а не в состоянии —
+  // менять состояние из тела эффекта нельзя.
+  const openedFromUrl = useRef(false);
   const [detail, setDetail] = useState<Detail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [steps, setSteps] = useState<Step[]>([]);
@@ -59,30 +62,6 @@ export function AgronomistScreen() {
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState("");
   const [sent, setSent] = useState<string>("");
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch("/api/consult/questions", { signal: controller.signal })
-      .then((r) => r.json())
-      .then((payload) => {
-        if (payload.ok) {
-          setQueue(payload.data);
-          setDenied(false);
-          setFailed(false);
-          return;
-        }
-        setQueue(null);
-        setDenied(payload.error?.code === "forbidden");
-        setFailed(payload.error?.code !== "forbidden");
-      })
-      .catch((error: unknown) => {
-        if (controller.signal.aborted) return;
-        console.error("очередь агронома: запрос не удался", error);
-        setQueue(null);
-        setFailed(true);
-      });
-    return () => controller.abort();
-  }, [attempt]);
 
   const open = useCallback(async (questionId: number) => {
     setCurrent(questionId);
@@ -104,6 +83,36 @@ export function AgronomistScreen() {
       setDetailLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/consult/questions", { signal: controller.signal })
+      .then((r) => r.json())
+      .then((payload) => {
+        if (payload.ok) {
+          setQueue(payload.data);
+          setDenied(false);
+          setFailed(false);
+          // Пришли по ссылке с номером вопроса — открываем его сразу.
+          if (initialQuestionId !== null && !openedFromUrl.current) {
+            openedFromUrl.current = true;
+            void open(initialQuestionId);
+          }
+          return;
+        }
+        setQueue(null);
+        setDenied(payload.error?.code === "forbidden");
+        setFailed(payload.error?.code !== "forbidden");
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return;
+        console.error("очередь агронома: запрос не удался", error);
+        setQueue(null);
+        setFailed(true);
+      });
+    return () => controller.abort();
+  }, [attempt, initialQuestionId, open]);
+
 
   async function act(action: "draft" | "approve" | "reject") {
     if (current === null) return;
