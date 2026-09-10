@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ActionBar, Button, EmptyState, ErrorState, Skeleton } from "@/ui";
+import { ActionBar, Button, EmptyState, ErrorState, PlantPhoto, Skeleton } from "@/ui";
 import { formatPrice } from "../catalog/filters";
 import styles from "./cart.module.css";
 
@@ -116,8 +116,8 @@ export function CartScreen() {
   if (cart.lines.length === 0) {
     return (
       <EmptyState
-        title="В корзине пусто"
-        description="Соберите заказ из каталога — фильтры помогут отобрать растения под ваш участок."
+        title="Корзина ждёт"
+        description="Соберите заказ из каталога — фильтры отберут растения под ваш свет, зону и сезон."
         action={
           <Link href="/catalog">
             <Button>В каталог</Button>
@@ -134,13 +134,16 @@ export function CartScreen() {
       <div className={styles.lines}>
         {cart.lines.map((line) => (
           <div className={styles.line} key={line.plantId}>
+            <span className={styles.thumb}>
+              <PlantPhoto name={line.nameRu} variant="thumb" />
+            </span>
             <span className={styles.name}>
               <Link href={`/catalog/${line.plantId}`}>{line.nameRu}</Link>
             </span>
             <span className={styles.latin}>{line.nameLat}</span>
             <span className="muted">{formatPrice(line.priceCents)} за штуку</span>
 
-            <div className={styles.controls}>
+            <div className={`${styles.controls} ${styles.wide}`}>
               <span className={styles.stepper}>
                 <Button
                   variant="secondary"
@@ -169,13 +172,15 @@ export function CartScreen() {
               <span className={styles.sum}>{formatPrice(line.sumCents)}</span>
             </div>
 
-            <Button
-              variant="ghost"
-              disabled={busyPlant === line.plantId}
-              onClick={() => send("cart-remove", { plantId: line.plantId }, line.plantId)}
-            >
-              Убрать из корзины
-            </Button>
+            <span className={styles.wide}>
+              <Button
+                variant="ghost"
+                disabled={busyPlant === line.plantId}
+                onClick={() => send("cart-remove", { plantId: line.plantId }, line.plantId)}
+              >
+                Убрать из корзины
+              </Button>
+            </span>
           </div>
         ))}
       </div>

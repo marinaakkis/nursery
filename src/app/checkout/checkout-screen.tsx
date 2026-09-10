@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ActionBar, Button, EmptyState, ErrorState, Field, Skeleton } from "@/ui";
+import { ActionBar, Button, EmptyState, ErrorState, Field, PlantPhoto, Skeleton } from "@/ui";
 import { formatPrice } from "../catalog/filters";
 import styles from "./checkout.module.css";
 
@@ -130,8 +130,8 @@ export function CheckoutScreen() {
   if (cart.lines.length === 0) {
     return (
       <EmptyState
-        title="Оформлять нечего"
-        description="Корзина пуста — сначала выберите растения в каталоге."
+        title="Сначала выберите растения"
+        description="Оформление откроется, как только в корзине появится хотя бы одна позиция."
         action={
           <Link href="/catalog">
             <Button>В каталог</Button>
@@ -263,16 +263,20 @@ export function CheckoutScreen() {
         <div className={styles.summary}>
           {cart.lines.map((line) => (
             <span className={styles.summaryLine} key={line.plantId}>
-              <span>
-                {line.nameRu} · {line.quantity} шт.
+              <span className={styles.summaryWhat}>
+                <PlantPhoto name={line.nameRu} variant="thumb" />
+                <span>
+                  {line.nameRu} · {line.quantity} шт.
+                </span>
               </span>
               <span>{formatPrice(line.sumCents)}</span>
             </span>
           ))}
-          <span className={styles.summaryTotal}>
-            <span>Итого</span>
-            <span>{formatPrice(cart.totalCents)}</span>
-          </span>
+        </div>
+
+        <div className={styles.summaryTotal}>
+          <span>Итого</span>
+          <span>{formatPrice(cart.totalCents)}</span>
         </div>
 
         <p className={styles.payStub}>

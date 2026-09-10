@@ -10,13 +10,21 @@
 }
 
 .line {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-2);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--sp-2) var(--sp-3);
   padding: var(--sp-3);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
+}
+
+.thumb {
+  grid-row: span 3;
+}
+
+.wide {
+  grid-column: 1 / -1;
 }
 
 .name {
@@ -71,6 +79,8 @@
   font-weight: 600;
 }
 
+/* Итог — отдельный блок на утопленной подложке: он не позиция списка,
+   и глазом должен читаться как другой уровень. */
 .total {
   display: flex;
   align-items: baseline;
@@ -78,7 +88,7 @@
   gap: var(--sp-2);
   margin: var(--sp-4) 0 0;
   padding: var(--sp-3);
-  background: var(--surface);
+  background: var(--surface-sunken);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
 }
