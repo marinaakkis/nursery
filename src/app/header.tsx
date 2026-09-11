@@ -3,15 +3,28 @@ import { BrandMark, SparkMark } from "@/ui";
 import styles from "./header.module.css";
 import { countDueCareEvents } from "@/modules/garden";
 import { countCartItems, currentUser, listDemoUsers } from "@/lib/demo-user.server";
+import type { DemoUser } from "@/lib/demo-user";
 import { UserSwitcher } from "./user-switcher";
 
 export async function Header() {
-  // База может быть недоступна — на сборке образа её нет вовсе. Шапка не имеет
-  // права уронить страницу из-за заглушки входа: без списка она просто пустая.
-  const [users, user] = await Promise.all([
-    listDemoUsers().catch(() => []),
-    currentUser().catch(() => null),
-  ]);
+  /*
+   * 🔶 База может быть недоступна — на сборке образа её нет вовсе, и шапка
+   * не имеет права уронить страницу. Но и прятать отказ за пустым списком
+   * нельзя: 11.09 страницы выглядели живыми при снесённой схеме именно
+   * потому, что шапка молча превращала ошибку в «пусто». Ошибка остаётся
+   * ошибкой: пишется в лог уровнем error и показывается полосой под шапкой.
+   * Разбор — memory/mistakes/2026-09-11-shema-snesena-kontejner-ne-perezapushchen.md
+   */
+  const [usersResult, userResult] = await Promise.allSettled([listDemoUsers(), currentUser()]);
+  const dbFailed = usersResult.status === "rejected" || userResult.status === "rejected";
+  if (dbFailed) {
+    console.error(
+      "header: база не ответила — страница отрисована без данных",
+      usersResult.status === "rejected" ? usersResult.reason : userResult.status === "rejected" ? userResult.reason : null,
+    );
+  }
+  const users: DemoUser[] = usersResult.status === "fulfilled" ? usersResult.value : [];
+  const user: DemoUser | null = userResult.status === "fulfilled" ? userResult.value : null;
 
   // Напоминание — сколько дел по уходу уже пора сделать. Считается тем же
   // способом, что и на экране: события с датой не позже сегодняшней.
@@ -103,6 +116,12 @@ export async function Header() {
 
         <UserSwitcher users={users} current={user} />
       </div>
+      {dbFailed ? (
+        <p className={styles.dbWarning} role="alert">
+          База данных не отвечает — страницы показываются без данных. Проверьте{" "}
+          <code>/health</code> и лог контейнера.
+        </p>
+      ) : null}
     </header>
   );
 }

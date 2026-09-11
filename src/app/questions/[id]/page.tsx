@@ -6,7 +6,9 @@ export const metadata = { title: "Переписка с агрономом" };
 
 export default async function ThreadPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = await currentUser();
+  // .catch как у остальных страниц: при отказе базы срабатывает экран ошибки,
+  // а не 500 всей страницы.
+  const user = await currentUser().catch(() => null);
 
   // Агроному этот маршрут показывал покупательский экран: форму «Дополнить вопрос»
   // с подсказкой «агроном увидит сообщение» — экран говорил роли неправду о ней

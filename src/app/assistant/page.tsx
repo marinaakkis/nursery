@@ -6,7 +6,9 @@ export const metadata = { title: "AI-помощник" };
 export default async function AssistantPage() {
   // Роль читается на сервере: предупреждение о невыбранном покупателе
   // должно быть видно сразу при входе, а не после первой попытки спросить.
-  const user = await currentUser();
+  // .catch как у остальных страниц: при отказе базы срабатывает экран ошибки,
+  // а не 500 всей страницы.
+  const user = await currentUser().catch(() => null);
   const canAsk = user?.role === "customer";
 
   // Большого заголовка страницы здесь нет намеренно: чат занимает экран

@@ -227,3 +227,13 @@
     animation: none;
   }
 }
+
+/* Полоса об отказе базы: шапка не падает, но и не молчит. */
+.dbWarning {
+  margin: 0;
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--status-danger-bg);
+  border-top: 1px solid var(--danger);
+  color: var(--status-danger-ink);
+  text-align: center;
+}
