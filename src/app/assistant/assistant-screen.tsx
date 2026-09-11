@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
+  Badge,
   BrandMark,
   Button,
   Chip,
@@ -37,7 +38,13 @@ type Turn = {
    в чипе не помещается на телефоне и читается как чужой текст. */
 const EXAMPLES = ["тень и глина", "солнце, без ухода", "полутень, зона 4"];
 
-export function AssistantScreen({ canAsk }: { canAsk: boolean }) {
+type AssistantScreenProps = {
+  canAsk: boolean;
+  /** «Подбор: правила» или «Подбор: модель …» — считается на сервере. */
+  mode: string;
+};
+
+export function AssistantScreen({ canAsk, mode }: AssistantScreenProps) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
@@ -190,6 +197,11 @@ export function AssistantScreen({ canAsk }: { canAsk: boolean }) {
         </span>
         <span className={styles.chatNote}>
           Подбирает по каталогу. Заказ не оформляет — только по вашей кнопке.
+        </span>
+        {/* Индикатор режима — спека §4.3: в детерминированном режиме честно
+            написано, что подбор идёт по правилам, а не моделью. */}
+        <span className={styles.mode}>
+          <Badge>{mode}</Badge>
         </span>
       </div>
 

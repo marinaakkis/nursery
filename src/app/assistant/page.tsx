@@ -1,3 +1,4 @@
+import { providerLabel } from "@/agent/provider";
 import { currentUser } from "@/lib/demo-user.server";
 import { AssistantScreen } from "./assistant-screen";
 
@@ -10,13 +11,16 @@ export default async function AssistantPage() {
   // а не 500 всей страницы.
   const user = await currentUser().catch(() => null);
   const canAsk = user?.role === "customer";
+  // Режим подбора читается на сервере из окружения — спека §4.3: «режим виден
+  // в интерфейсе». Клиент про переменные окружения знать не должен.
+  const mode = providerLabel();
 
   // Большого заголовка страницы здесь нет намеренно: чат занимает экран
   // целиком, и заголовок над ним съедал бы высоту ленты. Название стоит
   // мелко в шапке самого контейнера — как в любом мессенджере.
   return (
     <main className="page">
-      <AssistantScreen canAsk={canAsk} />
+      <AssistantScreen canAsk={canAsk} mode={mode} />
     </main>
   );
 }

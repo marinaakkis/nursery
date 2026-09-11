@@ -326,6 +326,12 @@
   color: var(--text-muted);
 }
 
+/* Индикатор режима — в правый край шапки чата; на узком экране переносится
+   строкой ниже вместе с подписью. */
+.mode {
+  margin-left: auto;
+}
+
 .composer {
   display: flex;
   flex-direction: column;

@@ -15,7 +15,6 @@
     "db:seed": "tsx src/db/seed.ts"
   },
   "dependencies": {
-    "ai": "^7.0.94",
     "drizzle-orm": "^0.45.2",
     "next": "^16.3.4",
     "postgres": "^3.4.9",
